@@ -2,8 +2,11 @@
 
 #include "interface/Model.h"
 
-using namespace Elegent;
+namespace Elegent
+{
 
 Model *model = NULL;
+
+}
 
 // vim: ft=cmscpp

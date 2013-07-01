@@ -2,7 +2,8 @@
 
 #include "interface/Constants.h"
 
-using namespace Elegent;
+namespace Elegent
+{
 
 //----------------------------------------------------------------------------------------------------
 
@@ -70,4 +71,7 @@ void Constants::Print()
   printf("	t_min = %E\n", t_min);
   printf("	pMode = %i\n", pMode);
 }
+
+} // namespace
+
 // vim: ft=cmscpp

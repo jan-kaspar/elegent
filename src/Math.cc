@@ -2,7 +2,8 @@
 
 #include "interface/Math.h"
 
-using namespace Elegent;
+namespace Elegent
+{
 
 // =================================== DERIVATION ROUTINES =================================================
 
@@ -235,5 +236,7 @@ TComplex CmplxInt(const void *obj, TComplex (*fcn)(double*, double*, const void 
   // put it together 
   return TComplex(Rh, Ih);
 }
+
+} // namespace
 
 // vim: ft=cmscpp
