@@ -171,5 +171,3 @@ extern CoulombInterference *coulomb;
 } // namespace
 
 #endif
-
-// vim: ft=cmscpp

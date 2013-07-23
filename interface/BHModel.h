@@ -71,5 +71,3 @@ class BHModel : public Model {
 } // namespace
 
 #endif
-
-// vim: ft=cmscpp

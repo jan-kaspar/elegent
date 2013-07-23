@@ -10,7 +10,6 @@ class TGraph;
 namespace Elegent
 {
 
-
 /**
  * \ingroup Elegent
  * \brief Model that interpolates stored amplitude points.
@@ -50,5 +49,3 @@ class InterpolationModel : public Model
 } // namespace
 
 #endif
-
-// vim: ft=cmscpp

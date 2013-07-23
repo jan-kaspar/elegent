@@ -4,7 +4,8 @@
 
 #include "TGraph.h"
 
-using namespace Elegent;
+namespace Elegent
+{
 
 //#define DEBUG 1
 
@@ -69,7 +70,8 @@ void InterpolationModel::AddPoint(double t, double r, double i)
   /// convert t to |t|
   double mt = -t;
 
-  if (re->GetN() == 0) {
+  if (re->GetN() == 0)
+  {
     t_min = mt;
     t_max = mt;
   } else {
@@ -83,4 +85,4 @@ void InterpolationModel::AddPoint(double t, double r, double i)
   im->SetPoint(im->GetN(), mt, i);
 }    
 
-// vim: ft=cmscpp
+} // namespace

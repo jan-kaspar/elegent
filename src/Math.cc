@@ -238,5 +238,3 @@ TComplex CmplxInt(const void *obj, TComplex (*fcn)(double*, double*, const void 
 }
 
 } // namespace
-
-// vim: ft=cmscpp

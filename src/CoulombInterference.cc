@@ -7,6 +7,9 @@
 using namespace std;
 using namespace Elegent;
 
+namespace Elegent
+{
+
 //----------------------------------------------------------------------------------------------------
 
 // a global instance
@@ -440,4 +443,4 @@ TComplex CoulombInterference::C(double t) const
   return (KL - PH) / PH;
 }
 
-// vim: ft=cmscpp
+} // namespace

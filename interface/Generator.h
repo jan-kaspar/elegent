@@ -81,5 +81,3 @@ class Generator
 } // namespace
 
 #endif
-
-// vim: ft=cmscpp

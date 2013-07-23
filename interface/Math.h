@@ -10,6 +10,7 @@ namespace Elegent
 
 // =================================== DERIVATION ROUTINES =================================================
 
+// TODO: needed?
 TComplex CmplxDeriv(TComplex (*fcn)(Double_t*, Double_t*), Double_t x, Double_t *params = NULL, Double_t h = 1E-5);
 
 // ================================== INTEGRATION ROUTINES =================================================
@@ -19,7 +20,4 @@ TComplex CmplxInt(const void *obj, TComplex (*fcn)(Double_t*, Double_t*, const v
 
 } // namespace
 
-
 #endif
-
-// vim: ft=cmscpp

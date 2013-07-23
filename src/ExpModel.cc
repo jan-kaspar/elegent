@@ -37,5 +37,3 @@ TComplex ExpModel::Amp(double t) const
 {
   return  a * TComplex::Exp( b1*t + b2*t*t + i*(p0 + p1*t) );
 }
-
-// vim: ft=cmscpp

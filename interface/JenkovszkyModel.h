@@ -17,35 +17,33 @@ namespace Elegent
  **/
 class JenkovszkyModel : public Model
 {
-  public:
-    JenkovszkyModel() : Model("jenkovszky", "jenkovszky (default)", "Jenkovszky et al.")
-      { Init(); }
+	public:
+		JenkovszkyModel() : Model("jenkovszky", "jenkovszky (default)", "Jenkovszky et al.")
+			{ Init(); }
 
-    void Init();
+		void Init();
 
-    virtual void Print() const;
-    virtual std::string GetModeString() const
-      { return "default"; }
+		virtual void Print() const;
+		virtual std::string GetModeString() const
+			{ return "default"; }
 
-    virtual TComplex Amp(double t) const;
-    virtual TComplex Prf(double b) const;
+		virtual TComplex Amp(double t) const;
+		virtual TComplex Prf(double b) const;
 
-  protected:
-    /// pomeron parameters
-    double a_P, b_P, de_P, al1_P, ep_P, s_P;
+	protected:
+		/// pomeron parameters
+		double a_P, b_P, de_P, al1_P, ep_P, s_P;
 
-    /// odderon parameters
-    double a_O, b_O, de_O, al1_O, s_O;
+		/// odderon parameters
+		double a_O, b_O, de_O, al1_O, s_O;
 
-    /// omega parameters
-    double a_om, b_om, s_om, al0_om, al1_om;
+		/// omega parameters
+		double a_om, b_om, s_om, al0_om, al1_om;
 
-    /// f parameters
-    double a_f, b_f, s_f, al0_f, al1_f;
+		/// f parameters
+		double a_f, b_f, s_f, al0_f, al1_f;
 };
 
 } // namespace
 
 #endif
-
-// vim: ft=cmscpp

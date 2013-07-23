@@ -232,5 +232,3 @@ TComplex BHModel::Amp(double t) const
   // from Eqs. (A11) and (A12)
   return  i * cnts->p_cms * cnts->sqrt_s * CmplxInt(this, prf0_J0, 0., upper_bound, &q, precision);
 }
-
-// vim: ft=cmscpp

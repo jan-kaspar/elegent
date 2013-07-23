@@ -43,5 +43,3 @@ extern Model *model;
 } // namespace
 
 #endif
-
-// vim: ft=cmscpp

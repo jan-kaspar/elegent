@@ -18,12 +18,12 @@ dict_modules = Model IslamModel PPPModel BSWModel BHModel JenkovszkyModel ExpMod
 modules = Math Generator
 
 # executable files
-exe_files = ElegentTest
+exe_files = ElegentTest ElegentDistributionSampler
 
 #----------------------------------------------------------------------------------------------------
 
 # directories to create
-dirsToCreate = obj dict lib bin
+dirsToCreate = obj lib bin #dict
 
 dict_modules_obj = $(addprefix obj/, $(addsuffix .o, $(dict_modules)))
 dict_modules_dict_src = $(addprefix dict/, $(addsuffix _dict.cc, $(dict_modules)))
@@ -84,5 +84,5 @@ info:
 clean:
 	rm -rf obj
 	rm -rf lib
-	rm -rf dict
+	#rm -rf dict
 	rm -rf bin

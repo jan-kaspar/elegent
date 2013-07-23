@@ -160,5 +160,3 @@ void Generator::Generate(GenEvent* gEv)
 {
   GenerateBase(gRandom->Rndm(), gRandom->Rndm(), gEv);
 }
-
-// vim: ft=cmscpp

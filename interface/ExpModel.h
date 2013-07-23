@@ -36,5 +36,3 @@ class ExpModel : public Model
 } // namespace
 
 #endif
-
-// vim: ft=cmscpp
