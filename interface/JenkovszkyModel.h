@@ -1,4 +1,7 @@
-// HEADER
+/**************************************************
+ * This file is a part of the Elegent package:
+ * 	http://elegent.hepforge.org/
+ *************************************************/
 
 #ifndef _elegent_jenkovszky_model_
 #define _elegent_jenkovszky_model_

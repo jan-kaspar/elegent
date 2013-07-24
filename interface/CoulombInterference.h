@@ -1,4 +1,7 @@
-// HEADER
+/**************************************************
+ * This file is a part of the Elegent package:
+ * 	http://elegent.hepforge.org/
+ *************************************************/
 
 #ifndef _elegent_coulomb_
 #define _elegent_coulomb_

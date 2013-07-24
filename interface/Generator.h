@@ -1,4 +1,7 @@
-// HEADER
+/**************************************************
+ * This file is a part of the Elegent package:
+ * 	http://elegent.hepforge.org/
+ *************************************************/
 
 #ifndef _elegent_elegent_
 #define _elegent_elegent_

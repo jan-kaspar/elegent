@@ -1,4 +1,7 @@
-// HEADER
+/**************************************************
+ * This file is a part of the Elegent package:
+ * 	http://elegent.hepforge.org/
+ *************************************************/
 
 #include "interface/BHModel.h"
 #include "interface/Math.h"
