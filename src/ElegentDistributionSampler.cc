@@ -1,14 +1,25 @@
 // HEADER
 
-//#include <cstdio>
-//#include <cstdlib>
 #include <string>
+#include <vector>
+#include <map>
 
 #include "interface/Constants.h"
 #include "interface/AllModels.h"
+#include "interface/InterpolationModel.h"
+
+#include "TFile.h"
+#include "TGraph.h"
 
 using namespace Elegent;
 using namespace std;
+
+//----------------------------------------------------------------------------------------------------
+
+struct AmplitudeGraph
+{
+	TGraph *re, *im;
+};
 
 //----------------------------------------------------------------------------------------------------
 
@@ -20,93 +31,8 @@ void PrintUsage()
 
 //----------------------------------------------------------------------------------------------------
 
-int main(int argc, char **argv)
+int InitModels(const string& hadronicModelsString, vector<Model *> &models)
 {
-	// defaults
-	double energy = 0.;
-	unsigned int samples = 4000;
-	double t_max = 20.;
-	string outputFileName = "";
-	string hadronicModelsString = "islam_bfkl,islam_cgc,ppp2,ppp3,bsw,bh,jenkovszky";
-	Constants::ParticleMode pMode = Constants::mPP;
-
-	// process command line
-	for (int i = 1; i < argc; i++)
-	{
-		if (strcmp(argv[i], "-energy") == 0)
-		{
-			if (argc-1 > i)
-				energy = atof(argv[++i]);
-			continue;
-		}
-
-		if (strcmp(argv[i], "-samples") == 0)
-		{
-			if (argc-1 > i)
-				samples = atoi(argv[++i]);
-			continue;
-		}
-
-		if (strcmp(argv[i], "-tmax") == 0)
-		{
-			if (argc-1 > i)
-				t_max = atof(argv[++i]);
-			continue;
-		}
-
-		if (strcmp(argv[i], "-output") == 0)
-		{
-			if (argc-1 > i)
-				outputFileName = argv[++i];
-			continue;
-		}
-
-		if (strcmp(argv[i], "-pp") == 0)
-		{
-			pMode = Constants::mPP;
-			continue;
-		}
-
-		if (strcmp(argv[i], "-app") == 0)
-		{
-			pMode = Constants::mAPP;
-			continue;
-		}
-	}
-
-	// test input
-	bool stop = false;
-	if (energy == 0.)
-	{
-		printf("ERROR: energy not specified.\n");
-		PrintUsage();
-		stop = true;
-	}
-
-	if (outputFileName.empty())
-	{
-		printf("ERROR: output not specified.\n");
-		PrintUsage();
-		stop = true;
-	}
-
-	if (stop)
-		return 1;
-
-	// print input
-	printf("particle mode %u\n", pMode);
-	printf("energy = %E\n", energy);
-	printf("t_max = %E\n", t_max);
-	printf("samples = %u\n", samples);
-	printf("output = %s\n", outputFileName.c_str());
-	printf("models = %s\n", hadronicModelsString.c_str());
-
-	// initialise constants etc.
-	Constants::Init(2.*energy, pMode);
-	cnts->Print();
-	coulomb->Print();
-
-	// initilise the selected models
 	size_t p_curr = 0;
 	while (true)
 	{
@@ -178,10 +104,11 @@ int main(int argc, char **argv)
 		if (model == NULL)
 		{
 			printf("ERROR: model tag `%s' not recognised\n", tag.c_str());
-			return 2;
+			return 3;
 		}
 
 		model->tag = tag;
+		models.push_back(model);
 
 		printf("\n>> model with tag `%s':\n", tag.c_str());
 		model->Print();
@@ -192,5 +119,398 @@ int main(int argc, char **argv)
 			p_curr = p_next + 1;
 	}
 
+	return 0;
+}
+
+//----------------------------------------------------------------------------------------------------
+
+void SampleModels(const vector<Model *> &models, double t_max, unsigned int N, vector<InterpolationModel *> &models_sampled)
+{
+	for (unsigned int mi = 0; mi < models.size(); mi++)
+	{
+		model = models[mi];
+
+		InterpolationModel *ms = new InterpolationModel(N, -t_max, 0.);
+		ms->tag = model->tag + ":interpolated";
+
+		for (unsigned int pi = 0; pi < N; pi++)
+		{
+			double t = ms->GetT(pi);
+			ms->SetPoint(pi, model->Amp(t));
+		}
+
+		models_sampled.push_back(ms);
+	}
+}
+
+//----------------------------------------------------------------------------------------------------
+
+void SampleAmplitude(unsigned int N, double t_min, double t_max, double t_min_coulomb, AmplitudeGraph &a, bool full)
+{
+	double dt = (t_max - t_min) / (N - 1);
+
+	a.re = new TGraph(); a.re->SetName("re");
+	a.im = new TGraph(); a.im->SetName("im");
+	
+	unsigned int idx = 0;
+	for (unsigned int pi = 0; pi < N; pi++)
+	{
+		double t = t_max - dt * pi;
+
+		if (!full)
+		{
+			if (fabs(t) < 1E-6)
+				continue;
+
+			if (t < t_min_coulomb)
+				continue;
+		}
+
+		TComplex v = coulomb->Amp(t);
+		a.re->SetPoint(idx, -t, v.Re());
+		a.im->SetPoint(idx, -t, v.Im());
+		idx++;
+	}
+}
+
+//----------------------------------------------------------------------------------------------------
+
+void BuildAmplitudes(const vector<InterpolationModel*> &models_sampled,
+	unsigned int N, double t_min, double t_max,
+	const vector<CoulombInterference::ciMode> &amplitudeModes,
+	double t_min_coulomb,
+	AmplitudeGraph &amplitude_pc, vector< map<CoulombInterference::ciMode, AmplitudeGraph> > &amplitudes)
+{
+	// PC amplitude
+	coulomb->mode = CoulombInterference::mPC;
+	SampleAmplitude(N, t_min, t_max, t_min_coulomb, amplitude_pc, false);
+
+	// other amplitudes
+	amplitudes.clear();
+	amplitudes.resize(models_sampled.size());
+	for (unsigned int mi = 0; mi < models_sampled.size(); mi++)
+	{
+		model = models_sampled[mi];
+
+		map<CoulombInterference::ciMode, AmplitudeGraph> &as = amplitudes[mi];
+
+		for (unsigned int cii = 0; cii < amplitudeModes.size(); cii++)
+		{
+			coulomb->mode = amplitudeModes[cii];
+
+			AmplitudeGraph &a = as[amplitudeModes[cii]];
+			SampleAmplitude(N, t_min, t_max, t_min_coulomb, a, (amplitudeModes[cii] == CoulombInterference::mPH));
+		}
+	}
+}
+
+//----------------------------------------------------------------------------------------------------
+
+void WriteOneAmplitudeGraphs(const AmplitudeGraph &a)
+{
+	a.re->Write("amplitude_re");
+	a.im->Write("amplitude_im");
+
+	// build differential and cumulative cross-sections
+	TGraph *phase = new TGraph(); phase->SetName("phase");
+	TGraph *rho = new TGraph(); rho->SetName("rho");
+	TGraph *B = new TGraph(); B->SetName("B");
+	TGraph *dif = new TGraph(); dif->SetName("differentical cross-section");
+	TGraph *cum = new TGraph(); cum->SetName("cumulative cross-section");
+
+	double *at = a.re->GetX();
+	double *ar = a.re->GetY();
+	double *ai = a.im->GetY();
+
+	double S=0., prev_t=0., prev_cs=0.;
+	for (int i = 0; i < a.re->GetN(); i++)
+	{
+		TComplex A(ar[i], ai[i]);
+		double cs = cnts->sig_fac * A.Rho2();
+
+		dif->SetPoint(i, at[i], cs);
+		phase->SetPoint(i, at[i], A.Theta());
+		rho->SetPoint(i, at[i], 1./tan(A.Theta()));
+
+		if (i > 0)
+			B->SetPoint(i-1, (at[i] + prev_t)/2., (log(prev_cs) - log(cs)) / (at[i] - prev_t));
+		
+		if (i > 0)
+			S += (cs + prev_cs) * (at[i] - prev_t) / 2.;
+		
+		cum->SetPoint(i, at[i], S);
+
+		prev_cs = cs;
+		prev_t = at[i];
+	}
+
+	phase->Write();
+	rho->Write();
+	B->Write();
+	dif->Write();
+	cum->Write();
+}
+
+//----------------------------------------------------------------------------------------------------
+
+void WriteCRZGraphs(const AmplitudeGraph &amp_pc, const AmplitudeGraph &amp_ph,
+		const AmplitudeGraph &amp_kl, const AmplitudeGraph &amp_swy)
+{
+	TGraph *C = new TGraph(); C->SetName("C");
+	TGraph *R = new TGraph(); R->SetName("R");
+	TGraph *Z = new TGraph(); Z->SetName("Z");
+
+	for (int i = 0; i < amp_kl.re->GetN(); i++)
+	{
+		double t, pcR, pcI, phR, phI, klR, klI, swyR, swyI;
+		amp_kl.re->GetPoint(i, t, klR);
+		amp_kl.im->GetPoint(i, t, klI);
+
+		pcR = amp_pc.re->Eval(t);
+		pcI = amp_pc.im->Eval(t);
+		phR = amp_ph.re->Eval(t);
+		phI = amp_ph.im->Eval(t);
+		swyR = amp_swy.re->Eval(t);
+		swyI = amp_swy.im->Eval(t);
+
+	    TComplex ph(phR, phI), pc(pcR, pcI), swy(swyR, swyI), kl(klR, klI);
+
+	    double vC = (kl.Rho2() - ph.Rho2()) / ph.Rho2();
+	    double vZ = (kl.Rho2() - ph.Rho2() - pc.Rho2()) / kl.Rho2();
+	    double vR = (kl.Rho2() - swy.Rho2()) / kl.Rho2();
+
+	    Z->SetPoint(i, t, vZ);
+	    C->SetPoint(i, t, vC);
+	    R->SetPoint(i, t, vR);
+	}
+
+	C->Write();
+	R->Write();
+	Z->Write();
+}
+
+//----------------------------------------------------------------------------------------------------
+
+void WriteGraphs(const vector<Model *> &models, const AmplitudeGraph &amplitude_pc,
+		const vector< map<CoulombInterference::ciMode, AmplitudeGraph> > &amplitudes)
+{
+	TDirectory *topDir = gDirectory;
+
+	// coulomb graphs
+	gDirectory = topDir->mkdir("PC");
+	WriteOneAmplitudeGraphs(amplitude_pc);
+
+	for (unsigned int mi = 0; mi < amplitudes.size(); mi++)
+	{
+		TDirectory *modelDir = topDir->mkdir(models[mi]->tag.c_str());
+
+		for (map<CoulombInterference::ciMode, AmplitudeGraph>::const_iterator mit = amplitudes[mi].begin(); mit != amplitudes[mi].end(); ++mit)
+		{
+			coulomb->mode = mit->first;
+			gDirectory = modelDir->mkdir(coulomb->GetModeString().c_str());
+
+			WriteOneAmplitudeGraphs(mit->second);
+		}
+
+		gDirectory = modelDir;
+		const map<CoulombInterference::ciMode, AmplitudeGraph> &m = amplitudes[mi];
+		map<CoulombInterference::ciMode, AmplitudeGraph>::const_iterator it_ph = m.find(CoulombInterference::mPH);
+		map<CoulombInterference::ciMode, AmplitudeGraph>::const_iterator it_kl = m.find(CoulombInterference::mKL);
+		map<CoulombInterference::ciMode, AmplitudeGraph>::const_iterator it_swy = m.find(CoulombInterference::mSWY);
+
+		if (it_ph == m.end() || it_kl == m.end() || it_swy == m.end())
+		{
+			printf("ERROR: some of the PH, KL, SWY amplitudes are missing for model `%s'.\n", models[mi]->tag.c_str());
+			continue;
+		}
+
+		WriteCRZGraphs(amplitude_pc, it_ph->second, it_kl->second, it_swy->second);
+	}
+}
+
+//----------------------------------------------------------------------------------------------------
+
+int main(int argc, char **argv)
+{
+	// defaults
+	double energy = 0.;
+	Constants::ParticleMode pMode = Constants::mPP;
+
+	unsigned int model_N = 1000, fullRange_N = 1000, lowt_N = 1000;
+	double model_t_max = 20., fullRange_t_max = 20., lowt_t_max = 0.1;
+
+	string hadronicModelsString = "islam_bfkl,islam_cgc,ppp2,ppp3,bsw,bh,jenkovszky";
+
+	string outputFileName = "";
+
+	// process command line
+	for (int i = 1; i < argc; i++)
+	{
+		if (strcmp(argv[i], "-energy") == 0)
+		{
+			if (argc-1 > i)
+				energy = atof(argv[++i]);
+			continue;
+		}
+
+		if (strcmp(argv[i], "-pp") == 0)
+		{
+			pMode = Constants::mPP;
+			continue;
+		}
+
+		if (strcmp(argv[i], "-app") == 0)
+		{
+			pMode = Constants::mAPP;
+			continue;
+		}
+
+		if (strcmp(argv[i], "-model-N") == 0)
+		{
+			if (argc-1 > i)
+				model_N = atoi(argv[++i]);
+			continue;
+		}
+
+		if (strcmp(argv[i], "-model-tmax") == 0)
+		{
+			if (argc-1 > i)
+				model_t_max = atof(argv[++i]);
+			continue;
+		}
+
+		if (strcmp(argv[i], "-full-N") == 0)
+		{
+			if (argc-1 > i)
+				fullRange_N = atoi(argv[++i]);
+			continue;
+		}
+
+		if (strcmp(argv[i], "-full-tmax") == 0)
+		{
+			if (argc-1 > i)
+				fullRange_t_max = atof(argv[++i]);
+			continue;
+		}
+
+		if (strcmp(argv[i], "-lowt-N") == 0)
+		{
+			if (argc-1 > i)
+				lowt_N = atoi(argv[++i]);
+			continue;
+		}
+
+		if (strcmp(argv[i], "-lowt-tmax") == 0)
+		{
+			if (argc-1 > i)
+				lowt_t_max = atof(argv[++i]);
+			continue;
+		}
+
+		if (strcmp(argv[i], "-models") == 0)
+		{
+			if (argc-1 > i)
+				hadronicModelsString = argv[++i];
+			continue;
+		}
+
+
+		if (strcmp(argv[i], "-output") == 0)
+		{
+			if (argc-1 > i)
+				outputFileName = argv[++i];
+			continue;
+		}
+
+		printf("ERROR: unrecognised parameter `%s'.\n", argv[i]);
+		PrintUsage();
+		return 10;
+	}
+
+	// test input
+	bool stop = false;
+	if (energy == 0.)
+	{
+		printf("ERROR: energy not specified.\n");
+		stop = true;
+	}
+
+	if (outputFileName.empty())
+	{
+		printf("ERROR: output not specified.\n");
+		stop = true;
+	}
+
+	if (stop)
+	{
+		PrintUsage();
+		return 1;
+	}
+
+	// print input
+	printf(">> ElegentDistributionSampler > input:\n");
+	printf("\tenergy = %E\n", energy);
+	printf("\tparticle mode %u\n", pMode);
+
+	printf("\tmodel sampling: samples = %u, t_max = %.2E\n", model_N, model_t_max);
+	printf("\tfull-range plots: samples = %u, t_max = %.2E\n", fullRange_N, fullRange_t_max);
+	printf("\tlow-|t| plots: samples = %u, t_max = %.2E\n", lowt_N, lowt_t_max);
+
+	printf("\tmodels = %s\n", hadronicModelsString.c_str());
+	printf("\toutput = %s\n", outputFileName.c_str());
+
+	// initialise constants etc.
+	Constants::Init(2.*energy, pMode);
+	cnts->Print();
+	coulomb->Print();
+
+	// is model_t_max high enough
+	if (model_t_max < coulomb->T)
+	{
+		printf("ERROR: model_t_max = %.2E is lower than CoulombInterference::T = %.2E\n", model_t_max, coulomb->T);
+		return 2;
+	}
+	double t_min_coulomb = -(model_t_max - coulomb->T);
+	
+	// inialise models
+	vector<Model *> models;
+	if (InitModels(hadronicModelsString, models) != 0)
+		return 3;
+
+	// sample the models
+	vector<InterpolationModel *> models_sampled;
+	SampleModels(models, model_t_max, model_N, models_sampled);
+
+	// prepare output
+	TFile *outF = new TFile(outputFileName.c_str(), "recreate");
+
+	// select amplitude to be generated
+	vector<CoulombInterference::ciMode> amplitudeModes;
+	amplitudeModes.push_back(CoulombInterference::mPH);
+	//amplitudeModes.push_back(CoulombInterference::mWY);
+	amplitudeModes.push_back(CoulombInterference::mSWY);
+	amplitudeModes.push_back(CoulombInterference::mKL);
+
+	// build full-range amplitudes
+	AmplitudeGraph amplitude_pc_full;
+	vector< map<CoulombInterference::ciMode, AmplitudeGraph> > amplitudes_full;
+	BuildAmplitudes(models_sampled, fullRange_N, -fullRange_t_max, 0., amplitudeModes,
+		t_min_coulomb, amplitude_pc_full, amplitudes_full);
+
+	// write full-range graphs
+	gDirectory = outF->mkdir("full range");
+	WriteGraphs(models, amplitude_pc_full, amplitudes_full);
+
+	// build low-|t| amplitudes
+	AmplitudeGraph amplitude_pc_lowt;
+	vector< map<CoulombInterference::ciMode, AmplitudeGraph> > amplitudes_lowt;
+	BuildAmplitudes(models_sampled, lowt_N, -lowt_t_max, 0., amplitudeModes,
+		t_min_coulomb, amplitude_pc_lowt, amplitudes_lowt);
+	
+	// build low-|t| graphs
+	gDirectory = outF->mkdir("low |t|");
+	WriteGraphs(models, amplitude_pc_lowt, amplitudes_lowt);
+
+	delete outF;
 	return 0;
 }

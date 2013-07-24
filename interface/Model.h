@@ -23,8 +23,6 @@ class Model
 
     signed char mode;                             ///< model mode
 
-    Model() : tag(""), name(""), label(""), mode(-1) {}
-
     Model(const std::string& _tag="", const std::string &_name="", const std::string &_label="", signed char _mode=-1) :
       tag(_tag), name(_name), label(_label), mode(_mode) {}
 

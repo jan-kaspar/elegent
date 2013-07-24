@@ -1,0 +1,11 @@
+indentation style
+
+eliminate all TODO notes in the code
+
+fix the Prf functions
+
+needed InterpolationModel.cc ? Or optimisation: equi-distant points ==> vector<complex>
+
+TComplex --> std::complex
+
+custom integration --> some standard library (like GSL ?)

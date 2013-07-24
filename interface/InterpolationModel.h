@@ -5,6 +5,8 @@
 
 #include "Model.h"
 
+#include <vector>
+
 class TGraph;
 
 namespace Elegent
@@ -16,34 +18,65 @@ namespace Elegent
  **/
 class InterpolationModel : public Model
 {
-  protected:
-    /// the lower boundary of the supported interval
-    double t_min;
+	public:
+		/// TODO
+		unsigned int N;
 
-    /// the upper boundary of the supported interval
-    double t_max;
+		/// the lower boundary
+		double t_min;
 
-    /// graph |t| versus the real part of the amplitude
-    TGraph *re; //->
+		/// the upper boundary
+		double t_max;
 
-    /// graph |t| versus the imaginary part of the amplitude
-    TGraph *im; //->
+		/// TODO
+		double dt;
 
-  public:
-    InterpolationModel();
-    virtual ~InterpolationModel();
+		/// TODO
+		std::vector<TComplex> amp_data;
 
-    virtual std::string GetModeString() const
-      { return "basic"; }
+	public:
+		InterpolationModel(unsigned int _N, double _t_min, double _t_max) :
+			N(_N), t_min(_t_min), t_max(_t_max), dt( (t_max - t_min) / (N-1) ), amp_data(N)
+		{
+		}
 
-    virtual void Print() const;             ///< prints model info
+		virtual ~InterpolationModel();
 
-    virtual TComplex Amp(double t) const;   ///< amplitude, t in GeV^-2, t < 0
-    virtual TComplex Prf(double b) const;   ///< profile function, b in fm
+		virtual std::string GetModeString() const
+			{ return "basic"; }
 
-    /// to store a new point
-    /// IMPORTANT: points MUST be inserted in ascending |t| order
-    void AddPoint(double t, double r, double i);    
+		virtual void Print() const;
+
+		/// amplitude, t in GeV^-2, t < 0
+		virtual TComplex Amp(double t) const
+		{
+			double f = (t - t_min) / dt;
+			unsigned int idx = (unsigned int) f;
+			
+			if (idx + 1 > N - 1)
+			{
+				if (fabs(t - t_max) < 1E-10)
+					return amp_data[N-1];
+				return TComplex(0, 0);
+			}
+		
+			f -= idx;
+		
+			return amp_data[idx] + (amp_data[idx+1] - amp_data[idx]) * f;
+		}
+
+		virtual TComplex Prf(double b) const;
+
+		/// TODO
+		inline double GetT(unsigned int idx) const
+		{
+			return t_min + dt * idx;
+		}
+
+		inline void SetPoint(unsigned int idx, const TComplex &v)
+		{
+			amp_data[idx] = v;
+		}
 };
 
 } // namespace
