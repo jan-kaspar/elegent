@@ -72,10 +72,10 @@ class Generator
   
   public:
     /// generates one event provided two random numbers with uniform distribution on (0, 1)
-    virtual void GenerateBase(double rn1, double rn2, HepMC::GenEvent* gE);
+    void GenerateBase(double rn1, double rn2, HepMC::GenEvent* gE);
 
     /// generates one event, using ROOT random number generator TRandom2
-    virtual void Generate(HepMC::GenEvent* gE);
+    void Generate(HepMC::GenEvent* gE);
 };
 
 } // namespace

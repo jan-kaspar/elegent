@@ -1,10 +1,16 @@
+
+
 # ROOT includes and libs
-INCS = `root-config --cflags` -I.
-LIBS = `root-config --libs`
+#ROOTDIR = /usr/local/root5
+ROOTDIR = /afs/cern.ch/cms/slc5_amd64_gcc434/lcg/root/5.27.06b-cms10
+INCS = `$(ROOTDIR)/bin/root-config --cflags` -I.
+LIBS = `$(ROOTDIR)/bin/root-config --libs`
 
 # HepMC includes and libs
-INCS += -I/usr/include
-LIBS += -L/usr/lib -lHepMC
+#HepMCDIR = /usr
+HepMCDIR = /afs/cern.ch/cms/slc5_amd64_gcc434/external/hepmc/2.06.05
+INCS += -I$(HepMCDIR)/include
+LIBS += -L$(HepMCDIR)/lib -lHepMC
 
 #----------------------------------------------------------------------------------------------------
 
