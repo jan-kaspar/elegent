@@ -268,8 +268,9 @@ TComplex IslamModel::T_quark_J0(double *t, double *b, const void *obj)
 
 TComplex IslamModel::Prf(double b) const
 {
-	// conversion from fm to GeV^-1
+	printf(">> IslamModel::Prf > not yet implemented.\n");
 	/*
+	// conversion from fm to GeV^-1
 	b /= cnts->hbarc; 
 	if (mode == 0) return Diff_fac_profile * GammaD(b) + (	CmplxInt(this, T_core_J0, upper_bound_t, 0, &b, precision_t) + CmplxInt(this, T_quark_J0, upper_bound_t, 0, &b, 1E-9)	) / 4. / cnts->p_cms / cnts->sqrt_s ;
 	if (mode == 1) return Diff_fac_profile * GammaD(b);
@@ -277,7 +278,7 @@ TComplex IslamModel::Prf(double b) const
 	if (mode == 3) return CmplxInt(this, T_quark_J0, upper_bound_t, 0, &b, precision_t) / 4. / cnts->p_cms / cnts->sqrt_s;
 	if (mode == 4) return Diff_fac_profile * GammaD(b) + CmplxInt(this, T_core_J0, upper_bound_t, 0, &b, precision_t) / 4. / cnts->p_cms / cnts->sqrt_s;
 	*/
-	return 0;
+	return 0.;
 }
 
 

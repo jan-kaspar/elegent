@@ -100,5 +100,6 @@ TComplex JenkovszkyModel::Amp(double t) const
 
 TComplex JenkovszkyModel::Prf(double t) const
 {
+	printf(">> JenkovszkyModel::Prf > not yet implemented.\n");
 	return 0.;
 }

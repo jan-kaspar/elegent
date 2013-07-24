@@ -30,8 +30,9 @@ void InterpolationModel::Print() const
 
 TComplex InterpolationModel::Prf(double) const
 {
-	printf(">> InterpolationModel::Prf > Not implemented.\n");
-	return 0;
+	// this function is not planned to be used
+	printf(">> InterpolationModel::Prf > not implemented.\n");
+	return 0.;
 }
 
 

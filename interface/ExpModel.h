@@ -21,19 +21,19 @@ namespace Elegent
  **/
 class ExpModel : public Model
 {
-  public:
-    ExpModel();
-    
-    virtual void Print() const;
+	public:
+		ExpModel();
+		
+		virtual void Print() const;
 
-    virtual std::string GetModeString() const
-      { return "basic"; }
-  
-    virtual TComplex Amp(double t) const;
-    virtual TComplex Prf(double b) const;
+		virtual std::string GetModeString() const
+			{ return "basic"; }
+	
+		virtual TComplex Amp(double t) const;
+		virtual TComplex Prf(double b) const;
 
-  public:
-    double a, b1, b2, p0, p1;
+	public:
+		double a, b1, b2, p0, p1;
 };
 
 } // namespace

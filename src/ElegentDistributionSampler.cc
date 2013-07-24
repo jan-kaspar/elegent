@@ -46,8 +46,8 @@ int InitModels(const string& hadronicModelsString, vector<Model *> &models)
 		if (tag.compare("islam_bfkl") == 0)
 		{
 			IslamModel *IslamBFKL = new IslamModel();
-			IslamBFKL->InitBase(  2.77,   0.0491, 0.245,   0.126,   3.075,   0.801);
-			IslamBFKL->InitStage2(  0.0844,  0.0,  2.7,  0.727,  13.,  0.246,  1.53,  0.,    1.46);
+			IslamBFKL->InitBase(	2.77,	 0.0491, 0.245,	 0.126,	 3.075,	 0.801);
+			IslamBFKL->InitStage2(	0.0844,	0.0,	2.7,	0.727,	13.,	0.246,	1.53,	0.,		1.46);
 			IslamBFKL->InitQQ(0.03, 0.15, 2., 12.);
 			IslamBFKL->InitCGC(0.0056, 0.29, 1.67, 12.);
 			IslamBFKL->SetUnitarizationOrders(1, 1);
@@ -59,8 +59,8 @@ int InitModels(const string& hadronicModelsString, vector<Model *> &models)
 		if (tag.compare("islam_cgc") == 0)
 		{
 			IslamModel *IslamCGC = new IslamModel();
-			IslamCGC->InitBase(  2.77,   0.0491, 0.245,   0.126,   3.075,   0.801);
-			IslamCGC->InitStage2(  0.0844,  0.0,  2.7,  0.727,  13.,  0.246,  1.53,  0.,    1.46);
+			IslamCGC->InitBase(	2.77,	 0.0491, 0.245,	 0.126,	 3.075,	 0.801);
+			IslamCGC->InitStage2(	0.0844,	0.0,	2.7,	0.727,	13.,	0.246,	1.53,	0.,		1.46);
 			IslamCGC->InitQQ(0.03, 0.15, 2., 12.);
 			IslamCGC->InitCGC(0.0056, 0.29, 1.67, 12.);
 			IslamCGC->SetUnitarizationOrders(1, 1);
@@ -276,15 +276,15 @@ void WriteCRZGraphs(const AmplitudeGraph &amp_pc, const AmplitudeGraph &amp_ph,
 		swyR = amp_swy.re->Eval(t);
 		swyI = amp_swy.im->Eval(t);
 
-	    TComplex ph(phR, phI), pc(pcR, pcI), swy(swyR, swyI), kl(klR, klI);
+		TComplex ph(phR, phI), pc(pcR, pcI), swy(swyR, swyI), kl(klR, klI);
 
-	    double vC = (kl.Rho2() - ph.Rho2()) / ph.Rho2();
-	    double vZ = (kl.Rho2() - ph.Rho2() - pc.Rho2()) / kl.Rho2();
-	    double vR = (kl.Rho2() - swy.Rho2()) / kl.Rho2();
+		double vC = (kl.Rho2() - ph.Rho2()) / ph.Rho2();
+		double vZ = (kl.Rho2() - ph.Rho2() - pc.Rho2()) / kl.Rho2();
+		double vR = (kl.Rho2() - swy.Rho2()) / kl.Rho2();
 
-	    Z->SetPoint(i, t, vZ);
-	    C->SetPoint(i, t, vC);
-	    R->SetPoint(i, t, vR);
+		Z->SetPoint(i, t, vZ);
+		C->SetPoint(i, t, vC);
+		R->SetPoint(i, t, vR);
 	}
 
 	C->Write();
