@@ -14,7 +14,6 @@ namespace Elegent
 {
 
 /**
- * \ingroup Elegent
  * \brief The base class for models of p-p and p-anti p elastic scattering.
  **/
 class Model

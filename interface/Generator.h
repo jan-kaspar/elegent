@@ -18,26 +18,9 @@ namespace Elegent
 {
 
 /**
-\defgroup Generator Generator
-\brief A MC package to generate p-p and p-anti p elastic scattering events.
-
-Generator is ELastic Event GENeraTor. Events are generated according to several phenomenological models, 
-see classes IslamModel, PPPModel, BSWModel, BHModel and JenkovszkyModel.
-
-The process is split into two parts
-	-# Preparation of cumulative distribution function (CDF). This (lengthy) step is done once and then the results are just reused. 
-	The work is done by module CDFBuilder. Some prepared CDFs might be found in data subdirectory.
-	-# Generation of events according to a prepared CDF. The work is done by Generator class, which is, for the framework purposes, wrapped
-	by the GeneratorSource.
-**/
-
-
-/**
-\ingroup Generator
-\brief MC generator of proton-proton elastic scattering events.
-
-All internal quantities are in GeV or in mm.
-**/
+ * \brief MC generator of proton-proton elastic scattering events.
+ * All internal quantities are in GeV or in mm.
+ **/
 class Generator
 {
 	public:

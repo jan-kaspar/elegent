@@ -12,7 +12,6 @@ namespace Elegent
 {
 
 /**
- *\ingroup Elegent
  *\brief Set of constants used in Elegent calculations.
  **/
 struct Constants

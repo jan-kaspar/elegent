@@ -15,7 +15,6 @@ namespace Elegent
 
 
 /**
- * \ingroup Elegent
  * \brief Exponential model of p-p and p-anti p elastic scattering.
  * For reference pourposes only.
  **/

@@ -13,7 +13,6 @@ namespace Elegent
 
 
 /**
- * \ingroup Elegent
  * \brief Islam model of p-p and p-anti p elastic scattering.
  **/
 class IslamModel : public Model

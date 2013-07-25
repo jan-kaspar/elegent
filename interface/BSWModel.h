@@ -16,7 +16,6 @@ namespace Elegent
 {
 
 /**
- * \ingroup Elegent
  * \brief Bourelly, Soffer and Wu model of p-p and p-anti p elastic scattering.
  **/
 class BSWModel : public Model 

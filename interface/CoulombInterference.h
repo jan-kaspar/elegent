@@ -12,7 +12,6 @@ namespace Elegent
 {
 
 /**
- * \ingroup Elegent
  * \brief Coulomb hadron interference for elastic scattering.
  **/
 class CoulombInterference

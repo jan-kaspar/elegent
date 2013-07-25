@@ -12,7 +12,6 @@ namespace Elegent
 {
 
 /**
- * \ingroup Elegent
  * \brief Predazzi, Petrov and Prokudin model of p-p and p-anti p elastic scattering.
  **/
 class PPPModel : public Model
