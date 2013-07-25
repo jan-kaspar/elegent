@@ -27,7 +27,7 @@ void PPPModel::SetTrajectory(Trajectory &t, double D, double c, double ap, doubl
 void PPPModel::Init(unsigned char m)
 {
 	// physics parameters
-	s0 = 1;	// in GeV^2
+	s0 = 1.;	// in GeV^2
 	
 	tag = "";
 	//						Delta		c			a'		r^2
@@ -36,8 +36,8 @@ void PPPModel::Init(unsigned char m)
 	{
 		// two pomerons
 		mode = m2P;
-		SetTrajectory(pom1, 0.08590,	53.18,		0.360,	9.595,	 s0);
-		SetTrajectory(pom2, 0.14437,	6.87,		0.082,	4.765,	 s0);
+		SetTrajectory(pom1, 0.08590,	53.18,		0.360,	9.595,	s0);
+		SetTrajectory(pom2, 0.14437,	6.87,		0.082,	4.765,	s0);
 		SetTrajectory(oder, -0.2707,	1.8134,		0.029,	1.159,	s0);
 		SetTrajectory(regf, -0.3100,	188.51,		0.84,	41.424, s0);
 		SetTrajectory(rego, -0.5300,	-171.36,	0.93,	2.621,	s0);
@@ -50,12 +50,12 @@ void PPPModel::Init(unsigned char m)
 	{
 		// three pomerons
 		mode = m3P;
-		SetTrajectory(pom1, 0.0578,		53.007,	 0.5596, 6.3096, s0);
+		SetTrajectory(pom1, 0.0578,		53.007,	 	0.5596, 6.3096, s0);
 		SetTrajectory(pom2, 0.1669,		9.6762,		0.2733,	3.1097, s0);
 		SetTrajectory(pom3, 0.2032,		1.6654,		0.0937,	2.4771, s0);
 		SetTrajectory(oder, 0.1920,		0.0166,		0.048,	0.1398, s0);
 		SetTrajectory(regf, -0.31,		191.69,		0.84,	31.593, s0);
-		SetTrajectory(rego, -0.53,		-174.18,	0.93,	7.467,	 s0);
+		SetTrajectory(rego, -0.53,		-174.18,	0.93,	7.467,	s0);
 		tag = "ppp3";
 		name = "PPP3";
 		label = "Petrov-Predazzi-Prokudin, 3 pomerons";
@@ -66,7 +66,7 @@ void PPPModel::Init(unsigned char m)
 	
 	// integration parameters
 	precision = 1E-14;
-	upper_bound = 60;
+	upper_bound = 60.;
 }
 
 //----------------------------------------------------------------------------------------------------

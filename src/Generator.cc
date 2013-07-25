@@ -21,8 +21,8 @@ using namespace Elegent;
 
 //----------------------------------------------------------------------------------------------------
 
-Generator::Generator(const string &_file, const string &_tag, double _t_min, double _t_max, unsigned int _verbosity) :
-	fileName(_file), modelTag(_tag), t_min(_t_min), t_max(_t_max), verbosity(_verbosity)
+Generator::Generator(const string &_file, const string &_path, double _t_min, double _t_max, unsigned int _verbosity) :
+	fileName(_file), modelPath(_path), t_min(_t_min), t_max(_t_max), verbosity(_verbosity)
 {
 }
 
@@ -42,20 +42,18 @@ unsigned int Generator::Init()
 	TGraph *data = (TGraph *) file.Get("data");
 	if (!data)
 	{
-		printf("ERROR in Elegent::Generator::Init > File `%s' does not contain data.\n", fileName.c_str());
+		printf("ERROR in Elegent::Generator::Init > File `%s' does not contain `data' object.\n", fileName.c_str());
 		return 2;
 	}
 	double dummy;
 	data->GetPoint(0, dummy, E_cms);
 
 	// try to load sigma_int graph
-	string path = "integrated cross section/";
-	path += modelTag;
-	TObject *o = file.Get(path.c_str());
+	TObject *o = file.Get(modelPath.c_str());
 	if (!o || !o->IsA()->InheritsFrom("TGraph"))
 	{
 		file.ls(); 
-		printf("ERROR in Elegent::Generator::Init > Model `%s' not found.\n", modelTag.c_str());
+		printf("ERROR in Elegent::Generator::Init > Model `%s' not found.\n", modelPath.c_str());
 		return 3;
 	}
 	TGraph *sigma_int = (TGraph*) o;
@@ -82,7 +80,7 @@ unsigned int Generator::Init()
 
 	if (verbosity > 0)
 	{
-		printf(">> Elegent::Generator > inverse cdf:\n\tfile: %s\n\tmodel: %s\n", fileName.c_str(), modelTag.c_str());
+		printf(">> Elegent::Generator > inverse cdf:\n\tfile: %s\n\tmodel: %s\n", fileName.c_str(), modelPath.c_str());
 		printf("\trequested |t| range: %.2E to %.2E GeV^2\n", t_min, t_max);
 		printf("\tpoints loaded: %i\n", i_max - i_min + 1);
 		printf("\t\tfirst point: idx = %i, |t| = %.2E GeV^2, p = %.2E mb\n", i_min, t_min_real, p_min);
