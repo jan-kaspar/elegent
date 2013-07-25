@@ -148,9 +148,11 @@ void SampleModels(const vector<Model *> &models, double t_max, unsigned int N, v
 
 //----------------------------------------------------------------------------------------------------
 
-void SampleAmplitude(unsigned int N, double t_min, double t_max, double t_min_coulomb, AmplitudeGraph &a, bool full)
+void SampleAmplitude(bool logarithmic, unsigned int N, double t_min, double t_max, double t_min_coulomb,
+		AmplitudeGraph &a, bool full)
 {
 	double dt = (t_max - t_min) / (N - 1);
+	double xi = pow(t_min/t_max, 1./(N - 1));
 
 	a.re = new TGraph(); a.re->SetName("re");
 	a.im = new TGraph(); a.im->SetName("im");
@@ -158,7 +160,7 @@ void SampleAmplitude(unsigned int N, double t_min, double t_max, double t_min_co
 	unsigned int idx = 0;
 	for (unsigned int pi = 0; pi < N; pi++)
 	{
-		double t = t_max - dt * pi;
+		double t = (logarithmic) ? t_max * pow(xi, pi) : t_max - dt * pi;
 
 		if (!full)
 		{
@@ -179,14 +181,14 @@ void SampleAmplitude(unsigned int N, double t_min, double t_max, double t_min_co
 //----------------------------------------------------------------------------------------------------
 
 void BuildAmplitudes(const vector<InterpolationModel*> &models_sampled,
-	unsigned int N, double t_min, double t_max,
+	bool logarithmic, unsigned int N, double t_min, double t_max,
 	const vector<CoulombInterference::ciMode> &amplitudeModes,
 	double t_min_coulomb,
 	AmplitudeGraph &amplitude_pc, vector< map<CoulombInterference::ciMode, AmplitudeGraph> > &amplitudes)
 {
 	// PC amplitude
 	coulomb->mode = CoulombInterference::mPC;
-	SampleAmplitude(N, t_min, t_max, t_min_coulomb, amplitude_pc, false);
+	SampleAmplitude(logarithmic, N, t_min, t_max, t_min_coulomb, amplitude_pc, false);
 
 	// other amplitudes
 	amplitudes.clear();
@@ -202,7 +204,7 @@ void BuildAmplitudes(const vector<InterpolationModel*> &models_sampled,
 			coulomb->mode = amplitudeModes[cii];
 
 			AmplitudeGraph &a = as[amplitudeModes[cii]];
-			SampleAmplitude(N, t_min, t_max, t_min_coulomb, a, (amplitudeModes[cii] == CoulombInterference::mPH));
+			SampleAmplitude(logarithmic, N, t_min, t_max, t_min_coulomb, a, (amplitudeModes[cii] == CoulombInterference::mPH));
 		}
 	}
 }
@@ -218,7 +220,7 @@ void WriteOneAmplitudeGraphs(const AmplitudeGraph &a)
 	TGraph *phase = new TGraph(); phase->SetName("phase");
 	TGraph *rho = new TGraph(); rho->SetName("rho");
 	TGraph *B = new TGraph(); B->SetName("B");
-	TGraph *dif = new TGraph(); dif->SetName("differentical cross-section");
+	TGraph *dif = new TGraph(); dif->SetName("differential cross-section");
 	TGraph *cum = new TGraph(); cum->SetName("cumulative cross-section");
 
 	double *at = a.re->GetX();
@@ -339,8 +341,8 @@ int main(int argc, char **argv)
 	double energy = 0.;
 	Constants::ParticleMode pMode = Constants::mPP;
 
-	unsigned int model_N = 1000, fullRange_N = 1000, lowt_N = 1000;
-	double model_t_max = 20., fullRange_t_max = 20., lowt_t_max = 0.1;
+	unsigned int model_N = 10000, fullRange_N = 5000, lowt_N = 500;
+	double model_t_max = 20., fullRange_t_max = 20., lowt_t_max = 1.;
 
 	string hadronicModelsString = "islam_bfkl,islam_cgc,ppp2,ppp3,bsw,bh,jenkovszky";
 
@@ -487,6 +489,12 @@ int main(int argc, char **argv)
 	// prepare output
 	TFile *outF = new TFile(outputFileName.c_str(), "recreate");
 
+	// a trick to save E, since of->WriteObject(&E, "cmsEnergy") doesn't work
+	TGraph *data = new TGraph();
+	data->SetName("data");
+	data->SetPoint(0, 0., energy);
+	data->Write();
+
 	// select amplitude to be generated
 	vector<CoulombInterference::ciMode> amplitudeModes;
 	amplitudeModes.push_back(CoulombInterference::mPH);
@@ -497,7 +505,7 @@ int main(int argc, char **argv)
 	// build full-range amplitudes
 	AmplitudeGraph amplitude_pc_full;
 	vector< map<CoulombInterference::ciMode, AmplitudeGraph> > amplitudes_full;
-	BuildAmplitudes(models_sampled, fullRange_N, -fullRange_t_max, 0., amplitudeModes,
+	BuildAmplitudes(models_sampled, false, fullRange_N, -fullRange_t_max, 0., amplitudeModes,
 		t_min_coulomb, amplitude_pc_full, amplitudes_full);
 
 	// write full-range graphs
@@ -507,7 +515,7 @@ int main(int argc, char **argv)
 	// build low-|t| amplitudes
 	AmplitudeGraph amplitude_pc_lowt;
 	vector< map<CoulombInterference::ciMode, AmplitudeGraph> > amplitudes_lowt;
-	BuildAmplitudes(models_sampled, lowt_N, -lowt_t_max, 0., amplitudeModes,
+	BuildAmplitudes(models_sampled, true, lowt_N, -lowt_t_max, -1E-5, amplitudeModes,
 		t_min_coulomb, amplitude_pc_lowt, amplitudes_lowt);
 	
 	// build low-|t| graphs
