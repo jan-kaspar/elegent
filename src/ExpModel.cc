@@ -38,5 +38,5 @@ TComplex ExpModel::Prf(double ) const
 
 TComplex ExpModel::Amp(double t) const
 {
-	return	a * TComplex::Exp( b1*t + b2*t*t + i*(p0 + p1*t) );
+	return a * TComplex::Exp( b1*t + b2*t*t + i*(p0 + p1*t) );
 }

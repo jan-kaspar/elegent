@@ -28,7 +28,6 @@ struct AmplitudeGraph
 
 void PrintUsage()
 {
-	// TODO
 	printf("USAGE: ElegentDistributionSampler [option] [option] ...\n");
 	printf("OPTIONS:\n");
 	printf("\t-h\t\t\tprint this help and exit\n");

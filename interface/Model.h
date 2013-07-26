@@ -14,7 +14,7 @@ namespace Elegent
 {
 
 /**
- * \brief The base class for models of p-p and p-anti p elastic scattering.
+ * \brief The base class for hadronic models of (anti)proton-proton elastic scattering.
  **/
 class Model
 {

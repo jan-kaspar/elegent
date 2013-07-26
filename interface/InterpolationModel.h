@@ -21,7 +21,7 @@ namespace Elegent
 class InterpolationModel : public Model
 {
 	public:
-		/// TODO
+		/// number of points (samples)
 		unsigned int N;
 
 		/// the lower boundary
@@ -30,10 +30,10 @@ class InterpolationModel : public Model
 		/// the upper boundary
 		double t_max;
 
-		/// TODO
+		/// the t interval between two adjacent (equidistant) points
 		double dt;
 
-		/// TODO
+		/// amplitude samples
 		std::vector<TComplex> amp_data;
 
 	public:
@@ -69,7 +69,7 @@ class InterpolationModel : public Model
 
 		virtual TComplex Prf(double b) const;
 
-		/// TODO
+		/// returns the value of t corresponding to the point with index `idx' (between 0 and N-1 inclusively)
 		inline double GetT(unsigned int idx) const
 		{
 			return t_min + dt * idx;

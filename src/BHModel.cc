@@ -1,7 +1,6 @@
 /**************************************************
  * This file is a part of the Elegent package:
  * 	http://elegent.hepforge.org/
- * TODO: adapted from an original code by Jan Smotlacha
  *************************************************/
 
 #include "interface/BHModel.h"
@@ -217,7 +216,7 @@ TComplex BHModel::prf0(double b) const
 TComplex BHModel::Prf(double b) const
 {
 	printf(">> BHModel::Prf > not yet implemented.\n");
-	// TODO: fix correct normalization
+	// fix correct normalization
 	//return prf0(b);
 	return 0.;
 }

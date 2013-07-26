@@ -8,14 +8,12 @@
 
 #include "Model.h"
 
-#include <cstring>
-
 namespace Elegent
 {
 
-
 /**
  * \brief Exponential model of p-p and p-anti p elastic scattering.
+ * amplitude(t) = a * exp( b1*t + b2*t*t + i*(p0 + p1*t) )
  * For reference pourposes only.
  **/
 class ExpModel : public Model

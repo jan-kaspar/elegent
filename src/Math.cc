@@ -1,7 +1,6 @@
 /**************************************************
  * This file is a part of the Elegent package:
  * 	http://elegent.hepforge.org/
- * TODO: adapted from ROOT
  *************************************************/
 
 #include "interface/Math.h"

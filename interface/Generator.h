@@ -24,7 +24,7 @@ namespace Elegent
 class Generator
 {
 	public:
-		Generator(const std::string &_file, const std::string &_tag, double _t_min, double _t_max, unsigned int _verbosity=1);
+		Generator(const std::string &_file, const std::string &_path, double _t_min, double _t_max, unsigned int _verbosity=1);
 		~Generator() {}
 
 		unsigned int Init();
@@ -35,13 +35,13 @@ class Generator
 		static const int NullState = 0;
 
 	protected:
-		/// cdf source filename
+		/// name of file containing the cumulative distribution function (CDF)
 		std::string fileName;
 
-		/// tag of model to be used
-		std::string modelTag;
+		/// path of the (CDF) within the file
+		std::string modelPath;
 
-		/// |t| values in GeV^2, bounds for cdf
+		/// |t| values in GeV^2, bounds for CDF
 		double t_min, t_max;
 		
 		/// verbosity level (0 = no, 1 = normal, 2 = debug)

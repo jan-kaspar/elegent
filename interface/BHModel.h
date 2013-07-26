@@ -14,6 +14,8 @@ namespace Elegent
 /**
  * \brief Block-Halzen model of p-p and p-anti p elastic scattering.
  * REFERENCE PAPER: Block et al., Phys. Rev. D 60, 054024 (1999)
+ *
+ * This class in based on code originally initiated by Jan Smotlacha.
  **/
 class BHModel : public Model
 {

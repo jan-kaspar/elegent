@@ -1,5 +1,3 @@
-eliminate all TODO notes in the code
-
 fix the Prf functions
 
 custom integration --> some standard library (like GSL ?)
