@@ -1,0 +1,24 @@
+#!/bin/bash
+
+function Generate()
+{
+	energy="$1"
+
+	echo ">> Generate: E = $energy"
+
+	tag="datasheet-${energy}GeV"
+
+	generator="../bin/ElegentDistributionSampler"
+	$generator -energy "$energy" -output "$tag.root" &> "$tag.log"
+	tar czf "$tag.tar.gz" "$tag.root" "$tag.log"
+	rm "$tag.root"
+	rm "$tag.log"
+}
+
+#----------------------------------------------------------------------------------------------------
+
+Generate "1380" &
+Generate "3500" &
+Generate "4000" &
+Generate "6500" &
+Generate "7000" &
