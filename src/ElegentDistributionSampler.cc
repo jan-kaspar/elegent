@@ -29,7 +29,20 @@ struct AmplitudeGraph
 void PrintUsage()
 {
 	// TODO
-	printf("USAGE: ElegentDistributionSampler\n");
+	printf("USAGE: ElegentDistributionSampler [option] [option] ...\n");
+	printf("OPTIONS:\n");
+	printf("\t-h\t\t\tprint this help and exit\n");
+	printf("\t-energy <E>\t\tset incident proton energy (i.e. half of sqrt(s)), in GeV\n");
+	printf("\t-pp\t\t\tselect proton-proton interactions\n");
+	printf("\t-app\t\t\tselect antiproton-proton interactions\n");
+	printf("\t-model-N <number>\tnumber of points for hadronic-model sampling\n");
+	printf("\t-model-tmax <value>\tmaximum |t| value (in GeV^2) for hadronic-model sampling\n");
+	printf("\t-full-N <number>\tnumber of points in full-range graphs\n");
+	printf("\t-full-tmax <value>\tmaximum |t| value (in GeV^2) for full-range graphs\n");
+	printf("\t-lowt-N <number>\tnumber of points in low-|t| graphs\n");
+	printf("\t-lowt-tmax <value>\tmaximum |t| value (in GeV^2) for low-|t| graphs\n");
+	printf("\t-models <string>\tcomma-separated list of model tags\n");
+	printf("\t-output <filename>\toutput file name\n");
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -351,6 +364,12 @@ int main(int argc, char **argv)
 	// process command line
 	for (int i = 1; i < argc; i++)
 	{
+		if (strcmp(argv[i], "-h") == 0)
+		{
+			PrintUsage();
+			return 0;
+		}
+
 		if (strcmp(argv[i], "-energy") == 0)
 		{
 			if (argc-1 > i)
