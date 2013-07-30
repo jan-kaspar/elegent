@@ -6,7 +6,7 @@ function Generate()
 
 	echo ">> Generate: E = $energy"
 
-	tag="datasheet-${energy}GeV"
+	tag="t-distributions-${energy}GeV"
 
 	generator="../bin/ElegentTDistributionSampler"
 	$generator -energy "$energy" -output "$tag.root" &> "$tag.log"
