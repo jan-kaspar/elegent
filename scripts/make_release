@@ -1,0 +1,17 @@
+#!/bin/bash
+
+if [ "$1" = "" ]
+then
+	echo "Please specify release number"
+	exit 1
+fi
+
+tarFile="elegent-$1.tar.gz"
+
+prefix="../"
+if [ -d "interface" ]
+then
+	prefix="./"
+fi
+
+tar czf "$tarFile" "$prefix/makefile" "$prefix/interface" "$prefix/src" "$prefix/scripts/generate_datasheets"
