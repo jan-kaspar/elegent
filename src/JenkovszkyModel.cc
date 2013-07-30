@@ -5,6 +5,7 @@
 
 #include "interface/JenkovszkyModel.h"
 #include "interface/Constants.h"
+#include "interface/Math.h"
 
 using namespace Elegent;
 
@@ -36,6 +37,9 @@ void JenkovszkyModel::Init()
 	s_f = 1.;	// GeV^2
 	al0_f = 0.787501;
 	al1_f = 0.84;
+
+	precision_t = 1E-4;
+	upper_bound_t = -50.;
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -47,6 +51,7 @@ void JenkovszkyModel::Print() const
 	printf("\todderon:\n\t\ta_O=%.3E, b_O=%.3E, de_O=%.3E, al1_O=%.3E, s_O=%.3E\n", a_O, b_O, de_O, al1_O, s_O);
 	printf("\tomega:\n\t\ta_om=%.3E, b_om=%.3E, s_om=%.3E, al0_om=%.3E, al1_om=%.3E\n", a_om, b_om, s_om, al0_om, al1_om);
 	printf("\tf:\n\t\ta_f=%.3E, b_f=%.3E, s_f=%.3E, al0_f=%.3E, al1_f=%.3E\n", a_f, b_f, s_f, al0_f, al1_f);
+	printf("\tupper_bound_t=%.3E, precision_t=%.3E\n", upper_bound_t, precision_t);
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -95,11 +100,19 @@ TComplex JenkovszkyModel::Amp(double t) const
 	return cnts->p_cms/cnts->sqrt_s * (A_P + A_O + A_om + A_f);
 }
 
+//----------------------------------------------------------------------------------------------------
+
+TComplex JenkovszkyModel::Amp_J0(double *t, double *b, const void *obj)
+{
+	/// t[0] ... t in GeV^2
+	/// b[0] ... impact parameter in fm
+	return ((JenkovszkyModel *)obj)->Amp(t[0]) * TMath::BesselJ0(b[0] * sqrt(-t[0]));
+}
 
 //----------------------------------------------------------------------------------------------------
 
-TComplex JenkovszkyModel::Prf(double t) const
+TComplex JenkovszkyModel::Prf(double b_fm) const
 {
-	printf(">> JenkovszkyModel::Prf > not yet implemented.\n");
-	return 0.;
+	double b = b_fm / cnts->hbarc;	// b in GeV^-1
+	return CmplxInt(this, Amp_J0, upper_bound_t, 0., &b, precision_t) / 4. / cnts->p_cms / cnts->sqrt_s;
 }

@@ -75,6 +75,7 @@ double DoubleInt(const void *obj, double (*fcn)(double*, double*, const void*), 
 			bb = c1;
 			if(1. + aconst*TMath::Abs(c2) != 1) goto CASE2;
 			h = s8;	//this is a crude approximation (cernlib function returned 0 !)
+			printf("WARNING in DoubleInt > Crude approximation.\n");
 		}
 		
 	return h;
@@ -153,8 +154,8 @@ TComplex CmplxInt(const void *obj, TComplex (*fcn)(double*, double*, const void 
 		} else {
 			bb = c1;
 			if (1. + aconst*TMath::Abs(c2) != 1) goto CASE2;
-			Rh = Rs8;	//this is a crude approximation (cernlib function returned 0 !)
-			printf("Crude integral!\n");
+			Rh = Rs8;	// this is a crude approximation (cernlib function returned 0 !)
+			printf("WARNING in CmplxInt (real part) > Crude approximation.\n");
 		}
 	
 	// IMAGINARY
@@ -201,7 +202,7 @@ TComplex CmplxInt(const void *obj, TComplex (*fcn)(double*, double*, const void 
 			bb = c1;
 			if (1. + aconst*TMath::Abs(c2) != 1) goto CASE2I;
 			Ih = Is8;
-			printf("Crude integral!\n");
+			printf("WARNING in CmplxInt (imaginary part) > Crude approximation.\n");
 		}
 		
 	// put it together 

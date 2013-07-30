@@ -45,7 +45,7 @@ TComplex IslamModel::T_diff(double t) const
 	printf(">> IslamModel::T_diff\n");
 #endif
 
-	/// t ... t
+	/// t < 0
 	return Diff_fac * CmplxInt(this, GammaD_J0, 0, upper_bound, &t, precision);
 }
 
@@ -53,7 +53,7 @@ TComplex IslamModel::T_diff(double t) const
 
 double IslamModel::F_sq(double t)	const
 {
-	/// formfactor, t ... t
+	/// formfactor, t < 0
 	return beta * sqrt(M_sq - t) * TMath::BesselK1(beta * sqrt(M_sq - t));
 }
 
@@ -65,7 +65,7 @@ TComplex IslamModel::T_core(double t) const
 	printf(">> IslamModel::T_core\n");
 #endif
 
-	/// t ... t
+	/// t < 0
 	return Core_fac * Hard_fac * F_sq(t) / (M_sq - t);
 }
 
@@ -153,7 +153,7 @@ TComplex IslamModel::T_quark(double t) const
 	printf(">> IslamModel::T_quark\n");
 #endif
 
-	/// t ... t
+	/// t < 0
 	double qt = sqrt(-t * (-t / cnts->t_min + 1.));
 
 	TComplex sum = 0.;
@@ -200,7 +200,7 @@ TComplex IslamModel::T_cgc(double t) const
 	printf(">> IslamModel::T_cgc\n");
 #endif
 
-	/// t ... t
+	/// t < 0
 	double qt = sqrt(-t * (-t / cnts->t_min + 1.));
 
 	TComplex sum = 0.;
@@ -221,7 +221,7 @@ TComplex IslamModel::Amp(double t) const
 	printf(">> IslamModel::amp, mode = %i\n", mode);
 #endif
 
-	/// t ... t
+	/// t < 0
 
 	switch (mode) {
 		case mFullQuark:	return T_diff(t) + T_core(t) + T_quark(t);
@@ -240,47 +240,20 @@ TComplex IslamModel::Amp(double t) const
 //----------------------------------------------------------------------------------------------------
 //---------------------------------------- PROFILE FUNCTIONS --------------------------------------
 
-TComplex IslamModel::T_core_J0(double *t, double *b, const void *obj)
+TComplex IslamModel::Amp_J0(double *t, double *b, const void *obj)
 {
 	/// b[0] ... impact parameter in fm
 	/// t[0] ... t in GeV^2
-	return ((IslamModel *)obj)->T_core(t[0]) * TMath::BesselJ0(b[0]*sqrt(-t[0]));
-}
-
-//----------------------------------------------------------------------------------------------------
-TComplex IslamModel::T_diff_J0(double *t, double *b, const void *obj)
-{
-	/// b[0] ... impact parameter in fm
-	/// t[0] ... t in GeV^2
-	return ((IslamModel *)obj)->T_diff(t[0]) * TMath::BesselJ0(b[0]*sqrt(-t[0]));
+	return ((IslamModel *)obj)->Amp(t[0]) * TMath::BesselJ0(b[0]*sqrt(-t[0]));
 }
 
 //----------------------------------------------------------------------------------------------------
 
-TComplex IslamModel::T_quark_J0(double *t, double *b, const void *obj)
+TComplex IslamModel::Prf(double b_fm) const
 {
-	/// b[0] ... impact parameter in fm
-	/// t[0] ... t in GeV^2
-	return ((IslamModel *)obj)->T_quark(t[0]) * TMath::BesselJ0(b[0]*sqrt(-t[0]));
+	double b = b_fm / cnts->hbarc;	// b in GeV^-1
+	return CmplxInt(this, Amp_J0, upper_bound_t, 0., &b, precision_t) / 4. / cnts->p_cms / cnts->sqrt_s;
 }
-
-//----------------------------------------------------------------------------------------------------
-
-TComplex IslamModel::Prf(double b) const
-{
-	printf(">> IslamModel::Prf > not yet implemented.\n");
-	/*
-	// conversion from fm to GeV^-1
-	b /= cnts->hbarc; 
-	if (mode == 0) return Diff_fac_profile * GammaD(b) + (	CmplxInt(this, T_core_J0, upper_bound_t, 0, &b, precision_t) + CmplxInt(this, T_quark_J0, upper_bound_t, 0, &b, 1E-9)	) / 4. / cnts->p_cms / cnts->sqrt_s ;
-	if (mode == 1) return Diff_fac_profile * GammaD(b);
-	if (mode == 2) return CmplxInt(this, T_core_J0, upper_bound_t, 0, &b, precision_t) / 4. / cnts->p_cms / cnts->sqrt_s;
-	if (mode == 3) return CmplxInt(this, T_quark_J0, upper_bound_t, 0, &b, precision_t) / 4. / cnts->p_cms / cnts->sqrt_s;
-	if (mode == 4) return Diff_fac_profile * GammaD(b) + CmplxInt(this, T_core_J0, upper_bound_t, 0, &b, precision_t) / 4. / cnts->p_cms / cnts->sqrt_s;
-	*/
-	return 0.;
-}
-
 
 //----------------------------------------------------------------------------------------------------
 //------------------------------------------- INITIALISATION --------------------------------------
@@ -429,14 +402,15 @@ void IslamModel::Print() const
 
 string IslamModel::GetModeString() const
 {
-	switch (mode) {
-		case mDiff:			 return "diffraction";
-		case mCore:			 return "core";
-		case mQuark:			return "quark";
-		case mCGC:				return "CGC";
-		case mDiffCore:	 return "core+diffraction";
+	switch (mode)
+	{
+		case mDiff:			return "diffraction";
+		case mCore:			return "core";
+		case mQuark:		return "quark";
+		case mCGC:			return "CGC";
+		case mDiffCore:		return "core+diffraction";
 		case mFullQuark:	return "core+diffraction+quark";
 		case mFullCGC:		return "core+diffraction+CGC";
-		default:					return "unknown";
+		default:			return "unknown";
 	}
 }

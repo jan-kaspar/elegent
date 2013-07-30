@@ -85,9 +85,7 @@ class IslamModel : public Model
 		TComplex T_cgc(double t) const;
 
 		/// profile funcion methods
-		static TComplex T_core_J0(double *t, double *b, const void *obj);
-		static TComplex T_diff_J0(double *t, double *b, const void *obj);
-		static TComplex T_quark_J0(double *t, double *b, const void *obj);
+		static TComplex Amp_J0(double *t, double *b, const void *obj);
 };
 
 } // namespace

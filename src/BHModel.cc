@@ -168,7 +168,7 @@ void BHModel::Init()
 	// precompute mu_qg
 	mu_qg = sqrt(mu_qq*mu_gg);
 		
-	// precompute sigma_gg, Eq. (B5): below the Cp_gg stands form C'_gg
+	// precompute sigma_gg, Eq. (B5): below the Cp_gg stands for C'_gg
 	sigma_gg = Cp_gg * Sigma_gg * Ng*Ng * TComplex(sumR(cnts->s), sumI(cnts->s));
 
 	// precompute sigma_qq, Eq. (B9)
@@ -187,8 +187,15 @@ void BHModel::Init()
 double BHModel::W(double b, double mu) const
 {
 	// Eq. (B2)
-	double mub = mu*b;
-	return mu*mu * mub*mub*mub * TMath::BesselK(3, mub) / 96. / cnts->pi;
+	double mub = mu * b;
+
+	// evaluates v = (mu b)^3 K_3(mu b); directly or in continuous limit
+	double v = 0.;
+	if (mub < 1E-10)
+		v = 8.;
+	else
+		v = mub*mub*mub * TMath::BesselK(3, mub);
+	return mu*mu * v / 96. / cnts->pi;
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -215,10 +222,7 @@ TComplex BHModel::prf0(double b) const
 
 TComplex BHModel::Prf(double b) const
 {
-	printf(">> BHModel::Prf > not yet implemented.\n");
-	// fix correct normalization
-	//return prf0(b);
-	return 0.;
+	return prf0(b / cnts->hbarc) * i / 2.;
 }
 
 //----------------------------------------------------------------------------------------------------

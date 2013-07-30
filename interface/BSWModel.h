@@ -59,7 +59,6 @@ class BSWModel : public Model
 		/// temporary constants: Omega0 = S0*F + R0 / s / regge_fac;
 		TComplex regge_fac;
 
-		TComplex amp_fac;
 		double upper_bound_t, precision_t;
 		double upper_bound_b, precision_b;
 
@@ -90,8 +89,6 @@ class BSWModel : public Model
 		TComplex prf0(double b) const;
 
 		static TComplex prf0_J0(double *b, double *q, const void *obj);
-
-		static TComplex prf0_J0_presampled(double *b, double *q, const void *obj);
 
 		/// the sampling-step size
 		double data_db;

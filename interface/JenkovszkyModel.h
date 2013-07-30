@@ -44,6 +44,11 @@ class JenkovszkyModel : public Model
 
 		/// f parameters
 		double a_f, b_f, s_f, al0_f, al1_f;
+		
+		/// integration parameters for profile-funcion calculation
+		double precision_t, upper_bound_t;
+		
+		static TComplex Amp_J0(double *t, double *b, const void *obj);
 };
 
 } // namespace

@@ -33,10 +33,7 @@ void BSWModel::Init(BSWModel::ModeType _mode, bool _presampled)
 
 	regge_fac(1., 0.);
 	
-	// amplitude factor
-	amp_fac(0., cnts->p_cms * cnts->sqrt_s);
-	
-	// remember S0(0)
+	// save value of S0(0)
 	S00 = S0(0.);
 
 	if (presampled)
@@ -180,21 +177,19 @@ TComplex BSWModel::prf0(double b) const
 
 TComplex BSWModel::Prf(double b) const
 {
-	return prf0(b / cnts->hbarc);
+	return prf0(b / cnts->hbarc) * i / 2.;
 }
 
 //----------------------------------------------------------------------------------------------------
 
 TComplex BSWModel::prf0_J0(double *b, double *q, const void *obj)
 {
-	return ((BSWModel *)obj)->prf0(b[0]) * b[0] * TMath::BesselJ0(b[0] * q[0]);
-}
+	BSWModel *m = (BSWModel *) obj;
 
-//----------------------------------------------------------------------------------------------------
-
-TComplex BSWModel::prf0_J0_presampled(double *b, double *q, const void *obj)
-{
-	return ((BSWModel *)obj)->SampleEval(b[0]) * b[0] * TMath::BesselJ0(b[0] * q[0]);
+	if (m->presampled)
+		return m->SampleEval(b[0]) * b[0] * TMath::BesselJ0(b[0] * q[0]);
+	else
+		return m->prf0(b[0]) * b[0] * TMath::BesselJ0(b[0] * q[0]);
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -202,10 +197,8 @@ TComplex BSWModel::prf0_J0_presampled(double *b, double *q, const void *obj)
 TComplex BSWModel::Amp(double t) const
 {
 	double q = sqrt(-t);
-	if (presampled)
-		return amp_fac * CmplxInt(this, prf0_J0_presampled, 0., upper_bound_b, &q, precision_b);
-	else
-		return amp_fac * CmplxInt(this, prf0_J0, 0., upper_bound_b, &q, precision_b);
+	
+	return i * cnts->p_cms * cnts->sqrt_s * CmplxInt(this, prf0_J0, 0., upper_bound_b, &q, precision_b);
 }
 
 //----------------------------------------------------------------------------------------------------

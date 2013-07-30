@@ -3,6 +3,9 @@
  * 	http://elegent.hepforge.org/
  *************************************************/
 
+#ifndef _elegent_modelfactory_
+#define _elegent_modelfactory_
+
 #include "IslamModel.h"
 #include "PPPModel.h"
 #include "BSWModel.h"
@@ -10,4 +13,21 @@
 #include "JenkovszkyModel.h"
 #include "ExpModel.h"
 
-#include "CoulombInterference.h"
+#include <string>
+
+namespace Elegent
+{
+
+/**
+ * \brief TODO
+ **/
+class ModelFactory
+{
+	public:
+		static Model* MakeStandardInstance(const std::string &tag, bool prf_presampled = true);
+};
+
+
+} // namespace
+
+#endif

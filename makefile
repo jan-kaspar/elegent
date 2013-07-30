@@ -21,10 +21,10 @@ ROOTCINT = rootcint
 dict_modules = Model IslamModel PPPModel BSWModel BHModel JenkovszkyModel ExpModel InterpolationModel CoulombInterference Constants
 
 # modules with no dictionaries
-modules = Math Generator
+modules = Math Generator ModelFactory
 
 # executable files
-exe_files = ElegentTest ElegentDistributionSampler
+exe_files = ElegentTest ElegentDistributionSampler ElegentProfileSampler
 
 #----------------------------------------------------------------------------------------------------
 
