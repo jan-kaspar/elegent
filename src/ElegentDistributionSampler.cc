@@ -151,7 +151,8 @@ void SampleModels(const vector<Model *> &models, double t_max, unsigned int N, v
 		for (unsigned int pi = 0; pi < N; pi++)
 		{
 			double t = ms->GetT(pi);
-			ms->SetPoint(pi, model->Amp(t));
+			TComplex a = model->Amp(t);
+			ms->SetPoint(pi, a);
 		}
 
 		models_sampled.push_back(ms);
@@ -353,7 +354,7 @@ int main(int argc, char **argv)
 	double energy = 0.;
 	Constants::ParticleMode pMode = Constants::mPP;
 
-	unsigned int model_N = 10000, fullRange_N = 5000, lowt_N = 500;
+	unsigned int model_N = 10001, fullRange_N = 5001, lowt_N = 501;
 	double model_t_max = 20., fullRange_t_max = 20., lowt_t_max = 1.;
 
 	string hadronicModelsString = "islam_bfkl,islam_cgc,ppp2,ppp3,bsw,bh,jenkovszky";
@@ -500,10 +501,6 @@ int main(int argc, char **argv)
 	if (InitModels(hadronicModelsString, models) != 0)
 		return 3;
 
-	// sample the models
-	vector<InterpolationModel *> models_sampled;
-	SampleModels(models, model_t_max, model_N, models_sampled);
-
 	// prepare output
 	TFile *outF = new TFile(outputFileName.c_str(), "recreate");
 
@@ -512,6 +509,10 @@ int main(int argc, char **argv)
 	data->SetName("data");
 	data->SetPoint(0, 0., energy);
 	data->Write();
+
+	// sample the models
+	vector<InterpolationModel *> models_sampled;
+	SampleModels(models, model_t_max, model_N, models_sampled);
 
 	// select amplitude to be generated
 	vector<CoulombInterference::ciMode> amplitudeModes;
