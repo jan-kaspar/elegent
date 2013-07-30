@@ -222,7 +222,6 @@ int main(int argc, char **argv)
 		double b = b_min;
 		for (unsigned int pi = 0; pi < N; pi++, b += db)
 		{
-			printf("%u\n", pi);
 			TComplex prf = model->Prf(b);
 			g_prf_re->SetPoint(pi, b, prf.Re());
 			g_prf_im->SetPoint(pi, b, prf.Im());
