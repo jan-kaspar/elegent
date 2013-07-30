@@ -8,7 +8,7 @@ function Generate()
 
 	tag="profiles-${energy}GeV"
 
-	generator="../bin/ElegentProfileSampler"
+	generator="../bin/ElegentBDistributionSampler"
 	$generator -energy "$energy" -output "$tag.root" &> "$tag.log"
 	tar czf "$tag.tar.gz" "$tag.root" "$tag.log"
 	rm "$tag.root"

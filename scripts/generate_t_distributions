@@ -8,7 +8,7 @@ function Generate()
 
 	tag="datasheet-${energy}GeV"
 
-	generator="../bin/ElegentDistributionSampler"
+	generator="../bin/ElegentTDistributionSampler"
 	$generator -energy "$energy" -output "$tag.root" &> "$tag.log"
 	tar czf "$tag.tar.gz" "$tag.root" "$tag.log"
 	rm "$tag.root"

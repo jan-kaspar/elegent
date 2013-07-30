@@ -21,7 +21,7 @@ using namespace std;
 
 void PrintUsage()
 {
-	printf("USAGE: ElegentProfileSampler [option] [option] ...\n");
+	printf("USAGE: ElegentBDistributionSampler [option] [option] ...\n");
 	printf("OPTIONS:\n");
 	printf("\t-h\t\t\tprint this help and exit\n");
 	printf("\t-energy <E>\t\tset incident proton energy (i.e. half of sqrt(s)), in GeV\n");
@@ -181,7 +181,7 @@ int main(int argc, char **argv)
 	}
 
 	// print input
-	printf(">> ElegentProfileSampler > input:\n");
+	printf(">> ElegentBDistributionSampler > input:\n");
 	printf("\tenergy = %E\n", energy);
 	printf("\tparticle mode %u\n", pMode);
 

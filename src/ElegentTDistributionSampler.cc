@@ -29,7 +29,7 @@ struct AmplitudeGraph
 
 void PrintUsage()
 {
-	printf("USAGE: ElegentDistributionSampler [option] [option] ...\n");
+	printf("USAGE: ElegentTDistributionSampler [option] [option] ...\n");
 	printf("OPTIONS:\n");
 	printf("\t-h\t\t\tprint this help and exit\n");
 	printf("\t-energy <E>\t\tset incident proton energy (i.e. half of sqrt(s)), in GeV\n");
@@ -410,7 +410,7 @@ int main(int argc, char **argv)
 	}
 
 	// print input
-	printf(">> ElegentDistributionSampler > input:\n");
+	printf(">> ElegentTDistributionSampler > input:\n");
 	printf("\tenergy = %E\n", energy);
 	printf("\tparticle mode %u\n", pMode);
 
