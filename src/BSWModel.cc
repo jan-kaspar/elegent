@@ -28,7 +28,7 @@ void BSWModel::Init(BSWModel::ModeType _mode, bool _presampled)
 	omega.Init( -167.329,	0.,		0.323,	0.795,	-1);
 	rho.Init(	 124.919,	8.54,	0.320,	1.,		-1);
 	
-	upper_bound_t = -400.; precision_t = 1E-15;
+	upper_bound_t = -500.; precision_t = 1E-15;
 	upper_bound_b = 50.; precision_b = 1E-12;
 
 	regge_fac(1., 0.);
@@ -40,7 +40,7 @@ void BSWModel::Init(BSWModel::ModeType _mode, bool _presampled)
 	S00 = S0(0.);
 
 	if (presampled)
-		BuildSample(10001);
+		BuildSample(25001);
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -228,7 +228,8 @@ void BSWModel::BuildSample(unsigned int samples)
 	data_N = samples;
 
 	double b = 0.;
-	for (unsigned int i = 0; i < samples; i++, b += db) {
+	for (unsigned int i = 0; i < samples; i++, b += db)
+	{
 		TComplex v = prf0(b);
 
 #ifdef DEBUG
