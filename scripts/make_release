@@ -14,4 +14,9 @@ then
 	prefix="./"
 fi
 
-tar czf "$tarFile" "$prefix/makefile" "$prefix/interface" "$prefix/src" "$prefix/scripts/generate_datasheets"
+tar czf "$tarFile" \
+		"$prefix/makefile" \
+		"$prefix/interface" \
+		"$prefix/src" \
+		"$prefix/scripts/generate_t_distributions" \
+		"$prefix/scripts/generate_b_distributions"
