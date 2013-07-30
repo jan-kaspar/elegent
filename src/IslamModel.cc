@@ -15,7 +15,7 @@ using namespace Elegent;
 //----------------------------------------------------------------------------------------------------
 
 IslamModel::IslamModel() : Model("islam", "islam(uninitialized)", "Islam et al."),
-	precision(1E-11), precision_t(1E-3), upper_bound(50.), upper_bound_t(-15.)
+	precision(1E-11), precision_t(1E-4), upper_bound(50.), upper_bound_t(-15.)
 {
 }
 
