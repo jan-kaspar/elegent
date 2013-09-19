@@ -62,4 +62,8 @@ function GeneratePlots()
 
 InitHtml
 GeneratePlots "pp" "2760"
+GeneratePlots "pp" "7000"
+GeneratePlots "pp" "8000"
+GeneratePlots "pp" "13000"
+GeneratePlots "pp" "14000"
 FinishHtml
