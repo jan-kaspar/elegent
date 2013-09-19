@@ -24,7 +24,7 @@ void PrintUsage()
 	printf("USAGE: ElegentBDistributionSampler [option] [option] ...\n");
 	printf("OPTIONS:\n");
 	printf("\t-h\t\t\tprint this help and exit\n");
-	printf("\t-energy <E>\t\tset incident proton energy (i.e. half of sqrt(s)), in GeV\n");
+	printf("\t-energy <W>\t\tset collision energy (i.e. sqrt(s)), in GeV\n");
 	printf("\t-pp\t\t\tselect proton-proton interactions\n");
 	printf("\t-app\t\t\tselect antiproton-proton interactions\n");
 	printf("\t-N <number>\t\tnumber of sampling points\n");
@@ -69,7 +69,7 @@ int InitModels(const string& hadronicModelsString, vector<Model *> &models)
 int main(int argc, char **argv)
 {
 	// defaults
-	double energy = 0.;
+	double W = 0.;
 	Constants::ParticleMode pMode = Constants::mPP;
 
 	unsigned int N = 1001;
@@ -91,7 +91,7 @@ int main(int argc, char **argv)
 		if (strcmp(argv[i], "-energy") == 0)
 		{
 			if (argc-1 > i)
-				energy = atof(argv[++i]);
+				W = atof(argv[++i]);
 			continue;
 		}
 
@@ -150,9 +150,9 @@ int main(int argc, char **argv)
 
 	// test input
 	bool stop = false;
-	if (energy == 0.)
+	if (W == 0.)
 	{
-		printf("ERROR: energy not specified.\n");
+		printf("ERROR: collision energy not specified.\n");
 		stop = true;
 	}
 
@@ -182,7 +182,7 @@ int main(int argc, char **argv)
 
 	// print input
 	printf(">> ElegentBDistributionSampler > input:\n");
-	printf("\tenergy = %E\n", energy);
+	printf("\tsqrt s = %E\n", W);
 	printf("\tparticle mode %u\n", pMode);
 
 	printf("\tsamples = %u, b_min, = %.2E, b_max = %.2E\n", N, b_min, b_max);
@@ -191,7 +191,7 @@ int main(int argc, char **argv)
 	printf("\toutput = %s\n", outputFileName.c_str());
 
 	// initialise constants etc.
-	Constants::Init(2.*energy, pMode);
+	Constants::Init(W, pMode);
 	cnts->Print();
 
 	// inialise models
@@ -205,7 +205,7 @@ int main(int argc, char **argv)
 	// a trick to save E, since of->WriteObject(&E, "cmsEnergy") doesn't work
 	TGraph *data = new TGraph();
 	data->SetName("data");
-	data->SetPoint(0, 0., energy);
+	data->SetPoint(0, 0., W/2.);
 	data->Write();
 
 	// build the profile-function plots

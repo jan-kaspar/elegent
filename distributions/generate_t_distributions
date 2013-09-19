@@ -2,23 +2,26 @@
 
 function Generate()
 {
-	energy="$1"
+	local mode="$1"
+	local energy="$2"
 
-	echo ">> Generate: E = $energy"
+	echo ">> Generate: mode = $mode, sqrt(s) = $energy GeV"
 
-	tag="t-distributions-${energy}GeV"
+	tag="t-distributions,${mode},${energy}GeV"
 
 	generator="../bin/ElegentTDistributionSampler"
-	$generator -energy "$energy" -output "$tag.root" &> "$tag.log"
+	$generator "-$mode" -energy "$energy" -output "$tag.root" &> "$tag.log"
+
 	tar czf "$tag.tar.gz" "$tag.root" "$tag.log"
-	rm "$tag.root"
-	rm "$tag.log"
+
+	#rm "$tag.root"
+	#rm "$tag.log"
 }
 
 #----------------------------------------------------------------------------------------------------
 
-Generate "1380" &
-Generate "3500" &
-Generate "4000" &
-Generate "6500" &
-Generate "7000" &
+Generate "pp" "2760" &
+Generate "pp" "7000" &
+Generate "pp" "8000" &
+Generate "pp" "13000" &
+Generate "pp" "14000" &

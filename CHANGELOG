@@ -1,4 +1,6 @@
 future release
+	* naming scheme for distributions and plots
+		...<mode>,<sqrt(s)>GeV...
 
 release 1.0
 	* first fully operational version

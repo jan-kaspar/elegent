@@ -1,14 +1,19 @@
+# PATHS TO BE ADJUSTED BY USER
 
-
-# ROOT includes and libs
+# path to ROOT installation
 #ROOTDIR = /usr/local/root5
-ROOTDIR = /afs/cern.ch/cms/slc5_amd64_gcc434/lcg/root/5.27.06b-cms10
+ROOTDIR = /afs/cern.ch/cms/slc5_amd64_gcc434/lcg/root/5.27.06b-cms18
+
+# path to HepMC installation
+#HepMCDIR = /usr
+HepMCDIR = /afs/cern.ch/cms/slc5_amd64_gcc434/external/hepmc/2.05.01-cms2
+
+#----------------------------------------------------------------------------------------------------
+#----------------------------------------------------------------------------------------------------
+
 INCS = `$(ROOTDIR)/bin/root-config --cflags` -I.
 LIBS = `$(ROOTDIR)/bin/root-config --libs`
 
-# HepMC includes and libs
-#HepMCDIR = /usr
-HepMCDIR = /afs/cern.ch/cms/slc5_amd64_gcc434/external/hepmc/2.06.05
 INCS += -I$(HepMCDIR)/include
 LIBS += -L$(HepMCDIR)/lib -lHepMC
 
@@ -74,7 +79,7 @@ lib/libElegent.so: $(dict_modules_obj) $(modules_obj)
 
 bin/% : src/%.cc lib/libElegent.so
 	@echo BUILDING $@
-	@$(GCC) $(INCS) $(LIBS) -Llib -lElegent $< -o $@
+	$(GCC) $(INCS) $(LIBS) -Llib -lElegent $< -o $@
 
 info:
 	echo $(dirsToCreate)
