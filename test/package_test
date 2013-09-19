@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# -------------------- test t-distribution sampling --------------------
+
+../bin/ElegentTDistributionSampler -h
+../bin/ElegentTDistributionSampler\
+		-energy 8000 -pp -models "ppp3" -output "t-distribution_test.root"\
+		-model-N 100 -model-tmax 20\
+		-full-N 100 -full-tmax 10\
+		-lowt-N 100 -lowt-tmax 1
+
+
+
+# -------------------- test b-distribution sampling --------------------
+
+../bin/ElegentBDistributionSampler -h
+../bin/ElegentBDistributionSampler\
+		 -energy 8000 -pp -models "ppp3" -output "b-distribution_test.root"\
+		 -N 1000 -bmin 0 -bmax 10
+
+
+
+# ------------------ test Monte-Carlo event generator ------------------
+
+../bin/ElegentTest -h
+../bin/ElegentTest "t-distribution_test.root" "full range/ppp3/PH/cumulative cross-section" 0 10 3
