@@ -13,6 +13,9 @@ using namespace Elegent;
 
 void JenkovszkyModel::Init()
 {
+	// fit parameters from Table 3 (corresponding to trajectory (8)),
+	// reggeon trajectories given under Eq. (4)
+
 	a_P = 261.966;
 	b_P = 8.40969;	// GeV^-2
 	de_P = 0.0504675;
@@ -29,13 +32,13 @@ void JenkovszkyModel::Init()
 	a_om = 8.21009;
 	b_om = 23.81201;	// GeV^-2
 	s_om = 1.;	// GeV^2
-	al0_om = 0.481996;
+	al0_om = 0.43;
 	al1_om = 0.93;
 	
 	a_f = -12.6303;
 	b_f = 4.35673;	// GeV^-2
 	s_f = 1.;	// GeV^2
-	al0_f = 0.787501;
+	al0_f = 0.70;
 	al1_f = 0.84;
 
 	precision_t = 1E-4;

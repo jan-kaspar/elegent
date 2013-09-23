@@ -13,9 +13,8 @@ namespace Elegent
 
 /**
  * \brief The model of Jenkovszky et al.
- * According to L. Jenkovszky, A. Lengyel, D. Lontkovskyi:
- * The Pomeron and Odderon in elastic, inelastic and total cross sections at the LHC.
- * arXiv:1105.1202 (2011)
+ * According to:
+ * 	L. L. JENKOVSZKY, A. I. LENGYEL, and D. I. LONTKOVSKYI, Int. J. Mod. Phys. A 26, 4755 (2011). DOI: 10.1142/S0217751X11054760 
  **/
 class JenkovszkyModel : public Model
 {
