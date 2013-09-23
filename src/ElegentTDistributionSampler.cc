@@ -458,7 +458,7 @@ int main(int argc, char **argv)
 	vector<InterpolationModel *> models_sampled;
 	SampleModels(models, model_t_max, model_N, models_sampled);
 
-	// select amplitude to be generated
+	// select amplitudes to be generated
 	vector<CoulombInterference::ciMode> amplitudeModes;
 	amplitudeModes.push_back(CoulombInterference::mPH);
 	//amplitudeModes.push_back(CoulombInterference::mWY);

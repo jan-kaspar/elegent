@@ -17,16 +17,20 @@ void BSWModel::Init(BSWModel::ModeType _mode, bool _presampled)
 	mode = _mode;
 	presampled = _presampled;
 	
+	// Eq. (6) in [3]
 	c = 0.167;
 	cp = 0.748;
+
+	// Table 1 in [3]
 	m1 = 0.577; m1sq = m1*m1;	// 0.333
 	m2 = 1.719; m2sq = m2*m2;	// 2.955
 	f = 6.971;
 	a = 1.858;	asq = a*a;		// 3.452
 	 
+	// Table 2 in [3], b's given in text of section 3 in [3]
 	A2.Init(	-24.269,	0.,		0.357,	1.,		+1);
 	omega.Init( -167.329,	0.,		0.323,	0.795,	-1);
-	rho.Init(	 124.919,	8.54,	0.320,	1.,		-1);
+	rho.Init(	124.919,	8.54,	0.320,	1.,		-1);
 	
 	upper_bound_t = -500.; precision_t = 1E-15;
 	upper_bound_b = 50.; precision_b = 1E-12;

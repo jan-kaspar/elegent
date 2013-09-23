@@ -1,22 +1,19 @@
 * custom integration --> some standard library (like GSL ?)
 
+* BH model - problem with N_g
+
+* Jenkovszky model: other trajectory parameterisations than Eq. (8)?
+
+* check the model updates - comparison with previous predictions
+
+* references in model headers: synchronise with Wiki
+
 * add more models (e.g. Brazilian group)?
 
-* fulfill CPiP requirements : Manuscripts that describe computer programs and NVAs must be accompanied by:
-  - the program source code
-  - job control scripts, where applicable
-  - a README file giving the names and a brief description of all the files that
-    make up the package and clear instructions on the installation and execution of the program
-  - sample input and output data for at least one comprehensive test run
-  - and, where appropriate, a user manual.
+* README file giving
+ - the names and a brief description of all the files that make up the package
+ - clear instructions on the installation and execution of the program
 
-* distribution files
- - add mode (pp or app)
- - number --> sqrt(s) instead of proton energy
- - update TOTEM CMSSW files
+* problem with low |t| sampling: visible in B(t)
 
-* update TOTEM TWiki (for version 6.x)
-
-* test directory/script
- - t- and b-distribution
- - run generator
+* use of GNU automake system

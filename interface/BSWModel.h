@@ -17,6 +17,11 @@ namespace Elegent
 
 /**
  * \brief Bourelly, Soffer and Wu model of p-p and p-anti p elastic scattering.
+ * References:
+ *	[1] BOURRELY C., SOFFER, J. and WU, T. T., Phys. Rev. D19 (1979) 3249
+ *	[2] BOURRELY C., SOFFER, J. and WU, T. T., Nucl. Phys. B247 (1984) 15
+ *	[3] BOURRELY C., SOFFER, J. and WU, T. T., Eur. Phys. J. C28 (2003) 97-105
+ *	[4] BOURRELY C., SOFFER, J. and WU, T. T., Eur. Phys. J. C71 (2011) 1601
  **/
 class BSWModel : public Model 
 {

@@ -130,7 +130,8 @@ TComplex IslamModel::T_qq(int n, double t) const
 	if (n == 1)
 		return Quark_fac / (-t + 1./r0/r0);
 	
-	if (n == 2) {
+	if (n == 2)
+	{
 		if (q < 1E-2)
 			return i * Quark_fac*Quark_fac * r0*r0*r0/4.;	// limit
 		else
@@ -142,7 +143,7 @@ TComplex IslamModel::T_qq(int n, double t) const
 	par[0] = q;
 	par[1] = n;
 	// correct -i
-	return -i	/ 2. / TMath::Factorial(n) * TComplex::Power(Quark_const, n) * DoubleInt(this, T_qq_integ, 0., 30., par, 1E-9);
+	return -i / 2. / TMath::Factorial(n) * TComplex::Power(Quark_const, n) * DoubleInt(this, T_qq_integ, 0., 30., par, 1E-9);
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -157,7 +158,8 @@ TComplex IslamModel::T_quark(double t) const
 	double qt = sqrt(-t * (-t / cnts->t_min + 1.));
 
 	TComplex sum = 0.;
-	for (int j = 1; j <= qqMaxOrder; j++) {
+	for (int j = 1; j <= qqMaxOrder; j++)
+	{
 		double F = F_cal(j, qt, omega, m0sq);
 		sum += F*F * T_qq(j, t);
 	}
@@ -189,7 +191,7 @@ TComplex IslamModel::T_cgc_n(int n, double t) const
 	double par[2];
 	par[0] = q;
 	par[1] = n;
-	return i	* pow(-2., n - 1) / TMath::Factorial(n) * TComplex::Power(cgc_fac, n) * DoubleInt(this, T_cgc_integ, 0., 30., par, 1E-9);
+	return i * pow(-2., n - 1) / TMath::Factorial(n) * TComplex::Power(cgc_fac, n) * DoubleInt(this, T_cgc_integ, 0., 30., par, 1E-9);
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -204,7 +206,8 @@ TComplex IslamModel::T_cgc(double t) const
 	double qt = sqrt(-t * (-t / cnts->t_min + 1.));
 
 	TComplex sum = 0.;
-	for (int j = 1; j <= cgcMaxOrder; j++) {
+	for (int j = 1; j <= cgcMaxOrder; j++)
+	{
 		double F = F_cal(j, qt, lambda, m0sq);
 		sum += F*F * T_cgc_n(j, t);
 	}
@@ -223,16 +226,18 @@ TComplex IslamModel::Amp(double t) const
 
 	/// t < 0
 
-	switch (mode) {
+	switch (mode)
+	{
 		case mFullQuark:	return T_diff(t) + T_core(t) + T_quark(t);
 		case mFullCGC:		return T_diff(t) + T_core(t) + T_cgc(t);
-		case mDiff:			 return T_diff(t);
-		case mCore:			 return T_core(t);
-		case mQuark:			return T_quark(t);
-		case mCGC:				return T_cgc(t);
-		case mDiffCore:	 return T_diff(t) + T_core(t);
+		case mDiff:			return T_diff(t);
+		case mCore:			return T_core(t);
+		case mQuark:		return T_quark(t);
+		case mCGC:			return T_cgc(t);
+		case mDiffCore:	 	return T_diff(t) + T_core(t);
 		default:
-			printf("!!! mode = -1 !!!\n\n"); return 0.;
+			printf("ERROR in IslamModel::Amp > unknown mode %i\n", mode);
+			return 0.;
 	}
 }
 
@@ -258,6 +263,31 @@ TComplex IslamModel::Prf(double b_fm) const
 //----------------------------------------------------------------------------------------------------
 //------------------------------------------- INITIALISATION --------------------------------------
 
+void IslamModel::Init(unsigned int _mode)
+{
+	mode = _mode;
+
+	// TODO: parameter source !!
+
+	InitBase(2.77,	 0.0491, 0.245,	 0.126,	 3.075,	 0.801);
+	InitStage2(0.0844,	0.0,	2.7,	0.727,	13.,	0.246,	1.53,	0.,		1.46);
+	
+	if (mode == mQuark || mode == mFullQuark)
+	{
+		InitQQ(0.03, 0.15, 2., 12.);
+	}
+
+	if (mode == mCGC || mode == mFullCGC)
+	{
+		InitCGC(0.0056, 0.29, 1.67, 12.);
+	}
+
+	// only Born term by default
+	SetUnitarizationOrders(1, 1);
+}
+
+//----------------------------------------------------------------------------------------------------
+
 TComplex CEF(double a, double b, double c)
 {
 // returns a + b / (s exp(-i pi/2))^c = a + b / (-i s)^c = a + b (-i s)^(-c)
@@ -281,12 +311,14 @@ void IslamModel::InitStage1(double pi_g_mod, double g_arg, double pi_hga, double
 	// enum g(s) first
 	Diff_fac = pi_g_mod / cnts->pi * TComplex::Exp(i * g_arg);
 	
-	if (cnts->pMode == cnts->mPP) {
+	if (cnts->pMode == cnts->mPP)
+	{
 		Hard_fac = cnts->s / cnts->pi * pi_hga * TComplex::Exp(i * hth) * (1 + GaMD_Re +i * GaMD_Im - (1. - TComplex::Exp(-R/a)) / (1. + TComplex::Exp(-R/a)) * Diff_fac); 
 		Core_fac = -1;
 	}
 	
-	if (cnts->pMode == cnts->mAPP) {
+	if (cnts->pMode == cnts->mAPP)
+	{
 		Hard_fac = + cnts->s / cnts->pi * pi_hga * TComplex::Exp(i * hth) * (1 - GaMD_Re -i * GaMD_Im - (1. - TComplex::Exp(-R/a)) / (1. + TComplex::Exp(-R/a)) * Diff_fac); 
 		Core_fac = +1;
 	}
@@ -306,12 +338,14 @@ void IslamModel::InitStage2(double et0, double c0, double si, double la0, double
 	Diff_fac = i * cnts->sqrt_s * cnts->p_cms * Diff_fac_profile;
 	Diff_fac_profile = Diff_fac_profile * i/2.;
 
-	if (cnts->pMode == cnts->mPP) {
+	if (cnts->pMode == cnts->mPP)
+	{
 		Hard_fac = cnts->s * CEF(hga0, hga1, hsi) * ( CEF(et0, c0, si) + i*CEF(la0, -d0, al) );
 		Core_fac = -1;
 	}
 
-	if (cnts->pMode == cnts->mAPP) {
+	if (cnts->pMode == cnts->mAPP)
+	{
 		Hard_fac = cnts->s * CEF(hga0, hga1, hsi) * ( CEF(et0, c0, si) - i*CEF(la0, -d0, al) );
 		Core_fac = +1;
 	}
@@ -341,19 +375,7 @@ void IslamModel::InitCGC(double _tgagg, double _lambda, double _m_c, double _m0s
 }
 
 //----------------------------------------------------------------------------------------------------
-
-void IslamModel::DirectInit(double Rr, double Ri, double ar, double ai, double Dr, double Di, double Hr, double Hi)
-{
-	// STAGE 2
-	R = TComplex(Rr, Ri);
-	a = TComplex(ar, ai);
-	Diff_fac = TComplex(Dr, Di);
-	Hard_fac = TComplex(Hr, Hi);
-	name = "Islam(ST2direct)";
-}
-
-//----------------------------------------------------------------------------------------------------
-//------------------------------------------- PRINTING --------------------------------------------
+//------------------------------------------- PRINTING -----------------------------------------------
 
 void IslamModel::Print() const
 {

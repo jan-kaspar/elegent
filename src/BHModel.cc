@@ -11,6 +11,78 @@ using namespace Elegent;
 
 //----------------------------------------------------------------------------------------------------
 
+
+void BHModel::Init()
+{
+	// parameters from [2]: Table 5, N_g from above Eq. (463), a's and b's from A.1.2
+
+	// common parameters
+	m0 = 0.6;
+	s0 = 9.53;
+	al_s = 0.5;
+	Sigma_gg = 9. * cnts->pi * al_s*al_s / m0/m0;
+
+	// sigma_gg
+	Cp_gg = 0.00103;
+	epsilon = 0.05;
+
+	// TODO: which is correct?
+	// [1] : Ng = (6.-epsilon)*(5.-epsilon)*(4.-epsilon)*(3.-epsilon)*(2.-epsilon)*(1.-epsilon) /5./4./3./2. / 2.;
+	// [2] : Ng = 3./2. * (5.-epsilon)*(4.-epsilon)*(3.-epsilon)*(2.-epsilon)*(1.-epsilon) /5./4./3./2.;
+	Ng = (6.-epsilon)*(5.-epsilon)*(4.-epsilon)*(3.-epsilon)*(2.-epsilon)*(1.-epsilon) /5./4./3./2. / 2.;
+		
+	a0 = -41.1;
+	a1 = -487.5;
+	a2 = -600.;
+	a3 = 600.;
+	a4 = 487.5;
+	a5 = 41.1;
+
+	b0 = -9.;
+	b1 = -225.;
+	b2 = -900.;
+	b3 = -900.;
+	b4 = -225.;
+	b5 = -9.;
+
+	// sigma_qg
+	C_qg_log = 0.166;
+
+	// sigma_qq
+	C = 5.36;
+	C_even_regge = 29.7;
+
+	// sigma_odd
+	C_odd = 10.3;
+	
+	// mu's
+	mu_gg = 0.73;
+	mu_odd = 0.53;
+	mu_qq = 0.89;
+
+	// integration settings
+	upper_bound = 50.;
+	precision = 1E-12;
+
+	// precompute mu_qg
+	mu_qg = sqrt(mu_qq*mu_gg);
+		
+	// precompute sigma_gg, Eq. (B5) in [1]: below the Cp_gg stands for C'_gg
+	sigma_gg = Cp_gg * Sigma_gg * Ng*Ng * TComplex(sumR(cnts->s), sumI(cnts->s));
+
+	// precompute sigma_qq, Eq. (B9) in [1]
+	sigma_qq = Sigma_gg * (C + C_even_regge * m0/sqrt(cnts->s) * TComplex::Exp(i * cnts->pi / 4.));
+
+	// precompute sigma_qg, Eq. (B10) in [1]
+	sigma_qg = Sigma_gg * C_qg_log * TComplex(log(cnts->s/s0), -cnts->pi/2.);
+	
+	// precompute sigma_odd, Eq. (B12) in [1] - the factor in front of W(b, mu_odd)
+	// plus additional factor (-i) to match the normalization used in chi_without_i
+	sigma_odd = -i * C_odd * Sigma_gg * m0 / cnts->sqrt_s * TComplex::Exp(i * cnts->pi / 4.);
+}
+
+//----------------------------------------------------------------------------------------------------
+
 void BHModel::Print() const
 {
 	printf(">> BHModel::Print\n");
@@ -130,63 +202,9 @@ double BHModel::sumI(double s) const
 }
 
 //----------------------------------------------------------------------------------------------------
-
-void BHModel::Init()
-{
-	// common parameters
-	m0 = 0.6;
-	s0 = 10.3;
-	al_s = 0.5; 
-	Sigma_gg = 9. * cnts->pi * al_s*al_s / m0/m0;
-
-	// sigma_gg
-	Cp_gg = 0.00103;
-	epsilon = 0.05;
-	Ng = (6.-epsilon)*(5.-epsilon)*(4.-epsilon)*(3.-epsilon)*(2.-epsilon)*(1.-epsilon) /5./4./3./2. / 2.;
-	a0 = -41.1, a1 = -487.5, a2 = -600., a3 = 600., a4 = 487.5, a5 = 41.1;
-	b0 = -9., b1 = -225., b2 = -900., b3 = -900., b4 = -225., b5 = -9.;
-
-	// sigma_qg
-	C_qg_log = 0.167;
-
-	// sigma_qq
-	C = 5.42;
-	C_even_regge = 28.8;
-
-	// sigma_odd
-	C_odd = 7.55;
-	
-	// mu's
-	mu_gg = 0.73;
-	mu_odd = 0.53;
-	mu_qq = 0.89;
-
-	// integration settings
-	upper_bound = 50.;
-	precision = 1E-12;
-
-	// precompute mu_qg
-	mu_qg = sqrt(mu_qq*mu_gg);
-		
-	// precompute sigma_gg, Eq. (B5): below the Cp_gg stands for C'_gg
-	sigma_gg = Cp_gg * Sigma_gg * Ng*Ng * TComplex(sumR(cnts->s), sumI(cnts->s));
-
-	// precompute sigma_qq, Eq. (B9)
-	sigma_qq = Sigma_gg * (C + C_even_regge * m0/sqrt(cnts->s) * TComplex::Exp(i * cnts->pi / 4.));
-
-	// precompute sigma_qg, Eq. (B10)
-	sigma_qg = Sigma_gg * C_qg_log * TComplex(log(cnts->s/s0), -cnts->pi/2.);
-	
-	// precompute sigma_odd, Eq. (B12) - the factor in front of W(b, mu_odd)
-	// plus additional factor (-i) to match the normalization used in chi_without_i
-	sigma_odd = -i * C_odd * Sigma_gg * m0 / cnts->sqrt_s * TComplex::Exp(i * cnts->pi / 4.);
-}
-
-//----------------------------------------------------------------------------------------------------
-
 double BHModel::W(double b, double mu) const
 {
-	// Eq. (B2)
+	// Eq. (B2) in [1]
 	double mub = mu * b;
 
 	// evaluates v = (mu b)^3 K_3(mu b); directly or in continuous limit
@@ -204,7 +222,7 @@ TComplex BHModel::chi_without_i(double b) const
 {
 	// TODO: why the one half?
 
-	// Eqs. (B1) without the leading i factor and Eq. (B12)
+	// Eqs. (B1) without the leading i factor and Eq. (B12) in [1]
 	return (
 			sigma_gg * W(b, mu_gg) + sigma_qg * W(b, mu_qg) + sigma_qq * W(b, mu_qq)
 			+ ((cnts->pMode == cnts->mAPP) ? +1. : -1.) * sigma_odd * W(b, mu_odd)

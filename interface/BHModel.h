@@ -13,7 +13,9 @@ namespace Elegent
 
 /**
  * \brief Block-Halzen model of p-p and p-anti p elastic scattering.
- * REFERENCE PAPER: Block et al., Phys. Rev. D 60, 054024 (1999)
+ * References:
+ *	[1] BLOCK, M. M., GREGORES, E. M., HALZEN, F. and PANCHERI, G., Phys. Rev. D60 (1999) 054024
+ *	[2] BLOCK, M. M., Phys. Rept. 436 (2006) 71-215
  *
  * This class in based on code originally initiated by Jan Smotlacha.
  **/

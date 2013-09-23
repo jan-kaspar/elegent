@@ -13,8 +13,8 @@ namespace Elegent
 
 /**
  * \brief The model of Jenkovszky et al.
- * According to:
- * 	L. L. JENKOVSZKY, A. I. LENGYEL, and D. I. LONTKOVSKYI, Int. J. Mod. Phys. A 26, 4755 (2011). DOI: 10.1142/S0217751X11054760 
+ * References:
+ *	[1] L. L. JENKOVSZKY, A. I. LENGYEL, and D. I. LONTKOVSKYI, Int. J. Mod. Phys. A 26, 4755 (2011). DOI: 10.1142/S0217751X11054760 
  **/
 class JenkovszkyModel : public Model
 {

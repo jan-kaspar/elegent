@@ -14,6 +14,12 @@ namespace Elegent
 
 /**
  * \brief Islam model of p-p and p-anti p elastic scattering.
+ * References:
+ *	[1] ISLAM, M. M., FEARNLEY, T. and GUILLAUD, J. P., Nuovo Cim. A81 (1984) 737
+ *	[2] ISLAM, M. M., INNOCENTE V., FEARNLEY T. and SANGUIETTI, G., Europhys. Lett. 4 (1987) 189-196
+ *	[3] ISLAM, M. M., LUDDY, R. J. and PROKUDIN, A. V., Phys. Lett. B605 (2005) 115-122
+ *	[4] ISLAM, M. M., LUDDY, R. J. and PROKUDIN, A. V., Int. J. Mod. Phys. A21 (2006) 1-42
+ *	[5] ISLAM, M. M., KASPAR, J. and LUDDY, R. J., Mod. Phys. Lett. A24 (2009) 485-496
  **/
 class IslamModel : public Model
 {
@@ -24,12 +30,12 @@ class IslamModel : public Model
 		IslamModel();
 
 		/// initialization methods
+		void Init(unsigned int _mode);
 		void InitBase(double R0, double R1, double a0, double a1, double be, double _m);
 		void InitStage1(double pi_g_mod, double g_arg, double pi_hga, double hth, double GaMD_Re, double GaMD_Im);
 		void InitStage2(double et0, double c0, double si, double la0, double d0, double al, double hga0, double hga1, double hsi);
 		void InitQQ(double _tgaqq, double _omega, double _r0, double _m0sq);
 		void InitCGC(double _tgagg, double _lambda, double _m_c, double _m0sq);
-		void DirectInit(double Rr, double Ri, double ar, double ai, double Dr, double Di, double Hr, double Hi);
 
 		virtual void Print() const;
 		virtual std::string GetModeString() const;

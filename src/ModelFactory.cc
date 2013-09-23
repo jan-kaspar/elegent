@@ -15,26 +15,16 @@ Model* ModelFactory::MakeStandardInstance(const std::string &tag, bool prf_presa
 	if (tag.compare("islam_bfkl") == 0)
 	{
 		IslamModel *IslamBFKL = new IslamModel();
-		IslamBFKL->InitBase(	2.77,	 0.0491, 0.245,	 0.126,	 3.075,	 0.801);
-		IslamBFKL->InitStage2(	0.0844,	0.0,	2.7,	0.727,	13.,	0.246,	1.53,	0.,		1.46);
-		IslamBFKL->InitQQ(0.03, 0.15, 2., 12.);
-		IslamBFKL->InitCGC(0.0056, 0.29, 1.67, 12.);
-		IslamBFKL->SetUnitarizationOrders(1, 1);
-		IslamBFKL->mode = IslamModel::mFullQuark;
-		IslamBFKL->name = "Islam (BFKL)";
+		IslamBFKL->Init(IslamModel::mFullQuark);
+		IslamBFKL->name = "Islam (HP)";
 		model = IslamBFKL;
 	}
 
 	if (tag.compare("islam_cgc") == 0)
 	{
 		IslamModel *IslamCGC = new IslamModel();
-		IslamCGC->InitBase(	2.77,	 0.0491, 0.245,	 0.126,	 3.075,	 0.801);
-		IslamCGC->InitStage2(	0.0844,	0.0,	2.7,	0.727,	13.,	0.246,	1.53,	0.,		1.46);
-		IslamCGC->InitQQ(0.03, 0.15, 2., 12.);
-		IslamCGC->InitCGC(0.0056, 0.29, 1.67, 12.);
-		IslamCGC->SetUnitarizationOrders(1, 1);
-		IslamCGC->mode = IslamModel::mFullCGC;
-		IslamCGC->name = "Islam (CGC)";
+		IslamCGC->Init(IslamModel::mFullCGC);
+		IslamCGC->name = "Islam (LxG)";
 		model = IslamCGC;
 	}
 
