@@ -31,11 +31,7 @@ class IslamModel : public Model
 
 		/// initialization methods
 		void Init(unsigned int _mode);
-		void InitBase(double R0, double R1, double a0, double a1, double be, double _m);
-		void InitStage1(double pi_g_mod, double g_arg, double pi_hga, double hth, double GaMD_Re, double GaMD_Im);
-		void InitStage2(double et0, double c0, double si, double la0, double d0, double al, double hga0, double hga1, double hsi);
-		void InitQQ(double _tgaqq, double _omega, double _r0, double _m0sq);
-		void InitCGC(double _tgagg, double _lambda, double _m_c, double _m0sq);
+		static TComplex CEF(double a, double b, double c);
 
 		virtual void Print() const;
 		virtual std::string GetModeString() const;
@@ -44,25 +40,31 @@ class IslamModel : public Model
 		virtual TComplex Prf(double b) const;
 
 		void SetUnitarizationOrders(int qq, int cgc)
-			{ qqMaxOrder = qq; cgcMaxOrder = cgc; }
+		{
+			qqMaxOrder = qq;
+			cgcMaxOrder = cgc;
+		}
 		
 	protected:
 		/// diffraction variables
 		TComplex R, a, Diff_fac_profile, Diff_fac;
 		
 		/// hard scattering variables
-		TComplex Hard_fac;
+		TComplex Abs_fac;
 	
 		/// core scattering variables
-		double beta, M_sq, Core_fac;
+		double beta, m_omega_sq, Core_fac;
+		
+		/// quark confinement parameters
+		double m0sq;
 	
-		/// quark-quard scattering variables
-		double m0sq, r0, omega;
+		/// "hard pomeron" scattering variables
+		double r0, omega;
 		TComplex Quark_fac;
 		TComplex Quark_const;
 		int qqMaxOrder;
 			
-		/// CGC scattering
+		/// "low-x gluons" scattering
 		double lambda, m_c;
 		TComplex cgc_fac;
 		int cgcMaxOrder;

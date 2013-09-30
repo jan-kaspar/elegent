@@ -23,7 +23,7 @@ IslamModel::IslamModel() : Model("islam", "islam(uninitialized)", "Islam et al."
 
 TComplex IslamModel::GammaD(double b) const
 {
-	/// profile function Gamma_D^+
+	/// b-dependent part of profile function Gamma_D^+ in Eq. (2.7) in [4]
 	/// b... impact parameter in	fm
 	return 1. / (1. + TComplex::Exp((b - R) / a)) + 1. / (1. + TComplex::Exp((-b - R) / a)) - 1.;
 }
@@ -54,7 +54,7 @@ TComplex IslamModel::T_diff(double t) const
 double IslamModel::F_sq(double t)	const
 {
 	/// formfactor, t < 0
-	return beta * sqrt(M_sq - t) * TMath::BesselK1(beta * sqrt(M_sq - t));
+	return beta * sqrt(m_omega_sq - t) * TMath::BesselK1(beta * sqrt(m_omega_sq - t));
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -66,7 +66,7 @@ TComplex IslamModel::T_core(double t) const
 #endif
 
 	/// t < 0
-	return Core_fac * Hard_fac * F_sq(t) / (M_sq - t);
+	return Core_fac * Abs_fac * F_sq(t) / (m_omega_sq - t);
 }
 
 
@@ -142,6 +142,7 @@ TComplex IslamModel::T_qq(int n, double t) const
 	double par[2];
 	par[0] = q;
 	par[1] = n;
+
 	// correct -i
 	return -i / 2. / TMath::Factorial(n) * TComplex::Power(Quark_const, n) * DoubleInt(this, T_qq_integ, 0., 30., par, 1E-9);
 }
@@ -164,7 +165,7 @@ TComplex IslamModel::T_quark(double t) const
 		sum += F*F * T_qq(j, t);
 	}
 
-	return Hard_fac * sum;
+	return Abs_fac * sum;
 }
 
 //------------------------------------ CGC AMPLITUDE -------------------------------------------------
@@ -212,7 +213,7 @@ TComplex IslamModel::T_cgc(double t) const
 		sum += F*F * T_cgc_n(j, t);
 	}
 
-	return Hard_fac * sum;
+	return Abs_fac * sum;
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -267,111 +268,99 @@ void IslamModel::Init(unsigned int _mode)
 {
 	mode = _mode;
 
-	// TODO: parameter source !!
-
-	InitBase(2.77,	 0.0491, 0.245,	 0.126,	 3.075,	 0.801);
-	InitStage2(0.0844,	0.0,	2.7,	0.727,	13.,	0.246,	1.53,	0.,		1.46);
-	
-	if (mode == mQuark || mode == mFullQuark)
-	{
-		InitQQ(0.03, 0.15, 2., 12.);
-	}
-
-	if (mode == mCGC || mode == mFullCGC)
-	{
-		InitCGC(0.0056, 0.29, 1.67, 12.);
-	}
-
-	// only Born term by default
-	SetUnitarizationOrders(1, 1);
-}
-
-//----------------------------------------------------------------------------------------------------
-
-TComplex CEF(double a, double b, double c)
-{
-// returns a + b / (s exp(-i pi/2))^c = a + b / (-i s)^c = a + b (-i s)^(-c)
-	return a + b * TComplex::Power(-i * cnts->s, -c);
-}
-
-//----------------------------------------------------------------------------------------------------
-
-void IslamModel::InitBase(double R0, double R1, double a0, double a1, double be, double _m)
-{
+	// ---------- diffraction amplitude ----------
+	// parameters from page 23 of [4] 
+	double R0 = 2.77;
+   	double R1 = 0.0491;
+	double a0 = 0.245;
+	double a1 = 0.126;
 	R = TComplex(R0 + R1*cnts->ln_s, -R1*cnts->pi/2);
 	a = TComplex(a0 + a1*cnts->ln_s, -a1*cnts->pi/2);
-
-	beta = be; M_sq = _m*_m;
-}
-
-//----------------------------------------------------------------------------------------------------
-
-void IslamModel::InitStage1(double pi_g_mod, double g_arg, double pi_hga, double hth, double GaMD_Re, double GaMD_Im)
-{
-	// enum g(s) first
-	Diff_fac = pi_g_mod / cnts->pi * TComplex::Exp(i * g_arg);
 	
-	if (cnts->pMode == cnts->mPP)
-	{
-		Hard_fac = cnts->s / cnts->pi * pi_hga * TComplex::Exp(i * hth) * (1 + GaMD_Re +i * GaMD_Im - (1. - TComplex::Exp(-R/a)) / (1. + TComplex::Exp(-R/a)) * Diff_fac); 
-		Core_fac = -1;
-	}
+	double et0 = 0.0844;
+	double c0 = 0.0;
+	double si = 2.7;
 	
-	if (cnts->pMode == cnts->mAPP)
-	{
-		Hard_fac = + cnts->s / cnts->pi * pi_hga * TComplex::Exp(i * hth) * (1 - GaMD_Re -i * GaMD_Im - (1. - TComplex::Exp(-R/a)) / (1. + TComplex::Exp(-R/a)) * Diff_fac); 
-		Core_fac = +1;
-	}
+	// function g(s) according to Eq. (4.2) in [4]
+	TComplex g_s = (1. - CEF(et0, c0, si)) * (1. + TComplex::Exp(-R/a)) / (1. - TComplex::Exp(-R/a));
+	Diff_fac = i * cnts->sqrt_s * cnts->p_cms * g_s;
+	Diff_fac_profile = g_s * i/2.;
 	
-	// Difffraction coeficient f_D, in Diff_fac is stored g(s)
-	Diff_fac_profile = i / 2. * Diff_fac;
-	Diff_fac = i * cnts->p_cms * cnts->sqrt_s * Diff_fac;
+	// ---------- absorbtion factor due to diffraction ----------
 	
-	name = "Islam(ST1)";
-}
-
-//----------------------------------------------------------------------------------------------------
-
-void IslamModel::InitStage2(double et0, double c0, double si, double la0, double d0, double al, double hga0, double hga1, double hsi)
-{
-	Diff_fac_profile = (1. - CEF(et0, c0, si)) * (1. + TComplex::Exp(-R/a)) / (1. - TComplex::Exp(-R/a));
-	Diff_fac = i * cnts->sqrt_s * cnts->p_cms * Diff_fac_profile;
-	Diff_fac_profile = Diff_fac_profile * i/2.;
+	// parameters from page 23 of [4]
+	double la0 = 0.727;
+	double d0 = 13.;
+	double al = 0.246;
+	double hga0 = 1.53;
+	double hga1 = 0.;
+	double hsi = 1.46;
 
 	if (cnts->pMode == cnts->mPP)
-	{
-		Hard_fac = cnts->s * CEF(hga0, hga1, hsi) * ( CEF(et0, c0, si) + i*CEF(la0, -d0, al) );
-		Core_fac = -1;
-	}
+		Abs_fac = cnts->s * CEF(hga0, hga1, hsi) * ( CEF(et0, c0, si) + i*CEF(la0, -d0, al) );
 
 	if (cnts->pMode == cnts->mAPP)
-	{
-		Hard_fac = cnts->s * CEF(hga0, hga1, hsi) * ( CEF(et0, c0, si) - i*CEF(la0, -d0, al) );
+		Abs_fac = cnts->s * CEF(hga0, hga1, hsi) * ( CEF(et0, c0, si) - i*CEF(la0, -d0, al) );
+	
+	// ---------- core amplitude ----------
+	// parameters from page 23 of [4]
+	beta = 3.075;
+	double m_omega = 0.801;
+	m_omega_sq = m_omega * m_omega;
+	
+	if (cnts->pMode == cnts->mPP)
+		Core_fac = -1;
+
+	if (cnts->pMode == cnts->mAPP)
 		Core_fac = +1;
+	
+	// ---------- quark-quark amplitude ----------
+	
+	// parameter from page 25 of [4]
+	m0sq = 12.;
+
+	// hard pomeron variant
+	if (mode == mQuark || mode == mFullQuark)
+	{
+		// parameters from page 25 of [4]
+		double tgaqq = 0.03;
+		omega = 0.15;
+		r0 = 2.;
+
+		// the factor (without s) multiplying the 2nd term in the 2nd brackets in Eq. (6.3) in [4]
+		Quark_fac = i * tgaqq * TComplex::Power(-i * cnts->s, omega);
+
+		Quark_const = -2. * tgaqq * TComplex::Power(-i * cnts->s, omega);
+
+		// Born term only by default
+		qqMaxOrder = 1;
 	}
+	
+	// low-x gluons variant
+	if (mode == mCGC || mode == mFullCGC)
+	{
+		double tgagg = 0.0056;	// TODO: no reference found!
 
-	name = "Islam(ST2)";
+		// parameters from page 8 of [5]
+		lambda = 0.29;
+		m_c = 1.67;
+		
+		// the factor (without is) multiplying the fraction in Eq. (32) in [5]
+		cgc_fac = tgagg * TComplex::Power(-i * cnts->s, lambda);
+
+		// Born term only by default
+		cgcMaxOrder = 1;
+	}
 }
 
 //----------------------------------------------------------------------------------------------------
 
-void IslamModel::InitQQ(double _tgaqq, double _omega, double _r0, double _m0sq)
+TComplex IslamModel::CEF(double a, double b, double c)
 {
-	m0sq = _m0sq; r0 = _r0; omega = _omega;
-	Quark_fac = i * _tgaqq * TComplex::Power(-i * cnts->s, _omega);
-	Quark_const = -2. * _tgaqq * TComplex::Power(-i * cnts->s, _omega);
-	qqMaxOrder = 1;
-	name = "Islam(ST3)";
-}
-
-//----------------------------------------------------------------------------------------------------
-
-void IslamModel::InitCGC(double _tgagg, double _lambda, double _m_c, double _m0sq)
-{
-	m0sq = _m0sq; lambda = _lambda; m_c = _m_c;
-	cgc_fac = _tgagg * TComplex::Power(-i * cnts->s, lambda);
-	cgcMaxOrder = 1;
-	name = "Islam(ST4)";
+	// crossing-even function:
+	//		a + b / (s exp(-i pi/2))^c
+	//		= a + b / (-i s)^c = a + b (-i s)^(-c)
+	return a + b * TComplex::Power(-i * cnts->s, -c);
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -380,25 +369,22 @@ void IslamModel::InitCGC(double _tgagg, double _lambda, double _m_c, double _m0s
 void IslamModel::Print() const
 {
 	printf(">> IslamModel::Print\n");
-	printf("\told\n");
+	printf("\tdiffraction variables\n");
 	double v1 = R.Im(); v1 = -v1 * 2 / cnts->pi;
 	double v0 = R.Re(); v0 -= v1 * cnts->ln_s;
-	printf("\t\tR0=%f\n\t\tR1=%f", v0, v1);
+	printf("\t\tR0=%f, R1=%f\n", v0, v1);
 	v1 = a.Im(); v1 = -v1 * 2 / cnts->pi;
 	v0 = a.Re(); v0 -= v1 * cnts->ln_s;
-	printf("\n\t\ta0=%f\n\t\ta1=%f", v0, v1);
-	printf("\n\t\tRe f_D=%f\n\t\tIm f_D=%f\n\t\tRe f_H=%f\n\t\tIm f_H=%f\n", Diff_fac.Re(), Diff_fac.Im(), Hard_fac.Re(), Hard_fac.Im());
-	
-	printf("\tdiffraction variables\n");
+	printf("\t\ta0=%f, a1=%f\n", v0, v1);
 	printf("\t\tR: Re=%E, Im=%E\n", R.Re(), R.Im());
 	printf("\t\ta: Re=%E, Im=%E\n", a.Re(), a.Im());
 	printf("\t\tDiff_fac_profile: Re=%E, Im=%E\n", Diff_fac_profile.Re(), Diff_fac_profile.Im());
 	printf("\t\tDiff_fac: Re=%E, Im=%E\n", Diff_fac.Re(), Diff_fac.Im());
-	printf("\t\tHard_fac: Re=%E, Im=%E\n", Hard_fac.Re(), Hard_fac.Im());
+	printf("\t\tAbs_fac: Re=%E, Im=%E\n", Abs_fac.Re(), Abs_fac.Im());
 
 	printf("\tcore scattering variables\n");
 	printf("\t\tbeta = %E\n", beta);
-	printf("\t\tM_sq = %E\n", M_sq);
+	printf("\t\tm_omega_sq = %E\n", m_omega_sq);
 	printf("\t\tCore_fac = %E\n", Core_fac);
 
 	printf("\tquark-quard scattering variables\n");

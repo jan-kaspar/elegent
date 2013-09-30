@@ -1,19 +1,29 @@
-* custom integration --> some standard library (like GSL ?)
-
 * BH model - problem with N_g
 
-* Jenkovszky model: other trajectory parameterisations than Eq. (8)?
-
-* check the model updates - comparison with previous predictions
+* BSW model
+ - problem with complex logarithm
+ - factor in front of the regeon term
+ - energy dependence S0 does actually depend on t.
 
 * references in model headers: synchronise with Wiki
-
-* add more models (e.g. Brazilian group)?
 
 * README file giving
  - the names and a brief description of all the files that make up the package
  - clear instructions on the installation and execution of the program
 
 * problem with low |t| sampling: visible in B(t)
+
+* s-distributions
+
+* new label system
+
+
+-------------------- long term --------------------
+
+* add more models (e.g. Brazilian group)?
+
+* Jenkovszky model: other trajectory parameterisations than Eq. (8)?
+
+* custom integration --> some standard library (like GSL ?)
 
 * use of GNU automake system
