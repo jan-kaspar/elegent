@@ -27,23 +27,24 @@ void BHModel::Init()
 	epsilon = 0.05;
 
 	// TODO: which is correct?
-	// [1] : Ng = (6.-epsilon)*(5.-epsilon)*(4.-epsilon)*(3.-epsilon)*(2.-epsilon)*(1.-epsilon) /5./4./3./2. / 2.;
-	// [2] : Ng = 3./2. * (5.-epsilon)*(4.-epsilon)*(3.-epsilon)*(2.-epsilon)*(1.-epsilon) /5./4./3./2.;
+	// [1] : Ng = (6.-epsilon)*(5.-epsilon)*(4.-epsilon)*(3.-epsilon)*(2.-epsilon)*(1.-epsilon) /5./4./3./2. / 2.;	// = 2.649
+	// [2] : Ng = 3./2. * (5.-epsilon)*(4.-epsilon)*(3.-epsilon)*(2.-epsilon)*(1.-epsilon) /5./4./3./2.;	// = 1.335
+	// Value from [2] seems wrong
 	Ng = (6.-epsilon)*(5.-epsilon)*(4.-epsilon)*(3.-epsilon)*(2.-epsilon)*(1.-epsilon) /5./4./3./2. / 2.;
 		
-	a0 = -41.1;
-	a1 = -487.5;
-	a2 = -600.;
-	a3 = 600.;
-	a4 = 487.5;
-	a5 = 41.1;
+	a.push_back(-41.1);
+	a.push_back(-487.5);
+	a.push_back(-600.);
+	a.push_back(600.);
+	a.push_back(487.5);
+	a.push_back(41.1);
 
-	b0 = -9.;
-	b1 = -225.;
-	b2 = -900.;
-	b3 = -900.;
-	b4 = -225.;
-	b5 = -9.;
+	b.push_back(-9.);
+	b.push_back(-225.);
+	b.push_back(-900.);
+	b.push_back(-900.);
+	b.push_back(-225.);
+	b.push_back(-9.);
 
 	// sigma_qg
 	C_qg_log = 0.166;
@@ -68,7 +69,7 @@ void BHModel::Init()
 	mu_qg = sqrt(mu_qq*mu_gg);
 		
 	// precompute sigma_gg, Eq. (B5) in [1]: below the Cp_gg stands for C'_gg
-	sigma_gg = Cp_gg * Sigma_gg * Ng*Ng * TComplex(sumR(cnts->s), sumI(cnts->s));
+	sigma_gg = Cp_gg * Sigma_gg * Ng*Ng * Sum(cnts->s);
 
 	// precompute sigma_qq, Eq. (B9) in [1]
 	sigma_qq = Sigma_gg * (C + C_even_regge * m0/sqrt(cnts->s) * TComplex::Exp(i * cnts->pi / 4.));
@@ -87,33 +88,33 @@ void BHModel::Print() const
 {
 	printf(">> BHModel::Print\n");
 
-	printf("\tcommon\n");
+	printf("\tcommon:\n");
 	printf("\t\ts0 = %E\n", s0);
 	printf("\t\tm0 = %E\n", m0);
 	printf("\t\tSigma_gg = %E\n", Sigma_gg);
 
-	printf("\tsigma_gg\n");
+	printf("\tsigma_gg:\n");
 	printf("\t\tCp_gg = %E\n", Cp_gg);
 	printf("\t\tNg = %E\n", Ng);
 	printf("\t\tepsilon = %E\n", epsilon);
-	printf("\t\ta0 = %E, a1 = %E, a2 = %E, a3 = %E, a4 = %E, a5 = %E\n", a0, a1, a2, a3, a4, a5);
-	printf("\t\tb0 = %E, b1 = %E, b2 = %E, b3 = %E, b4 = %E, b5 = %E\n", b0, b1, b2, b3, b4, b5);
+	printf("\t\ta0 = %E, a1 = %E, a2 = %E, a3 = %E, a4 = %E, a5 = %E\n", a[0], a[1], a[2], a[3], a[4], a[5]);
+	printf("\t\tb0 = %E, b1 = %E, b2 = %E, b3 = %E, b4 = %E, b5 = %E\n", b[0], b[1], b[2], b[3], b[4], b[5]);
 	printf("\t\tsigma_gg: Re = %E, Im = %E\n", sigma_gg.Re(), sigma_gg.Im());
 
-	printf("\tsigma_qg\n");
+	printf("\tsigma_qg:\n");
 	printf("\t\tC_qg_log = %E\n", C_qg_log);
 	printf("\t\tsigma_qg: Re = %E, Im = %E\n", sigma_qg.Re(), sigma_qg.Im());
 
-	printf("\tsigma_qq\n");
+	printf("\tsigma_qq:\n");
 	printf("\t\tC = %E\n", C);
 	printf("\t\tC_even_regge = %E\n", C_even_regge);
 	printf("\t\tsigma_qq: Re = %E, Im = %E\n", sigma_qq.Re(), sigma_qq.Im());
 
-	printf("\tsigma_odd\n");
+	printf("\tsigma_odd:\n");
 	printf("\t\tC_odd = %E\n", C_odd);
 	printf("\t\tsigma_odd: Re = %E, Im = %E\n", sigma_odd.Re(), sigma_odd.Im());
 	
-	printf("\tmu's\n");
+	printf("\tmu's:\n");
 	printf("\t\tmu_gg = %E\n", mu_gg);
 	printf("\t\tmu_qq = %E\n", mu_qq);
 	printf("\t\tmu_qg = %E\n", mu_qg);
@@ -122,83 +123,23 @@ void BHModel::Print() const
 
 //----------------------------------------------------------------------------------------------------
 
-double BHModel::sumR1(double s) const
+TComplex BHModel::Sum(double s) const
 {
-	return
-		(a0-b0/(-epsilon))/(-epsilon)+(a1-b1/(1-epsilon))/(1-epsilon)
-		+(a2-b2/(2-epsilon))/(2-epsilon)+(a3-b3/(3-epsilon))/(3-epsilon)
-		+(a4-b4/(4-epsilon))/(4-epsilon)+(a5-b5/(5-epsilon))/(5-epsilon)
-		-(a0-b0/(-epsilon))/(-epsilon)*exp(epsilon*log(s/m0/m0))*cos(epsilon*cnts->pi/2)
-		-(a1-b1/(1-epsilon))/(1-epsilon)*exp((epsilon-1)*log(s/m0/m0))*cos((epsilon-1)*cnts->pi/2)
-		-(a2-b2/(2-epsilon))/(2-epsilon)*exp((epsilon-2)*log(s/m0/m0))*cos((epsilon-2)*cnts->pi/2)
-		-(a3-b3/(3-epsilon))/(3-epsilon)*exp((epsilon-3)*log(s/m0/m0))*cos((epsilon-3)*cnts->pi/2)
-		-(a4-b4/(4-epsilon))/(4-epsilon)*exp((epsilon-4)*log(s/m0/m0))*cos((epsilon-4)*cnts->pi/2)
-		-(a5-b5/(5-epsilon))/(5-epsilon)*exp((epsilon-5)*log(s/m0/m0))*cos((epsilon-5)*cnts->pi/2);
-}
+	TComplex log_tau0 = log(m0*m0 / s) + i * cnts->pi / 2.;
 
-//----------------------------------------------------------------------------------------------------
+	TComplex S = 0.;
 
-double BHModel::sumR2(double s) const
-{
-	return
-		-(b0/(-epsilon))*exp(epsilon*log(s/m0/m0))*cos(epsilon*cnts->pi/2)*log(m0*m0/s)
-		-(b1/(1-epsilon))*exp((epsilon-1)*log(s/m0/m0))*cos((epsilon-1)*cnts->pi/2)*log(m0*m0/s)
-		-(b2/(2-epsilon))*exp((epsilon-2)*log(s/m0/m0))*cos((epsilon-2)*cnts->pi/2)*log(m0*m0/s)
-		-(b3/(3-epsilon))*exp((epsilon-3)*log(s/m0/m0))*cos((epsilon-3)*cnts->pi/2)*log(m0*m0/s)
-		-(b4/(4-epsilon))*exp((epsilon-4)*log(s/m0/m0))*cos((epsilon-4)*cnts->pi/2)*log(m0*m0/s)
-		-(b5/(5-epsilon))*exp((epsilon-5)*log(s/m0/m0))*cos((epsilon-5)*cnts->pi/2)*log(m0*m0/s)
-		-(b0/(-epsilon))*exp(epsilon*log(s/m0/m0))*sin(epsilon*cnts->pi/2)*cnts->pi/2
-		-(b1/(1-epsilon))*exp((epsilon-1)*log(s/m0/m0))*sin((epsilon-1)*cnts->pi/2)*cnts->pi/2
-		-(b2/(2-epsilon))*exp((epsilon-2)*log(s/m0/m0))*sin((epsilon-2)*cnts->pi/2)*cnts->pi/2
-		-(b3/(3-epsilon))*exp((epsilon-3)*log(s/m0/m0))*sin((epsilon-3)*cnts->pi/2)*cnts->pi/2
-		-(b4/(4-epsilon))*exp((epsilon-4)*log(s/m0/m0))*sin((epsilon-4)*cnts->pi/2)*cnts->pi/2
-		-(b5/(5-epsilon))*exp((epsilon-5)*log(s/m0/m0))*sin((epsilon-5)*cnts->pi/2)*cnts->pi/2;
-}
+	for (unsigned int ii = 0; ii <= 5; ii++)
+	{
+		double i = double(ii);
+		double ime = i - epsilon;
+		double f = b[ii] / ime;
+		double t1 = (a[i] - f) / ime;
+		TComplex v = t1 - TComplex::Exp(ime * log_tau0) * (t1 + f * log_tau0);
+		S += v;
+	}
 
-//----------------------------------------------------------------------------------------------------
-
-double BHModel::sumR(double s) const
-{
-	return sumR1(s) + sumR2(s);
-}
-
-//----------------------------------------------------------------------------------------------------
-
-double BHModel::sumI1(double s) const
-{
-	return
-		(a0-b0/(-epsilon))/(-epsilon)*exp(epsilon*log(s/m0/m0))*sin(epsilon*cnts->pi/2)
-		+(a1-b1/(1-epsilon))/(1-epsilon)*exp((epsilon-1)*log(s/m0/m0))*sin((epsilon-1)*cnts->pi/2)
-		+(a2-b2/(2-epsilon))/(2-epsilon)*exp((epsilon-2)*log(s/m0/m0))*sin((epsilon-2)*cnts->pi/2)
-		+(a3-b3/(3-epsilon))/(3-epsilon)*exp((epsilon-3)*log(s/m0/m0))*sin((epsilon-3)*cnts->pi/2)
-		+(a4-b4/(4-epsilon))/(4-epsilon)*exp((epsilon-4)*log(s/m0/m0))*sin((epsilon-4)*cnts->pi/2)
-		+(a5-b5/(5-epsilon))/(5-epsilon)*exp((epsilon-5)*log(s/m0/m0))*sin((epsilon-5)*cnts->pi/2)
-		-(b0/(-epsilon))*exp(epsilon*log(s/m0/m0))*cos(epsilon*cnts->pi/2)*cnts->pi/2
-		-(b1/(1-epsilon))*exp((epsilon-1)*log(s/m0/m0))*cos((epsilon-1)*cnts->pi/2)*cnts->pi/2
-		-(b2/(2-epsilon))*exp((epsilon-2)*log(s/m0/m0))*cos((epsilon-2)*cnts->pi/2)*cnts->pi/2
-		-(b3/(3-epsilon))*exp((epsilon-3)*log(s/m0/m0))*cos((epsilon-3)*cnts->pi/2)*cnts->pi/2
-		-(b4/(4-epsilon))*exp((epsilon-4)*log(s/m0/m0))*cos((epsilon-4)*cnts->pi/2)*cnts->pi/2
-		-(b5/(5-epsilon))*exp((epsilon-5)*log(s/m0/m0))*cos((epsilon-5)*cnts->pi/2)*cnts->pi/2;
-}
-
-//----------------------------------------------------------------------------------------------------
-
-double BHModel::sumI2(double s) const
-{
-	return
-		(b0/(-epsilon))*exp(epsilon*log(s/m0/m0))*sin(epsilon*cnts->pi/2)*log(m0*m0/s)
-		+(b1/(1-epsilon))*exp((epsilon-1)*log(s/m0/m0))*sin((epsilon-1)*cnts->pi/2)*log(m0*m0/s)
-		+(b2/(2-epsilon))*exp((epsilon-2)*log(s/m0/m0))*sin((epsilon-2)*cnts->pi/2)*log(m0*m0/s)
-		+(b3/(3-epsilon))*exp((epsilon-3)*log(s/m0/m0))*sin((epsilon-3)*cnts->pi/2)*log(m0*m0/s)
-		+(b4/(4-epsilon))*exp((epsilon-4)*log(s/m0/m0))*sin((epsilon-4)*cnts->pi/2)*log(m0*m0/s)
-		+(b5/(5-epsilon))*exp((epsilon-5)*log(s/m0/m0))*sin((epsilon-5)*cnts->pi/2)*log(m0*m0/s);
-}
-
-//----------------------------------------------------------------------------------------------------
-
-double BHModel::sumI(double s) const
-{
-	return sumI1(s) + sumI2(s);
+	return S;
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -223,9 +164,12 @@ TComplex BHModel::chi_without_i(double b) const
 	// TODO: why the one half?
 
 	// Eqs. (B1) without the leading i factor and Eq. (B12) in [1]
+	double odd_sign = (cnts->pMode == cnts->mAPP) ? +1. : -1.;
 	return (
-			sigma_gg * W(b, mu_gg) + sigma_qg * W(b, mu_qg) + sigma_qq * W(b, mu_qq)
-			+ ((cnts->pMode == cnts->mAPP) ? +1. : -1.) * sigma_odd * W(b, mu_odd)
+			sigma_gg * W(b, mu_gg)
+			+ sigma_qg * W(b, mu_qg)
+			+ sigma_qq * W(b, mu_qq)
+			+ odd_sign * sigma_odd * W(b, mu_odd)
 		) / 2.;
 }
 

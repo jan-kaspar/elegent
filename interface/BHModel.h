@@ -16,8 +16,6 @@ namespace Elegent
  * References:
  *	[1] BLOCK, M. M., GREGORES, E. M., HALZEN, F. and PANCHERI, G., Phys. Rev. D60 (1999) 054024
  *	[2] BLOCK, M. M., Phys. Rept. 436 (2006) 71-215
- *
- * This class in based on code originally initiated by Jan Smotlacha.
  **/
 class BHModel : public Model
 {
@@ -40,7 +38,7 @@ class BHModel : public Model
 
 		/// parameters for sigma_gg
 		double Cp_gg, epsilon, Ng; 
-		double a0, a1, a2, a3, a4, a5, b0, b1, b2, b3, b4, b5;
+		std::vector<double> a, b;
 		
 		/// parameters for sigma_gg
 		double C_qg_log; 
@@ -60,13 +58,11 @@ class BHModel : public Model
 		/// integration parameters
 		double precision, upper_bound;
 
+		/// profile defined by Eq. (B2) in [1]
 		double W(double b, double mi) const;
-		double sumR1(double s) const;
-		double sumR2(double s) const;
-		double sumR(double s) const;
-		double sumI1(double s) const;
-		double sumI2(double s) const;
-		double sumI(double s) const;
+
+		/// sum in Eq. (B5) in [1]
+		TComplex Sum(double s) const;
 
 		/// the full eikonal: Eq. (1) without the leading factor i and Eq. (12)
 		TComplex chi_without_i(double b) const;
