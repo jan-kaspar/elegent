@@ -86,7 +86,7 @@ int main(int argc, char **argv)
 	unsigned int N = 1001;
 	double b_min = 0., b_max = 10.;
 
-	string hadronicModelsString = "islam_bfkl,islam_cgc,ppp2,ppp3,bsw,bh,jenkovszky";
+	string hadronicModelsString = "";
 
 	string outputFileName = "";
 

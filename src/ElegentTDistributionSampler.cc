@@ -318,7 +318,7 @@ int main(int argc, char **argv)
 	unsigned int model_N = 10001, fullRange_N = 5001, lowt_N = 501;
 	double model_t_max = 20., fullRange_t_max = 20., lowt_t_max = 1.;
 
-	string hadronicModelsString = "islam_bfkl,islam_cgc,ppp2,ppp3,bsw,bh,jenkovszky";
+	string hadronicModelsString = "";
 
 	string outputFileName = "";
 
