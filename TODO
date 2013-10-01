@@ -5,8 +5,6 @@
  - factor in front of the regeon term
  - energy dependence S0 does actually depend on t.
 
-* references in model headers: synchronise with Wiki
-
 * README file giving
  - the names and a brief description of all the files that make up the package
  - clear instructions on the installation and execution of the program
@@ -14,9 +12,6 @@
 * problem with low |t| sampling: visible in B(t)
 
 * s-distributions
-
-* new label system
-
 
 -------------------- long term --------------------
 

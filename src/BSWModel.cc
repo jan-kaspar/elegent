@@ -12,7 +12,14 @@ using namespace Elegent;
 
 //----------------------------------------------------------------------------------------------------
 
-void BSWModel::Init(BSWModel::ModeType _mode, bool _presampled)
+BSWModel::BSWModel()
+{
+	fullLabel.name = "Bourrely et al."; shortLabel.name = "bourrely";
+}
+
+//----------------------------------------------------------------------------------------------------
+
+void BSWModel::Configure(BSWModel::ModeType _mode, bool _presampled)
 {
 	mode = _mode;
 	presampled = _presampled;
@@ -40,6 +47,21 @@ void BSWModel::Init(BSWModel::ModeType _mode, bool _presampled)
 	// save value of S0(0)
 	S00 = S0(0.);
 
+	// set labels
+	fullLabel.variant = ""; shortLabel.variant = "";
+	fullLabel.version = "Eur. Phys. J. C28 (2003) 97-105"; shortLabel.version = "03";
+	if (mode == mPomReg)
+		{ fullLabel.mode = "full"; shortLabel.mode = "full"; }
+	if (mode == mPom)
+		{ fullLabel.mode = "Pomeron"; shortLabel.mode = "pom"; }
+	if (mode == mReg)
+		{ fullLabel.mode = "Reggeon"; shortLabel.mode = "reg"; }
+}
+
+//----------------------------------------------------------------------------------------------------
+
+void BSWModel::Init()
+{
 	if (presampled)
 		BuildSample(25001);
 }
@@ -49,10 +71,12 @@ void BSWModel::Init(BSWModel::ModeType _mode, bool _presampled)
 void BSWModel::Print() const
 {
 	printf(">> BSWModel::Print\n");
-	printf("\tc=%.3f\tc'=%.3f\tm1=%.3f\tm2=%.3f\tf=%.3f\ta=%.3f\n", c, cp, m1, m2, f, a);
-	printf("\tA2: C=%.3f\tb=%.3f\talpha=%.3f\taplha'=%.3f\n", A2.C, A2.b, A2.a, A2.ap);
-	printf("\tomega: C=%.3f\tb=%.3f\talpha=%.3f\taplha'=%.3f\n", omega.C, omega.b, omega.a, omega.ap);
-	printf("\trho: C=%.3f\tb=%.3f\talpha=%.3f\taplha'=%.3f\n", rho.C, rho.b, rho.a, rho.ap);
+	printf("\t%s\n", CompileFullLabel().c_str());
+	printf("\tmode = %u\n", mode);
+	printf("\tc=%.3f, c'=%.3f, m1=%.3f, m2=%.3f, f=%.3f, a=%.3f\n", c, cp, m1, m2, f, a);
+	printf("\tA2   : C=%.3f, b=%.3f, alpha=%.3f, aplha'=%.3f\n", A2.C, A2.b, A2.a, A2.ap);
+	printf("\tomega: C=%.3f, b=%.3f, alpha=%.3f, aplha'=%.3f\n", omega.C, omega.b, omega.a, omega.ap);
+	printf("\trho  : C=%.3f, b=%.3f, alpha=%.3f, aplha'=%.3f\n", rho.C, rho.b, rho.a, rho.ap);
 
 	printf("\n");
 
@@ -65,24 +89,6 @@ void BSWModel::Print() const
 	printf("\tintegration parameters:\n");
 	printf("\t\tt: upper bound = %.1E, precision = %.1E\n", upper_bound_t, precision_t);
 	printf("\t\tb: upper bound = %.1E, precision = %.1E\n", upper_bound_b, precision_b);
-}
-
-//----------------------------------------------------------------------------------------------------
-
-string BSWModel::GetModeString() const
-{
-	string ms = "unknown/";
-
-	if (mode == mPomReg) ms = "Pom+Reg";
-	if (mode == mPom) ms = "Pomeron";
-	if (mode == mReg) ms = "Regge";
-
-	if (presampled)
-			ms += "presampled";
-
-	//sprintf(str, "t:%.0f,%.0E	b:%.0f,%.0E", upper_bound_t, precision_t, upper_bound_b, precision_b);
-
-	return ms;
 }
 
 //----------------------------------------------------------------------------------------------------

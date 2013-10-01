@@ -5,66 +5,72 @@
 
 #include "interface/ModelFactory.h"
 
+using namespace std;
+
 namespace Elegent
 {
 
-Model* ModelFactory::MakeStandardInstance(const std::string &tag, bool prf_presampled)
+ModelFactory::ModelFactory()
 {
-	Model* model = NULL;
+	IslamModel *islam_hp = new IslamModel();
+	islam_hp->Configure(IslamModel::vHP, IslamModel::mFull);
+	model_map[islam_hp->CompileShortLabel()] = islam_hp;
+
+	IslamModel *islam_lxg = new IslamModel();
+	islam_lxg->Configure(IslamModel::vLxG, IslamModel::mFull);
+	model_map[islam_lxg->CompileShortLabel()] = islam_lxg;
+
+	PPPModel *ppp2 = new PPPModel();
+	ppp2->Configure(PPPModel::v2P);
+	model_map[ppp2->CompileShortLabel()] = ppp2;
 	
-	if (tag.compare("islam_bfkl") == 0)
-	{
-		IslamModel *IslamBFKL = new IslamModel();
-		IslamBFKL->Init(IslamModel::mFullQuark);
-		IslamBFKL->name = "Islam (HP)";
-		model = IslamBFKL;
-	}
-
-	if (tag.compare("islam_cgc") == 0)
-	{
-		IslamModel *IslamCGC = new IslamModel();
-		IslamCGC->Init(IslamModel::mFullCGC);
-		IslamCGC->name = "Islam (LxG)";
-		model = IslamCGC;
-	}
-
-	if (tag.compare("ppp2") == 0)
-	{
-		PPPModel *PPP2 = new PPPModel();
-		PPP2->Init(PPPModel::m2P);
-		model = PPP2;
-	}
-
-	if (tag.compare("ppp3") == 0)
-	{
-		PPPModel *PPP3 = new PPPModel();
-		PPP3->Init(PPPModel::m3P);
-		model = PPP3;
-	}
+	PPPModel *ppp3 = new PPPModel();
+	ppp3->Configure(PPPModel::v3P);
+	model_map[ppp3->CompileShortLabel()] = ppp3;
 	
-	if (tag.compare("bsw") == 0)
+	BSWModel *bsw = new BSWModel();
+	bsw->Configure(BSWModel::mPomReg);
+	model_map[bsw->CompileShortLabel()] = bsw;
+
+	BHModel *bh = new BHModel();
+	bh->Configure();
+	model_map[bh->CompileShortLabel()] = bh;
+	
+	JenkovszkyModel *jenkovszky = new JenkovszkyModel();
+	jenkovszky->Configure();
+	model_map[jenkovszky->CompileShortLabel()] = jenkovszky;
+}
+
+//----------------------------------------------------------------------------------------------------
+
+void ModelFactory::PrintList() const
+{
+	printf(">> ModelFactory::PrintList > available models:\n");
+
+	for (map<std::string, Model*>::const_iterator it = model_map.begin(); it != model_map.end(); ++it)
 	{
-		BSWModel *BSW = new BSWModel();
-		BSW->Init(BSWModel::mPom, prf_presampled);
-		model = BSW;
+		printf("\t%s : %s\n", it->first.c_str(), it->second->CompileFullLabel().c_str());
 	}
+}
 
-	if (tag.compare("bh") == 0)
-	{
-		BHModel *BH = new BHModel();
-		BH->Init();
-		model = BH;
-	}
+//----------------------------------------------------------------------------------------------------
 
-	if (tag.compare("jenkovszky") == 0)
-	{	
-		JenkovszkyModel *Jenkovszky = new JenkovszkyModel();
-		Jenkovszky->Init();
-		model = Jenkovszky;
-	}
-
+Model* ModelFactory::MakeInstance(const std::string &tag) const
+{
+	// look for tag in model map
+	map<string, Model*>::const_iterator it = model_map.find(tag);
+	Model* model = (it == model_map.end()) ? NULL : it->second;
+	
+	// if not found print all possibilities
 	if (model == NULL)
-		printf("ERROR in ModelFactory::MakeStandardInstance: model tag `%s' not recognised\n", tag.c_str());
+	{
+		printf("ERROR in ModelFactory::MakeInstance: model tag `%s' not available\n", tag.c_str());
+		PrintList();
+		return NULL;
+	}
+
+	// initialise model
+	model->Init();
 
 	return model;
 }

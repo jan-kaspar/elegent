@@ -19,22 +19,33 @@ namespace Elegent
 class Model
 {
 	public:
-		std::string tag;	///< short model name
-		std::string name;	///< model name, version, etc.
-		std::string label;	///< long model name
+		/// collection of strings that describe model instance
+		struct Label
+		{
+			std::string name, variant, version, mode;
+		};
 
-		signed char mode;	///< model mode
+		/// full label (e.g. for figure legend)
+		Label fullLabel;	
 
-		Model(const std::string& _tag="", const std::string &_name="", const std::string &_label="", signed char _mode=-1) :
-			tag(_tag), name(_name), label(_label), mode(_mode) {}
+		/// short label (e.g. for object names in ROOT files)
+		Label shortLabel;
+
+		/// TODO
+		std::string CompileShortLabel() const;
+
+		/// TODO
+		std::string CompileFullLabel() const;
+
+		Model() {}
 
 		virtual ~Model() {}
 
+		/// TODO: describe
+		virtual void Init() =0;
+
 		/// prints model info
 		virtual void Print() const	=0;
-
-		/// returns model mode as a string
-		virtual std::string GetModeString() const =0;
 
 		///\brief amplitude, t in GeV^-2, t < 0
 		/// Normalisation is such that
@@ -49,7 +60,7 @@ class Model
 		virtual TComplex Prf(double b) const =0;
 };
 
-/// actual model
+/// current model
 extern Model *model;
 
 } // namespace

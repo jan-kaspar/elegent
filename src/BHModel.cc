@@ -11,8 +11,14 @@ using namespace Elegent;
 
 //----------------------------------------------------------------------------------------------------
 
+BHModel::BHModel()
+{
+	fullLabel.name = "Block et al."; shortLabel.name = "block";
+}
 
-void BHModel::Init()
+//----------------------------------------------------------------------------------------------------
+
+void BHModel::Configure()
 {
 	// parameters from [2]: Table 5, N_g from above Eq. (463), a's and b's from A.1.2
 
@@ -80,6 +86,11 @@ void BHModel::Init()
 	// precompute sigma_odd, Eq. (B12) in [1] - the factor in front of W(b, mu_odd)
 	// plus additional factor (-i) to match the normalization used in chi_without_i
 	sigma_odd = -i * C_odd * Sigma_gg * m0 / cnts->sqrt_s * TComplex::Exp(i * cnts->pi / 4.);
+	
+	// set labels
+	fullLabel.variant = ""; shortLabel.variant = "";
+	fullLabel.version = "Phys. Rept. 436 (2006) 71-215"; shortLabel.version = "06";
+	fullLabel.mode = ""; shortLabel.mode = "";
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -87,6 +98,7 @@ void BHModel::Init()
 void BHModel::Print() const
 {
 	printf(">> BHModel::Print\n");
+	printf("\t%s\n", CompileFullLabel().c_str());
 
 	printf("\tcommon:\n");
 	printf("\t\ts0 = %E\n", s0);

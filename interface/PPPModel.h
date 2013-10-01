@@ -19,20 +19,26 @@ namespace Elegent
 class PPPModel : public Model
 {
 	public:
-		struct Trajectory {
+		struct Trajectory
+		{
 			double D, c, ap, r2, rho2;
 			TComplex gamma;
 		};
 
-		/// modes of PPP model
-		enum { m2P, m3P };
+		/// available variant
+		enum VariantType
+		{
+			v2P,	///< with 2 Pomerons
+			v3P		///< with 3 Pomerons
+		} variant;
 		
-		PPPModel() : Model("ppp", "PPP (uninitialized)", "", -1) {}
+		PPPModel();
 		
-		void Init(unsigned char m);
+		void Configure(VariantType v);
+
+		virtual void Init() {}
 
 		virtual void Print() const;
-		virtual std::string GetModeString() const;
 
 		virtual TComplex Amp(double t) const;
 		virtual TComplex Prf(double b) const;		 ///< b in fm

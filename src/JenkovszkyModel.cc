@@ -9,9 +9,14 @@
 
 using namespace Elegent;
 
+JenkovszkyModel::JenkovszkyModel()
+{
+	fullLabel.name = "Jenkovszky et al."; shortLabel.name = "jenkovszky";
+}
+
 //----------------------------------------------------------------------------------------------------
 
-void JenkovszkyModel::Init()
+void JenkovszkyModel::Configure()
 {
 	// fit parameters from Table 3 (corresponding to trajectory (8)),
 	// reggeon trajectories given under Eq. (4) in [1]
@@ -43,6 +48,11 @@ void JenkovszkyModel::Init()
 
 	precision_t = 1E-4;
 	upper_bound_t = -50.;
+
+	// set labels
+	fullLabel.variant = ""; shortLabel.variant = "";
+	fullLabel.version = "Int. J. Mod. Phys. A 26 (2011) 4755"; shortLabel.version = "11";
+	fullLabel.mode = ""; shortLabel.mode = "";
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -50,6 +60,7 @@ void JenkovszkyModel::Init()
 void JenkovszkyModel::Print() const
 {
 	printf(">> JenkovszkyModel::Print\n");
+	printf("\t%s\n", CompileFullLabel().c_str());
 	printf("\tpomeron:\n\t\ta_P=%.3E, b_P=%.3E, de_P=%.3E, al1_P=%.3E, ep_P=%.3E, s_P=%.3E\n", a_P, b_P, de_P, al1_P, ep_P, s_P);
 	printf("\todderon:\n\t\ta_O=%.3E, b_O=%.3E, de_O=%.3E, al1_O=%.3E, s_O=%.3E\n", a_O, b_O, de_O, al1_O, s_O);
 	printf("\tomega:\n\t\ta_om=%.3E, b_om=%.3E, s_om=%.3E, al0_om=%.3E, al1_om=%.3E\n", a_om, b_om, s_om, al0_om, al1_om);

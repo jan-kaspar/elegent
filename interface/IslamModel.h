@@ -24,26 +24,41 @@ namespace Elegent
 class IslamModel : public Model
 {
 	public:
-		/// modes of Islam model
-		enum {mDiff, mCore, mQuark, mCGC, mDiffCore, mFullQuark, mFullCGC};
+		/// variant of the model
+		enum VariantType
+		{
+			vHP,	///< hard Pomeron
+			vLxG	///< low-x gluons
+		} variant;
+
+		/// mode of the model
+		enum ModeType
+		{
+			mDiff,		///< diffraction amplitude
+			mCore,		///< core amplitude
+			mQuark,		///< quark-quark amplitude
+			mDiffCore,	///< diffraction and core amplitude
+			mFull		///< diffraction, core and quark-quark amplitude
+		} mode;
 
 		IslamModel();
 
-		/// initialization methods
-		void Init(unsigned int _mode);
+		void Configure(VariantType _v, ModeType _m);
+
+		virtual void Init() {}
+
 		static TComplex CEF(double a, double b, double c);
-
-		virtual void Print() const;
-		virtual std::string GetModeString() const;
-
-		virtual TComplex Amp(double t) const;
-		virtual TComplex Prf(double b) const;
 
 		void SetUnitarizationOrders(int qq, int cgc)
 		{
 			qqMaxOrder = qq;
 			cgcMaxOrder = cgc;
 		}
+
+		virtual void Print() const;
+
+		virtual TComplex Amp(double t) const;
+		virtual TComplex Prf(double b) const;
 		
 	protected:
 		/// diffraction variables
@@ -72,25 +87,30 @@ class IslamModel : public Model
 		/// integration variables
 		double precision, precision_t, upper_bound, upper_bound_t;
 
-		/// amplitude methods
+		/// diffraction amplitude
+		TComplex T_diff(double t) const;
 		TComplex GammaD(double b) const;
 		static TComplex GammaD_J0(double *b, double *t, const void *obj);
-		TComplex T_diff(double t) const;
 		
-		double F_sq(double t) const;
+		/// core amplitude
 		TComplex T_core(double t) const;
+		double F_sq(double t) const;
 
+		/// quark-quark amplitude
+		TComplex T_quark(double t) const;
 		double I_integral(double qt, double al) const;
 		static double F_cal_integ(double *x, double *qt, const void *obj);
 		double F_cal(int n, double qt, double om, double m0sq) const;
+		
+		/// quark-quark amplitude: hard-pomeron variant
+		static double T_hp_integ(double *, double *, const void *);
+		TComplex T_hp_n(int n, double t) const;
+		TComplex T_hp(double t) const;
 
-		static double T_qq_integ(double *, double *, const void *);
-		TComplex T_qq(int n, double t) const;
-		TComplex T_quark(double t) const;
-
-		static double T_cgc_integ(double *, double *, const void *);
-		TComplex T_cgc_n(int n, double t) const;
-		TComplex T_cgc(double t) const;
+		/// quark-quark amplitude: low-x gluons variant
+		static double T_lxg_integ(double *, double *, const void *);
+		TComplex T_lxg_n(int n, double t) const;
+		TComplex T_lxg(double t) const;
 
 		/// profile funcion methods
 		static TComplex Amp_J0(double *t, double *b, const void *obj);

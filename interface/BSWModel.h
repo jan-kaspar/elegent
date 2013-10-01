@@ -34,19 +34,24 @@ class BSWModel : public Model
 				{ C=_C; b=_b; a=_a; ap=_ap; sig = _sig; }
 		};
 
-		/// the modes of this model
-		enum ModeType { mPomReg, mPom, mReg };
+		/// available modes
+		enum ModeType
+		{
+			mPomReg,	///< both Pomeron and Reggeon contributions
+			mPom,		///< only Pomeron contribution
+			mReg		///< only Reggeon contribution
+		} mode;
 
-		/// the Pom+Reg mode still broken
-		BSWModel() : Model("bsw", "BSW", "Bourrely-Soffer-Wu", mPom) {}
+		BSWModel();
 		
 		~BSWModel() {}
 
 		/// the Pom+Reg mode still broken
-		void Init(ModeType _mode = mPom, bool _presampled = true);
+		void Configure(ModeType _mode = mPomReg, bool _presampled = true);
+		
+		virtual void Init();
 
 		virtual void Print() const;
-		virtual std::string GetModeString() const;
 
 		virtual TComplex Amp(double t) const;	
 		virtual TComplex Prf(double b) const;	

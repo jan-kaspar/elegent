@@ -14,19 +14,17 @@ namespace Elegent
 /**
  * \brief The model of Jenkovszky et al.
  * References:
- *	[1] L. L. JENKOVSZKY, A. I. LENGYEL, and D. I. LONTKOVSKYI, Int. J. Mod. Phys. A 26, 4755 (2011). DOI: 10.1142/S0217751X11054760 
+ *	[1] L. L. JENKOVSZKY, A. I. LENGYEL, and D. I. LONTKOVSKYI, Int. J. Mod. Phys. A 26 (2011) 4755. DOI: 10.1142/S0217751X11054760 
  **/
 class JenkovszkyModel : public Model
 {
 	public:
-		JenkovszkyModel() : Model("jenkovszky", "jenkovszky (default)", "Jenkovszky et al.")
-			{ Init(); }
+		JenkovszkyModel();
 
-		void Init();
+		void Configure();
+		virtual void Init() {}
 
 		virtual void Print() const;
-		virtual std::string GetModeString() const
-			{ return "default"; }
 
 		virtual TComplex Amp(double t) const;
 		virtual TComplex Prf(double b) const;

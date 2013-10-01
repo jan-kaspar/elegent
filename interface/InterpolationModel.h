@@ -37,15 +37,13 @@ class InterpolationModel : public Model
 		std::vector<TComplex> amp_data;
 
 	public:
-		InterpolationModel(unsigned int _N, double _t_min, double _t_max) :
-			N(_N), t_min(_t_min), t_max(_t_max), dt( (t_max - t_min) / (N-1) ), amp_data(N)
-		{
-		}
+		InterpolationModel(unsigned int _N, double _t_min, double _t_max);
 
 		virtual ~InterpolationModel();
 
-		virtual std::string GetModeString() const
-			{ return "basic"; }
+		void Configure();
+		
+		virtual void Init() {}
 
 		virtual void Print() const;
 

@@ -20,15 +20,11 @@ namespace Elegent
 class BHModel : public Model
 {
 	public:
-		BHModel() : Model("bh", "Blk-Hlz", "Block-Halzen", -1) {}
-
-		void Init();
-
-		virtual std::string GetModeString() const
-			{ return "basic"; }
-
+		BHModel();
+		
+		void Configure();
+		virtual void Init() {}
 		virtual void Print() const;
-
 		virtual TComplex Amp(double t) const;
 		virtual TComplex Prf(double b) const;
 

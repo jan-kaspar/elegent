@@ -14,6 +14,20 @@ namespace Elegent
 
 //----------------------------------------------------------------------------------------------------
 
+InterpolationModel::InterpolationModel(unsigned int _N, double _t_min, double _t_max) :
+	N(_N), t_min(_t_min), t_max(_t_max), dt( (t_max - t_min) / (N-1) ), amp_data(N)
+{
+	fullLabel.name = "Interpolation"; shortLabel.name = "itpl";
+}
+
+//----------------------------------------------------------------------------------------------------
+
+void InterpolationModel::Configure()
+{
+}
+
+//----------------------------------------------------------------------------------------------------
+
 InterpolationModel::~InterpolationModel()
 {
 }

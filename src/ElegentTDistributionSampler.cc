@@ -35,7 +35,8 @@ void PrintUsage()
 	printf("\t-energy <W>\t\tset collision energy (i.e. sqrt(s)), in GeV\n");
 	printf("\t-pp\t\t\tselect proton-proton interactions\n");
 	printf("\t-app\t\t\tselect antiproton-proton interactions\n");
-	printf("\t-models <string>\tcomma-separated list of model tags\n");
+	printf("\t-models <string>\tsemicolon-separated list of model tags\n");
+	printf("\t-l, -model-list\t\tprint list of available model tags and exit\n");
 	printf("\t-output <filename>\toutput file name\n");
 	printf("\n");
 	printf("OPTIONS for hadronic-model sampling:\n");
@@ -53,20 +54,30 @@ void PrintUsage()
 
 //----------------------------------------------------------------------------------------------------
 
+void PrintModelList()
+{
+	Constants::Init(1., Constants::mPP);
+	ModelFactory mf;
+	mf.PrintList();
+}
+
+//----------------------------------------------------------------------------------------------------
+
 int InitModels(const string& hadronicModelsString, vector<Model *> &models)
 {
+	ModelFactory mf;
+
 	size_t p_curr = 0;
 	while (true)
 	{
-		size_t p_next = hadronicModelsString.find(',', p_curr);
+		size_t p_next = hadronicModelsString.find(';', p_curr);
 		string tag = (p_next != string::npos) ? hadronicModelsString.substr(p_curr, p_next - p_curr) : hadronicModelsString.substr(p_curr);
 
-		model = ModelFactory::MakeStandardInstance(tag);
+		model = mf.MakeInstance(tag);
 
 		if (model == NULL)
 			return 3;
 
-		model->tag = tag;
 		models.push_back(model);
 
 		printf("\n>> model with tag `%s':\n", tag.c_str());
@@ -90,7 +101,8 @@ void SampleModels(const vector<Model *> &models, double t_max, unsigned int N, v
 		model = models[mi];
 
 		InterpolationModel *ms = new InterpolationModel(N, -t_max, 0.);
-		ms->tag = model->tag + ":interpolated";
+		ms->fullLabel.name = ms->fullLabel.name + ":interpolated";
+		ms->shortLabel.name = ms->shortLabel.name + ":interpolated";
 
 		for (unsigned int pi = 0; pi < N; pi++)
 		{
@@ -139,9 +151,9 @@ void SampleAmplitude(bool logarithmic, unsigned int N, double t_min, double t_ma
 
 void BuildAmplitudes(const vector<InterpolationModel*> &models_sampled,
 	bool logarithmic, unsigned int N, double t_min, double t_max,
-	const vector<CoulombInterference::ciMode> &amplitudeModes,
+	const vector<CoulombInterference::CIMode> &amplitudeModes,
 	double t_min_coulomb,
-	AmplitudeGraph &amplitude_pc, vector< map<CoulombInterference::ciMode, AmplitudeGraph> > &amplitudes)
+	AmplitudeGraph &amplitude_pc, vector< map<CoulombInterference::CIMode, AmplitudeGraph> > &amplitudes)
 {
 	// PC amplitude
 	coulomb->mode = CoulombInterference::mPC;
@@ -154,7 +166,7 @@ void BuildAmplitudes(const vector<InterpolationModel*> &models_sampled,
 	{
 		model = models_sampled[mi];
 
-		map<CoulombInterference::ciMode, AmplitudeGraph> &as = amplitudes[mi];
+		map<CoulombInterference::CIMode, AmplitudeGraph> &as = amplitudes[mi];
 
 		for (unsigned int cii = 0; cii < amplitudeModes.size(); cii++)
 		{
@@ -168,17 +180,19 @@ void BuildAmplitudes(const vector<InterpolationModel*> &models_sampled,
 
 //----------------------------------------------------------------------------------------------------
 
-void WriteOneAmplitudeGraphs(const AmplitudeGraph &a)
+void WriteOneAmplitudeGraphs(const AmplitudeGraph &a, const string &label)
 {
+	a.re->SetTitle(label.c_str());
 	a.re->Write("amplitude_re");
-	a.im->Write("amplitude_im");
+	a.im->SetTitle(label.c_str());
+	a.im->Write("amplitude_im"); 
 
 	// build differential and cumulative cross-sections
-	TGraph *phase = new TGraph(); phase->SetName("phase");
-	TGraph *rho = new TGraph(); rho->SetName("rho");
-	TGraph *B = new TGraph(); B->SetName("B");
-	TGraph *dif = new TGraph(); dif->SetName("differential cross-section");
-	TGraph *cum = new TGraph(); cum->SetName("cumulative cross-section");
+	TGraph *phase = new TGraph(); phase->SetName("phase"); phase->SetTitle(label.c_str());
+	TGraph *rho = new TGraph(); rho->SetName("rho"); rho->SetTitle(label.c_str());
+	TGraph *B = new TGraph(); B->SetName("B"); B->SetTitle(label.c_str());
+	TGraph *dif = new TGraph(); dif->SetName("differential cross-section"); dif->SetTitle(label.c_str());
+	TGraph *cum = new TGraph(); cum->SetName("cumulative cross-section"); cum->SetTitle(label.c_str());
 
 	double *at = a.re->GetX();
 	double *ar = a.re->GetY();
@@ -216,11 +230,11 @@ void WriteOneAmplitudeGraphs(const AmplitudeGraph &a)
 //----------------------------------------------------------------------------------------------------
 
 void WriteCRZGraphs(const AmplitudeGraph &amp_pc, const AmplitudeGraph &amp_ph,
-		const AmplitudeGraph &amp_kl, const AmplitudeGraph &amp_swy)
+		const AmplitudeGraph &amp_kl, const AmplitudeGraph &amp_swy, const string &label)
 {
-	TGraph *C = new TGraph(); C->SetName("C");
-	TGraph *R = new TGraph(); R->SetName("R");
-	TGraph *Z = new TGraph(); Z->SetName("Z");
+	TGraph *C = new TGraph(); C->SetName("C"); C->SetTitle(label.c_str());
+	TGraph *R = new TGraph(); R->SetName("R"); R->SetTitle(label.c_str());
+	TGraph *Z = new TGraph(); Z->SetName("Z"); Z->SetTitle(label.c_str());
 
 	for (int i = 0; i < amp_kl.re->GetN(); i++)
 	{
@@ -254,39 +268,42 @@ void WriteCRZGraphs(const AmplitudeGraph &amp_pc, const AmplitudeGraph &amp_ph,
 //----------------------------------------------------------------------------------------------------
 
 void WriteGraphs(const vector<Model *> &models, const AmplitudeGraph &amplitude_pc,
-		const vector< map<CoulombInterference::ciMode, AmplitudeGraph> > &amplitudes)
+		const vector< map<CoulombInterference::CIMode, AmplitudeGraph> > &amplitudes)
 {
 	TDirectory *topDir = gDirectory;
 
 	// coulomb graphs
 	gDirectory = topDir->mkdir("PC");
-	WriteOneAmplitudeGraphs(amplitude_pc);
+	WriteOneAmplitudeGraphs(amplitude_pc, "Coulomb");
 
 	for (unsigned int mi = 0; mi < amplitudes.size(); mi++)
 	{
-		TDirectory *modelDir = topDir->mkdir(models[mi]->tag.c_str());
+		string shortLabel = models[mi]->CompileShortLabel();
+		string fullLabel = models[mi]->CompileFullLabel();
 
-		for (map<CoulombInterference::ciMode, AmplitudeGraph>::const_iterator mit = amplitudes[mi].begin(); mit != amplitudes[mi].end(); ++mit)
+		TDirectory *modelDir = topDir->mkdir(shortLabel.c_str());
+
+		for (map<CoulombInterference::CIMode, AmplitudeGraph>::const_iterator mit = amplitudes[mi].begin(); mit != amplitudes[mi].end(); ++mit)
 		{
 			coulomb->mode = mit->first;
 			gDirectory = modelDir->mkdir(coulomb->GetModeString().c_str());
 
-			WriteOneAmplitudeGraphs(mit->second);
+			WriteOneAmplitudeGraphs(mit->second, fullLabel);
 		}
 
 		gDirectory = modelDir;
-		const map<CoulombInterference::ciMode, AmplitudeGraph> &m = amplitudes[mi];
-		map<CoulombInterference::ciMode, AmplitudeGraph>::const_iterator it_ph = m.find(CoulombInterference::mPH);
-		map<CoulombInterference::ciMode, AmplitudeGraph>::const_iterator it_kl = m.find(CoulombInterference::mKL);
-		map<CoulombInterference::ciMode, AmplitudeGraph>::const_iterator it_swy = m.find(CoulombInterference::mSWY);
+		const map<CoulombInterference::CIMode, AmplitudeGraph> &m = amplitudes[mi];
+		map<CoulombInterference::CIMode, AmplitudeGraph>::const_iterator it_ph = m.find(CoulombInterference::mPH);
+		map<CoulombInterference::CIMode, AmplitudeGraph>::const_iterator it_kl = m.find(CoulombInterference::mKL);
+		map<CoulombInterference::CIMode, AmplitudeGraph>::const_iterator it_swy = m.find(CoulombInterference::mSWY);
 
 		if (it_ph == m.end() || it_kl == m.end() || it_swy == m.end())
 		{
-			printf("ERROR: some of the PH, KL, SWY amplitudes are missing for model `%s'.\n", models[mi]->tag.c_str());
+			printf("ERROR: some of the PH, KL, SWY amplitudes are missing for model `%s'.\n", shortLabel.c_str());
 			continue;
 		}
 
-		WriteCRZGraphs(amplitude_pc, it_ph->second, it_kl->second, it_swy->second);
+		WriteCRZGraphs(amplitude_pc, it_ph->second, it_kl->second, it_swy->second, fullLabel);
 	}
 }
 
@@ -311,6 +328,12 @@ int main(int argc, char **argv)
 		if (strcmp(argv[i], "-h") == 0)
 		{
 			PrintUsage();
+			return 0;
+		}
+		
+		if (strcmp(argv[i], "-l") == 0 || strcmp(argv[i], "-model-list") == 0)
+		{
+			PrintModelList();
 			return 0;
 		}
 
@@ -459,7 +482,7 @@ int main(int argc, char **argv)
 	SampleModels(models, model_t_max, model_N, models_sampled);
 
 	// select amplitudes to be generated
-	vector<CoulombInterference::ciMode> amplitudeModes;
+	vector<CoulombInterference::CIMode> amplitudeModes;
 	amplitudeModes.push_back(CoulombInterference::mPH);
 	//amplitudeModes.push_back(CoulombInterference::mWY);
 	amplitudeModes.push_back(CoulombInterference::mSWY);
@@ -467,7 +490,7 @@ int main(int argc, char **argv)
 
 	// build full-range amplitudes
 	AmplitudeGraph amplitude_pc_full;
-	vector< map<CoulombInterference::ciMode, AmplitudeGraph> > amplitudes_full;
+	vector< map<CoulombInterference::CIMode, AmplitudeGraph> > amplitudes_full;
 	BuildAmplitudes(models_sampled, false, fullRange_N, -fullRange_t_max, 0., amplitudeModes,
 		t_min_coulomb, amplitude_pc_full, amplitudes_full);
 
@@ -477,7 +500,7 @@ int main(int argc, char **argv)
 
 	// build low-|t| amplitudes
 	AmplitudeGraph amplitude_pc_lowt;
-	vector< map<CoulombInterference::ciMode, AmplitudeGraph> > amplitudes_lowt;
+	vector< map<CoulombInterference::CIMode, AmplitudeGraph> > amplitudes_lowt;
 	BuildAmplitudes(models_sampled, true, lowt_N, -lowt_t_max, -1E-5, amplitudeModes,
 		t_min_coulomb, amplitude_pc_lowt, amplitudes_lowt);
 	

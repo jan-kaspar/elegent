@@ -14,17 +14,26 @@
 #include "ExpModel.h"
 
 #include <string>
+#include <map>
 
 namespace Elegent
 {
 
 /**
- * \brief TODO
+ * \brief A class to give list of available models and to create an instance of a model specified by tag.
  **/
 class ModelFactory
 {
+	protected:
+		/// map: tag --> model instance
+		std::map<std::string, Model*> model_map;
+
 	public:
-		static Model* MakeStandardInstance(const std::string &tag, bool prf_presampled = true);
+		ModelFactory();
+
+		void PrintList() const;
+
+		Model* MakeInstance(const std::string &tag) const;
 };
 
 

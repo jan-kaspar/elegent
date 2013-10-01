@@ -30,26 +30,37 @@ void PrintUsage()
 	printf("\t-N <number>\t\tnumber of sampling points\n");
 	printf("\t-bmin <value>\t\tlower bound of b (in fm) for sampling\n");
 	printf("\t-bmax <value>\t\tupper bound of b (in fm) for sampling\n");
-	printf("\t-models <string>\tcomma-separated list of model tags\n");
+	printf("\t-models <string>\tsemicolon-separated list of model tags\n");
+	printf("\t-l, -model-list\t\tprint list of available model tags and exit\n");
 	printf("\t-output <filename>\toutput file name\n");
+}
+
+//----------------------------------------------------------------------------------------------------
+
+void PrintModelList()
+{
+	Constants::Init(1., Constants::mPP);
+	ModelFactory mf;
+	mf.PrintList();
 }
 
 //----------------------------------------------------------------------------------------------------
 
 int InitModels(const string& hadronicModelsString, vector<Model *> &models)
 {
+	ModelFactory mf;
+
 	size_t p_curr = 0;
 	while (true)
 	{
-		size_t p_next = hadronicModelsString.find(',', p_curr);
+		size_t p_next = hadronicModelsString.find(';', p_curr);
 		string tag = (p_next != string::npos) ? hadronicModelsString.substr(p_curr, p_next - p_curr) : hadronicModelsString.substr(p_curr);
 
-		model = ModelFactory::MakeStandardInstance(tag, false);
+		model = mf.MakeInstance(tag);
 
 		if (model == NULL)
 			return 3;
 
-		model->tag = tag;
 		models.push_back(model);
 
 		printf("\n>> model with tag `%s':\n", tag.c_str());
@@ -85,6 +96,12 @@ int main(int argc, char **argv)
 		if (strcmp(argv[i], "-h") == 0)
 		{
 			PrintUsage();
+			return 0;
+		}
+		
+		if (strcmp(argv[i], "-l") == 0 || strcmp(argv[i], "-model-list") == 0)
+		{
+			PrintModelList();
 			return 0;
 		}
 
@@ -213,10 +230,10 @@ int main(int argc, char **argv)
 	{
 		model = models[mi];
 	
-		gDirectory = outF->mkdir(model->tag.c_str());
+		gDirectory = outF->mkdir(model->CompileShortLabel().c_str());
 
-		TGraph *g_prf_re = new TGraph(); g_prf_re->SetName("prf_re");
-		TGraph *g_prf_im = new TGraph(); g_prf_im->SetName("prf_im");
+		TGraph *g_prf_re = new TGraph(); g_prf_re->SetName("prf_re"); g_prf_re->SetTitle(model->CompileFullLabel().c_str());
+		TGraph *g_prf_im = new TGraph(); g_prf_im->SetName("prf_im"); g_prf_im->SetTitle(model->CompileFullLabel().c_str());
 
 		double db = (b_max - b_min) / (N - 1);
 		double b = b_min;

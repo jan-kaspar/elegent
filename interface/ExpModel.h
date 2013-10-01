@@ -21,11 +21,9 @@ class ExpModel : public Model
 	public:
 		ExpModel();
 		
+		void Configure();
+		virtual void Init() {}
 		virtual void Print() const;
-
-		virtual std::string GetModeString() const
-			{ return "basic"; }
-	
 		virtual TComplex Amp(double t) const;
 		virtual TComplex Prf(double b) const;
 

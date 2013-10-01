@@ -17,20 +17,19 @@ namespace Elegent
 class CoulombInterference
 {
 	public:
-		enum ciMode
+		/// the mode of coulomb interference
+		enum CIMode
 		{
 			mPC,				///< pure electromagnetic amplitude (Born/OPE approximation) [default]
 			mPH,				///< pure hadronic amplitude
 			mWY,				///< WY formula
 			mSWY,			 	///< simplified WY formula
 			mKL				 	///< (corrected) KL formula (includes the one of Cahn)
-		};
-		
-		/// the mode of coulomb interference
-		ciMode mode;
+		} mode;
 
 		std::string GetModeString() const;
 
+		/// form factor type
 		enum FFType
 		{
 			ffNone,				///< form factor = 1
@@ -40,11 +39,8 @@ class CoulombInterference
 			ffKelly,			///< Kelly: Phys. Rev. C70 (2004)
 			ffArrington,		///< Arrington et al.: Phys. Rev C76 (2007)
 			ffPuckett,			///< Puckett et al.: arXiv 1008.0855v1 [default]
-			ffPuckettEl		 	///< only electric form-factor of Puckett et al. (for consistency check with Vojtech's calculations)
-		};
-
-		/// form factor type
-		FFType ffType;
+			ffPuckettEl		 	///< only electric form-factor of Puckett et al.
+		} ffType;
 
 		CoulombInterference();
 
