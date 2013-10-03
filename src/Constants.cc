@@ -29,20 +29,16 @@ double Constants::gamma =			0.577215;
 
 //----------------------------------------------------------------------------------------------------
 
-Constants::Constants(double W, Constants::ParticleMode mode)
+void Constants::Configure(double W, Constants::ParticleMode mode)
 {
-	sqrt_s = W;											/// sqrt_s / GeV
-	s = sqrt_s*sqrt_s;									/// s / GeV^2
-	ln_s = log(s);										/// ln(s / GeV^2)
-	p_cms = sqrt(s /4. - proton_mass * proton_mass);	/// particle CMS impuls
-	sig_fac = sq_hbarc * pi / (s * p_cms * p_cms);		/// d sig/dt = sig_fac * |A|^2
-	t_min = 4.*proton_mass * proton_mass - s;			/// NEGATIVE !
+	sqrt_s = W;
+	s = sqrt_s*sqrt_s;
+	ln_s = log(s);
+	p_cms = sqrt(s /4. - proton_mass * proton_mass);
+	sig_fac = sq_hbarc * pi / (s * p_cms * p_cms);
+	t_min = 4.*proton_mass * proton_mass - s;
 	
 	pMode = mode;
-	//printf("Running at \e[00;34mW = %.1f GeV, in ", sqrt_s);
-	//if (pMode == mPP) printf("p-p");
-	//if (pMode == mAPP) printf("p-anti p");
-	//printf(" mode\e[00m\n");
 }
 
 //----------------------------------------------------------------------------------------------------

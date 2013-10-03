@@ -55,7 +55,7 @@ void ModelFactory::PrintList() const
 
 //----------------------------------------------------------------------------------------------------
 
-Model* ModelFactory::MakeInstance(const std::string &tag) const
+Model* ModelFactory::MakeInstance(const std::string &tag, bool callInit) const
 {
 	// look for tag in model map
 	map<string, Model*>::const_iterator it = model_map.find(tag);
@@ -70,7 +70,8 @@ Model* ModelFactory::MakeInstance(const std::string &tag) const
 	}
 
 	// initialise model
-	model->Init();
+	if (callInit)
+		model->Init();
 
 	return model;
 }
