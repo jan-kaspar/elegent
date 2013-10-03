@@ -33,7 +33,7 @@ class ModelFactory
 
 		void PrintList() const;
 
-		Model* MakeInstance(const std::string &tag) const;
+		Model* MakeInstance(const std::string &tag, bool callInit = true) const;
 };
 
 

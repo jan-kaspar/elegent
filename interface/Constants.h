@@ -25,25 +25,31 @@ struct Constants
 											///< sigma/mbarn = sigma/GeV^-2 * sq_hbarc
 	static double M;						///< abbreviation for proton mass in GeV
 	static double M_sq;						///< proton mass squared, GeV^2
-	static double kappa;					///> the anomalous magnetic moment of proton
+	static double kappa;					///< the anomalous magnetic moment of proton
 	
 	// mathematics constants
 	static double pi;						///< pi
 	static double gamma;					///< Euler's constant
-	
-	// physics data and preenumerations
-	double sqrt_s;
-	double s;
-	double ln_s;
-	double p_cms;
-	double sig_fac;
-	double t_min;
+
+	// physics data
+	double sqrt_s;							///< sqrt_s / GeV
+	double s;								///< s / GeV^2
+	double ln_s;							///< ln(s / GeV^2)
+	double p_cms;							///< particle CMS impuls
+	double sig_fac;							///< d sig/dt = sig_fac * |A|^2
+	double t_min;							///< negative
 	
 	enum ParticleMode {mPP, mAPP} pMode; 	///< particle mode
  
 	/// \param W = sqrt(s)
-	Constants(double W = 0., ParticleMode mode = mPP);
+	Constants(double W = 0., ParticleMode mode = mPP)
+	{
+		Configure(W, mode);
+	}
+	
+	void Configure(double W, ParticleMode mode);
 
+	/// \brief initilize new instance of Constants and save its pointer to the `cnts' global variable
 	/// \param W = sqrt(s)
 	static void Init(double W, ParticleMode mode);
 
