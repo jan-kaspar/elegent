@@ -23,7 +23,22 @@ void BSWModel::Configure(BSWModel::ModeType _mode, bool _presampled)
 {
 	mode = _mode;
 	presampled = _presampled;
-	
+
+	// set labels
+	fullLabel.variant = ""; shortLabel.variant = "";
+	fullLabel.version = "Eur. Phys. J. C28 (2003) 97-105"; shortLabel.version = "03";
+	if (mode == mPomReg)
+		{ fullLabel.mode = "full"; shortLabel.mode = "full"; }
+	if (mode == mPom)
+		{ fullLabel.mode = "Pomeron"; shortLabel.mode = "pom"; }
+	if (mode == mReg)
+		{ fullLabel.mode = "Reggeon"; shortLabel.mode = "reg"; }
+}
+
+//----------------------------------------------------------------------------------------------------
+
+void BSWModel::Init()
+{
 	// Eq. (6) in [3]
 	c = 0.167;
 	cp = 0.748;
@@ -46,22 +61,6 @@ void BSWModel::Configure(BSWModel::ModeType _mode, bool _presampled)
 	
 	// save value of S0(0)
 	S00 = S0(0.);
-
-	// set labels
-	fullLabel.variant = ""; shortLabel.variant = "";
-	fullLabel.version = "Eur. Phys. J. C28 (2003) 97-105"; shortLabel.version = "03";
-	if (mode == mPomReg)
-		{ fullLabel.mode = "full"; shortLabel.mode = "full"; }
-	if (mode == mPom)
-		{ fullLabel.mode = "Pomeron"; shortLabel.mode = "pom"; }
-	if (mode == mReg)
-		{ fullLabel.mode = "Reggeon"; shortLabel.mode = "reg"; }
-}
-
-//----------------------------------------------------------------------------------------------------
-
-void BSWModel::Init()
-{
 	if (presampled)
 		BuildSample(25001);
 }

@@ -19,15 +19,20 @@ ExpModel::ExpModel()
 
 void ExpModel::Configure()
 {
+	fullLabel.variant = ""; shortLabel.variant = "";
+	fullLabel.version = ""; shortLabel.version = "";
+	fullLabel.mode = ""; shortLabel.mode = "";
+}
+
+//----------------------------------------------------------------------------------------------------
+
+void ExpModel::Init()
+{
 	a = 2E9;
 	b1 = 10.;
 	b2 = 0.;
 	p0 = M_PI/2.;
 	p1 = 0.;
-
-	fullLabel.variant = ""; shortLabel.variant = "";
-	fullLabel.version = ""; shortLabel.version = "";
-	fullLabel.mode = ""; shortLabel.mode = "";
 }
 
 //----------------------------------------------------------------------------------------------------

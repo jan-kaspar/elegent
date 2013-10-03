@@ -29,7 +29,7 @@ dict_modules = Model IslamModel PPPModel BSWModel BHModel JenkovszkyModel ExpMod
 modules = Math Generator ModelFactory
 
 # executable files
-exe_files = ElegentTest ElegentTDistributionSampler ElegentBDistributionSampler
+exe_files = ElegentTest ElegentTDistributionSampler ElegentBDistributionSampler ElegentSDistributionSampler
 
 #----------------------------------------------------------------------------------------------------
 

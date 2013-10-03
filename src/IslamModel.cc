@@ -25,7 +25,37 @@ void IslamModel::Configure(IslamModel::VariantType _v, IslamModel::ModeType _m)
 {
 	variant = _v;
 	mode = _m;
+	
+	if (variant == vHP)
+	{
+		fullLabel.variant = "HP"; shortLabel.variant = "hp";
+	}
+	
+	// low-x gluons variant
+	if (variant == vLxG)
+	{
+		fullLabel.variant = "LxG"; shortLabel.variant = "lxg";
+	}
+	
+	// set labels
+	fullLabel.version = "Int. J. Mod. Phys. A21 (2006) 1-42, Mod. Phys. Lett. A24 (2009) 485-496"; shortLabel.version = "06,09";
 
+	if (mode == mDiff)
+		{ fullLabel.mode = "diffraction"; shortLabel.mode = "diff"; }
+	if (mode == mCore)
+		{ fullLabel.mode = "core"; shortLabel.mode = "core"; }
+	if (mode == mQuark)
+		{ fullLabel.mode = "quark-quark"; shortLabel.mode = "quark"; }
+	if (mode == mDiffCore)
+		{ fullLabel.mode = "diffraction+core"; shortLabel.mode = "diff+core"; }
+	if (mode == mFull)
+		{ fullLabel.mode = "full"; shortLabel.mode = "full"; }
+}
+
+//----------------------------------------------------------------------------------------------------
+
+void IslamModel::Init()
+{
 	// ---------- diffraction amplitude ----------
 	// parameters from page 23 of [4] 
 	double R0 = 2.77;
@@ -92,8 +122,6 @@ void IslamModel::Configure(IslamModel::VariantType _v, IslamModel::ModeType _m)
 
 		// Born term only by default
 		qqMaxOrder = 1;
-		
-		fullLabel.variant = "HP"; shortLabel.variant = "hp";
 	}
 	
 	// low-x gluons variant
@@ -110,8 +138,6 @@ void IslamModel::Configure(IslamModel::VariantType _v, IslamModel::ModeType _m)
 
 		// Born term only by default
 		cgcMaxOrder = 1;
-	
-		fullLabel.variant = "LxG"; shortLabel.variant = "lxg";
 	}
 	
 	// integration parameters
@@ -119,20 +145,6 @@ void IslamModel::Configure(IslamModel::VariantType _v, IslamModel::ModeType _m)
    	precision_t = 1E-4;
 	upper_bound = 50.;
 	upper_bound_t = -15.;
-
-	// set labels
-	fullLabel.version = "Int. J. Mod. Phys. A21 (2006) 1-42, Mod. Phys. Lett. A24 (2009) 485-496"; shortLabel.version = "06,09";
-
-	if (mode == mDiff)
-		{ fullLabel.mode = "diffraction"; shortLabel.mode = "diff"; }
-	if (mode == mCore)
-		{ fullLabel.mode = "core"; shortLabel.mode = "core"; }
-	if (mode == mQuark)
-		{ fullLabel.mode = "quark-quark"; shortLabel.mode = "quark"; }
-	if (mode == mDiffCore)
-		{ fullLabel.mode = "diffraction+core"; shortLabel.mode = "diff+core"; }
-	if (mode == mFull)
-		{ fullLabel.mode = "full"; shortLabel.mode = "full"; }
 }
 
 //----------------------------------------------------------------------------------------------------

@@ -45,7 +45,7 @@ class IslamModel : public Model
 
 		void Configure(VariantType _v, ModeType _m);
 
-		virtual void Init() {}
+		virtual void Init();
 
 		static TComplex CEF(double a, double b, double c);
 

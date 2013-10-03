@@ -36,7 +36,7 @@ class PPPModel : public Model
 		
 		void Configure(VariantType v);
 
-		virtual void Init() {}
+		virtual void Init();
 
 		virtual void Print() const;
 

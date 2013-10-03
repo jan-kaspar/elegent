@@ -22,7 +22,7 @@ class ExpModel : public Model
 		ExpModel();
 		
 		void Configure();
-		virtual void Init() {}
+		virtual void Init();
 		virtual void Print() const;
 		virtual TComplex Amp(double t) const;
 		virtual TComplex Prf(double b) const;

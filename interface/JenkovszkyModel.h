@@ -22,7 +22,7 @@ class JenkovszkyModel : public Model
 		JenkovszkyModel();
 
 		void Configure();
-		virtual void Init() {}
+		virtual void Init();
 
 		virtual void Print() const;
 

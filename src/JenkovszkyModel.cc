@@ -18,6 +18,16 @@ JenkovszkyModel::JenkovszkyModel()
 
 void JenkovszkyModel::Configure()
 {
+	// set labels
+	fullLabel.variant = ""; shortLabel.variant = "";
+	fullLabel.version = "Int. J. Mod. Phys. A 26 (2011) 4755"; shortLabel.version = "11";
+	fullLabel.mode = ""; shortLabel.mode = "";
+}
+
+//----------------------------------------------------------------------------------------------------
+
+void JenkovszkyModel::Init()
+{
 	// fit parameters from Table 3 (corresponding to trajectory (8)),
 	// reggeon trajectories given under Eq. (4) in [1]
 
@@ -48,11 +58,6 @@ void JenkovszkyModel::Configure()
 
 	precision_t = 1E-4;
 	upper_bound_t = -50.;
-
-	// set labels
-	fullLabel.variant = ""; shortLabel.variant = "";
-	fullLabel.version = "Int. J. Mod. Phys. A 26 (2011) 4755"; shortLabel.version = "11";
-	fullLabel.mode = ""; shortLabel.mode = "";
 }
 
 //----------------------------------------------------------------------------------------------------

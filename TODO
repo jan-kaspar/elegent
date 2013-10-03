@@ -5,13 +5,33 @@
  - factor in front of the regeon term
  - energy dependence S0 does actually depend on t.
 
+* model problems to Wiki
+
+* finish Wiki
+
 * README file giving
  - the names and a brief description of all the files that make up the package
  - clear instructions on the installation and execution of the program
 
 * problem with low |t| sampling: visible in B(t)
 
-* s-distributions
+* s-distributions: issue with BSW module
+
+* s-distributions to test module
+
+* list models to test module
+
+* update make_release
+
+* update TOTEM TWiki, cfg files (new label scheme, how to get available model list)
+
+* check compatibility with old curves
+
+* add more energies (generate dists and plots, mention ISR, SppS, RHIC, Tevetra in the text)
+ - pp: ISR (23, 31, 53), RHIC (200)
+ - app: ISR (31, 53), SppS (546, 630), Tevatron (1800)
+
+* plots: grid in Asymptote
 
 -------------------- long term --------------------
 

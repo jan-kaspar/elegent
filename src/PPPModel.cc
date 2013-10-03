@@ -19,6 +19,30 @@ PPPModel::PPPModel()
 
 //----------------------------------------------------------------------------------------------------
 
+void PPPModel::Configure(PPPModel::VariantType _v)
+{
+	variant = _v;
+
+	if (variant == v2P)
+	{
+		fullLabel.variant = "2P"; shortLabel.variant = "2p";
+	}
+	
+	if (variant == v3P)
+	{
+		fullLabel.variant = "3P"; shortLabel.variant = "3p";
+	}
+
+	if (variant != v2P && variant != v3P)
+		printf("ERROR in PPPModel::Init > Unknown variant %u.\n", variant);
+
+	// set labels
+	fullLabel.version = "Eur. Phys. J. C23 (2002) 135-143"; shortLabel.version = "02";
+	fullLabel.mode = ""; shortLabel.mode = "";
+}
+
+//----------------------------------------------------------------------------------------------------
+
 void PPPModel::SetTrajectory(Trajectory &t, double D, double c, double ap, double r2, double s0)
 {
 	t.D = D; t.c = c; t.ap = ap; t.r2 = r2;
@@ -31,10 +55,8 @@ void PPPModel::SetTrajectory(Trajectory &t, double D, double c, double ap, doubl
 
 //----------------------------------------------------------------------------------------------------
 
-void PPPModel::Configure(PPPModel::VariantType _v)
+void PPPModel::Init()
 {
-	variant = _v;
-
 	// physics parameters
 	s0 = 1.;	// in GeV^2
 	
@@ -48,8 +70,6 @@ void PPPModel::Configure(PPPModel::VariantType _v)
 		SetTrajectory(oder, -0.2707,	1.8134,		0.029,	1.159,	s0);
 		SetTrajectory(regf, -0.3100,	188.51,		0.84,	41.424, s0);
 		SetTrajectory(rego, -0.5300,	-171.36,	0.93,	2.621,	s0);
-
-		fullLabel.variant = "2P"; shortLabel.variant = "2p";
 	}
 	
 	if (variant == v3P)
@@ -61,20 +81,11 @@ void PPPModel::Configure(PPPModel::VariantType _v)
 		SetTrajectory(oder, 0.1920,		0.0166,		0.048,	0.1398, s0);
 		SetTrajectory(regf, -0.31,		191.69,		0.84,	31.593, s0);
 		SetTrajectory(rego, -0.53,		-174.18,	0.93,	7.467,	s0);
-
-		fullLabel.variant = "3P"; shortLabel.variant = "3p";
 	}
-
-	if (variant != v2P && variant != v3P)
-		printf("ERROR in PPPModel::Init > Unknown variant %u.\n", variant);
 	
 	// integration parameters
 	precision = 1E-14;
 	upper_bound = 60.;
-
-	// set labels
-	fullLabel.version = "Eur. Phys. J. C23 (2002) 135-143"; shortLabel.version = "02";
-	fullLabel.mode = ""; shortLabel.mode = "";
 }
 
 //----------------------------------------------------------------------------------------------------

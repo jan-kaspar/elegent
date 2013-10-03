@@ -31,17 +31,17 @@ class Model
 		/// short label (e.g. for object names in ROOT files)
 		Label shortLabel;
 
-		/// TODO
-		std::string CompileShortLabel() const;
-
-		/// TODO
+		/// compiles a human readable string from fullLabel
 		std::string CompileFullLabel() const;
+
+		/// compiles a human readable string from shortLabel
+		std::string CompileShortLabel() const;
 
 		Model() {}
 
 		virtual ~Model() {}
 
-		/// TODO: describe
+		/// TODO
 		virtual void Init() =0;
 
 		/// prints model info
