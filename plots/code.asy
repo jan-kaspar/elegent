@@ -4,6 +4,7 @@ import pad_layout;
 //----------------------------------------------------------------------------------------------------
 
 xSizeDef = 10cm;
+ySizeDef = 8cm;
 
 //----------------------------------------------------------------------------------------------------
 
@@ -43,6 +44,7 @@ void StartJob(string hf, string dd)
 
 	write(f_out, "<html>", endl);
 	write(f_out, "	<head>", endl);
+	write(f_out, "		<link rel=\"stylesheet\" type=\"text/css\" href=\"/elegent.css\">", endl);
 	write(f_out, "	</head>", endl);
 	write(f_out, "<body>", endl);
 }
@@ -164,9 +166,9 @@ void ProcessOnePlot(int pi, string mode, string energies[], string tag, string f
 	write(f_out, "	<tr>", endl);
 
 	if (html_flag == 1)
-		write(f_out, "		<td>"+plots[pi].htmlLabel+"</td>", endl);
+		write(f_out, "		<td class=\"quantity\">"+plots[pi].htmlLabel+"</td>", endl);
 	if (html_flag == 2)
-		write(f_out, "		<td rowspan=\"2\">"+plots[pi].htmlLabel+"</td>", endl);
+		write(f_out, "		<td rowspan=\"2\" class=\"quantity\">"+plots[pi].htmlLabel+"</td>", endl);
 
 	for (int ei : energies.keys)
 	{
@@ -200,7 +202,7 @@ void ProcessPlots(string mode, string energies[], string tag)
 		html_mode = "p&#773;p";
 	write(f_out, "<h2>"+html_mode+"</h2>", endl);
 	
-	write(f_out, "<table border=\"1\">", endl);
+	write(f_out, "<table class=\"plot\">", endl);
 	write(f_out, "	<tr>", endl);
 	write(f_out, "		<td></td><td colspan=\""+format("%u", energies.length)+"\">&radic;s   (GeV<sup>2</sup>)</td>", endl);
 	write(f_out, "	</tr>", endl);
@@ -234,7 +236,7 @@ void ProcessPlots(string mode, string energies[], string tag)
 void ProcessOneSPlot(int pi, string mode, string tag)
 {
 	write(f_out, "	<tr>", endl);
-	write(f_out, "		<td>"+plots[pi].htmlLabel+"</td>", endl);
+	write(f_out, "		<td class=\"quantity\">"+plots[pi].htmlLabel+"</td>", endl);
 
 	string dist_file = dist_dir + "/" + tag + "," + mode + ".root";
 	string out_file = mode+","+tag+","+plots[pi].fileName;
@@ -245,7 +247,6 @@ void ProcessOneSPlot(int pi, string mode, string tag)
 	FinalizeFile(out_file);
 
 	write(f_out, "		<td><a href=\""+out_file+".pdf\">full range</td>", endl);
-
 	
 	write(f_out, "	</tr>", endl);
 }
@@ -259,7 +260,7 @@ void ProcessSPlots(string mode, string tag)
 		html_mode = "p&#773;p";
 	write(f_out, "<h2>"+html_mode+"</h2>", endl);
 	
-	write(f_out, "<table border=\"1\">", endl);
+	write(f_out, "<table class=\"plot\">", endl);
 	for (int pi : plots.keys)
 	{
 		ProcessOneSPlot(pi, mode, tag);
@@ -272,8 +273,6 @@ void ProcessSPlots(string mode, string tag)
 
 void MakeTPlots(string mode, string energies[])
 {
-	write(f_out, "<h1>t-distributions</h1>", endl);
-
 	plots.delete();
 
 	RegisterPlot("amp", "hadronic amplitude", doubleScale=true, new void (string input_file, string option) {
@@ -341,8 +340,6 @@ void MakeTPlots(string mode, string energies[])
 
 void MakeBPlots(string mode, string energies[])
 {
-	write(f_out, "<h1>b-distributions</h1>", endl);
-
 	plots.delete();
 
 	RegisterPlot("amp", "hadronic amplitude", doubleScale=false, new void (string input_file, string option) {
@@ -362,7 +359,6 @@ void MakeBPlots(string mode, string energies[])
 
 void MakeSPlots(string mode)
 {
-	write(f_out, "<h1>s-distributions</h1>", endl);
 
 	plots.delete();
 
@@ -370,18 +366,21 @@ void MakeSPlots(string mode)
 		NewPad("$\sqrt s\ung{GeV}$", "$\si_{\rm tot}(s)\ung{mb}$");
 		scale(Log, Linear(true));
 		PlotAllModels(input_file, "<model>/si_tot", "hadronic total cross-section");
+		//ylimits(0, 200, Crop);
 	});
 
 	RegisterPlot("rho", "hadronic forward rho", doubleScale=true, new void (string input_file, string option) {
 		NewPad("$\sqrt s\ung{GeV}$", "$\rh(s, t = 0) \equiv \left. {\Re F^{\rm H}\over \Im F^{\rm H}} \right|_{t = 0}$");
 		scale(Log, Linear(true));
 		PlotAllModels(input_file, "<model>/rho", "hadronic forward rho");
+		//ylimits(-0.7, 0.3, Crop);
 	});
 	
 	RegisterPlot("B0", "hadronic forward slope", doubleScale=true, new void (string input_file, string option) {
 		NewPad("$\sqrt s\ung{GeV}$", "$B(s, t=0) \equiv \left . {\d \log |F^{\rm H}|^2\over\d t} \right|_{t = 0}\ung{GeV^{-2}}$");
 		scale(Log, Linear(true));
 		PlotAllModels(input_file, "<model>/B0", "hadronic forward slope");
+		//ylimits(0, 50, Crop);
 	});
 	
 	ProcessSPlots(mode, "s-distributions");
@@ -389,11 +388,20 @@ void MakeSPlots(string mode)
 
 //----------------------------------------------------------------------------------------------------
 
-void MakePlots(string mode_str, string energies_str)
+void MakePlots(string pp_energies_str, string app_energies_str)
 {
-	string energies_a[] = split(energies_str, " ");
+	string pp_energies_a[] = split(pp_energies_str, " ");
+	string app_energies_a[] = split(app_energies_str, " ");
 
-	MakeTPlots(mode_str, energies_a);
-	MakeBPlots(mode_str, energies_a);
-	MakeSPlots(mode_str);
+	write(f_out, "<h1>t-distributions</h1>", endl);
+	MakeTPlots("pp", pp_energies_a);
+	MakeTPlots("app", app_energies_a);
+
+	write(f_out, "<h1>b-distributions</h1>", endl);
+	MakeBPlots("pp", pp_energies_a);
+	MakeBPlots("app", app_energies_a);
+	
+	write(f_out, "<h1>s-distributions</h1>", endl);
+	MakeSPlots("pp");
+	MakeSPlots("app");
 }

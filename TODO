@@ -1,25 +1,21 @@
 * BH model - problem with N_g
 
-* BSW model
+* BSW model - investigate first, then send email
  - problem with complex logarithm
  - factor in front of the regeon term
  - energy dependence S0 does actually depend on t.
+ - signatures of reggeons?
+ - make sure that the integration accuracy is sufficient!
 
-* model problems to Wiki
+* model problems (BH, BSW) to Wiki
 
 * finish Wiki
 
-* README file giving
+* add `environment' hints to README
+
+* README
  - the names and a brief description of all the files that make up the package
  - clear instructions on the installation and execution of the program
-
-* problem with low |t| sampling: visible in B(t)
-
-* s-distributions: issue with BSW module
-
-* s-distributions to test module
-
-* list models to test module
 
 * update make_release
 
@@ -27,11 +23,12 @@
 
 * check compatibility with old curves
 
-* add more energies (generate dists and plots, mention ISR, SppS, RHIC, Tevetra in the text)
- - pp: ISR (23, 31, 53), RHIC (200)
- - app: ISR (31, 53), SppS (546, 630), Tevatron (1800)
-
 * plots: grid in Asymptote
+
+* problem with low |t| sampling: visible in B(t)
+
+* web - distributions - naming scheme
+
 
 -------------------- long term --------------------
 
@@ -39,6 +36,6 @@
 
 * Jenkovszky model: other trajectory parameterisations than Eq. (8)?
 
-* custom integration --> some standard library (like GSL ?)
+* custom integration --> some standard library (e.g. GSL)
 
 * use of GNU automake system

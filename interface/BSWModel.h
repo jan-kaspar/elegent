@@ -60,6 +60,9 @@ class BSWModel : public Model
 		/// flag whether the presampled mode is on
 		bool presampled;
 
+		/// accuracy level (use true for differential cross-section, false is sufficient for total cross-section)
+		bool highAccuracy;
+
 		/// the pomeron exchange parameters
 		double c, cp, a, f, m1, m2, asq, m1sq, m2sq;
 

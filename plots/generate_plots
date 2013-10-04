@@ -21,9 +21,11 @@ done
 (
 	echo "import code;"
 	echo "StartJob(\"$html_file\", \"$distribution_dir\");"
-	echo "MakePlots(\"pp\", \"$pp_energies\");"
-	echo "MakePlots(\"app\", \"$app_energies\");"
+	echo "MakePlots(\"$pp_energies\", \"$app_energies\");"
 	echo "EndJob();"
 ) > "job.asy"
 
 asy -globalwrite "job.asy"
+
+# clean up
+rm "job.asy"

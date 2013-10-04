@@ -15,6 +15,8 @@ using namespace Elegent;
 BSWModel::BSWModel()
 {
 	fullLabel.name = "Bourrely et al."; shortLabel.name = "bourrely";
+
+	highAccuracy = true;
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -54,8 +56,14 @@ void BSWModel::Init()
 	omega.Init( -167.329,	0.,		0.323,	0.795,	-1);
 	rho.Init(	124.919,	8.54,	0.320,	1.,		-1);
 	
-	upper_bound_t = -500.; precision_t = 1E-15;
-	upper_bound_b = 50.; precision_b = 1E-12;
+	if (highAccuracy)
+	{
+		upper_bound_t = -500.; precision_t = 1E-15;
+		upper_bound_b = 50.; precision_b = 1E-12;
+	} else {
+		upper_bound_t = -200.; precision_t = 1E-5;
+		upper_bound_b = 30.; precision_b = 1E-5;
+	}
 
 	regge_fac(1., 0.);
 	

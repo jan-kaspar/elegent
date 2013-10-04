@@ -66,6 +66,7 @@ int InitModels(const string& hadronicModelsString, vector<Model *> &models)
 		{
 			BSWModel *bswm = (BSWModel *) model;
 			bswm->presampled = false;
+			bswm->highAccuracy = false;
 		}
 
 		models.push_back(model);
@@ -89,7 +90,7 @@ int main(int argc, char **argv)
 	Constants::ParticleMode pMode = Constants::mPP;
 
 	unsigned int N = 1001;
-	double W_min = 2E0, W_max = 1E5;
+	double W_min = 5E0, W_max = 1E5;
 
 	string hadronicModelsString = "";
 
@@ -208,13 +209,13 @@ int main(int argc, char **argv)
 	// prepare output
 	TFile *outF = new TFile(outputFileName.c_str(), "recreate");
 
-	// build the profile-function plots
+	// build the s-distributions
 	for (unsigned int mi = 0; mi < models.size(); mi++)
 	{
 		model = models[mi];
 	
 		string fullLabel = model->CompileFullLabel();
-		printf(">>> %s\n", fullLabel.c_str());
+		//printf(">> %s\n", fullLabel.c_str());
 
 		gDirectory = outF->mkdir(model->CompileShortLabel().c_str());
 
