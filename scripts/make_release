@@ -15,8 +15,15 @@ then
 fi
 
 tar czf "$tarFile" \
-		"$prefix/makefile" \
 		"$prefix/interface" \
+		"$prefix/distributions/generate_t_distributions" \
+		"$prefix/distributions/generate_b_distributions" \
+		"$prefix/distributions/generate_s_distributions" \
+		"$prefix/plots/code.asy" \
+		"$prefix/plots/generate_plots" \
 		"$prefix/src" \
-		"$prefix/scripts/generate_t_distributions" \
-		"$prefix/scripts/generate_b_distributions"
+		"$prefix/CHANGELOG" \
+		"$prefix/Doxyfile" \
+		"$prefix/README" \
+		"$prefix/TODO" \
+		"$prefix/makefile" \
