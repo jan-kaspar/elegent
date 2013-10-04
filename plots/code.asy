@@ -129,6 +129,22 @@ void PlotAllModels(string input_file, string template, string legend_title,
 
 void FinalizeFile(string name)
 {
+	// add grid
+	for (int pi : pad_collection.keys)
+	{
+		SetPad(pad_collection[pi]);
+
+		currentpad.xTicks = NoTicks();
+		xaxis(BottomTop, LeftTicks(format="%", extend=true, pTick=black+dotted, ptick=invisible));
+		xaxis(Label(currentpad.xLabel, 1), BottomTop, LeftTicks());
+		currentpad.xLabel = "";
+	
+		currentpad.yTicks = NoTicks();
+		yaxis(LeftRight, RightTicks(format="%", extend=true, pTick=black+dotted, ptick=invisible));
+		yaxis(Label(currentpad.yLabel, 1), LeftRight, RightTicks());
+		currentpad.yLabel = "";
+	}
+
 	NewPad(false);
 	add(legend_frame);
 	GShipout(name);
@@ -278,7 +294,6 @@ void MakeTPlots(string mode, string energies[])
 	RegisterPlot("amp", "hadronic amplitude", doubleScale=true, new void (string input_file, string option) {
 		NewPad("$|t|\ung{GeV^2}$", "$\Re F^{\rm H}$");
 		scale((option == "low |t|") ? Log : Linear, Linear(true));
-		// TODO: way to easily add grid?
 		PlotAllModels(input_file, option+"/<model>/PH/amplitude_re", "hadronic amplitudes");
 	
 		NewPad("$|t|\ung{GeV^2}$", "$\Im F^{\rm H}$");
@@ -343,11 +358,11 @@ void MakeBPlots(string mode, string energies[])
 	plots.delete();
 
 	RegisterPlot("amp", "hadronic amplitude", doubleScale=false, new void (string input_file, string option) {
-		NewPad("$b\ung{fm}$", "$\Re T^{\rm H}$");
+		NewPad("$b\ung{fm}$", "$\Re A^{\rm H}$");
 		scale(Linear, Linear(true));
 		PlotAllModels(input_file, "<model>/prf_re", "hadronic amplitudes");
 	
-		NewPad("$b\ung{fm}$", "$\Im T^{\rm H}$");
+		NewPad("$b\ung{fm}$", "$\Im A^{\rm H}$");
 		scale(Linear, Linear(true));
 		PlotAllModels(input_file, "<model>/prf_im", "hadronic amplitudes");
 	});
@@ -366,21 +381,18 @@ void MakeSPlots(string mode)
 		NewPad("$\sqrt s\ung{GeV}$", "$\si_{\rm tot}(s)\ung{mb}$");
 		scale(Log, Linear(true));
 		PlotAllModels(input_file, "<model>/si_tot", "hadronic total cross-section");
-		//ylimits(0, 200, Crop);
 	});
 
 	RegisterPlot("rho", "hadronic forward rho", doubleScale=true, new void (string input_file, string option) {
 		NewPad("$\sqrt s\ung{GeV}$", "$\rh(s, t = 0) \equiv \left. {\Re F^{\rm H}\over \Im F^{\rm H}} \right|_{t = 0}$");
 		scale(Log, Linear(true));
 		PlotAllModels(input_file, "<model>/rho", "hadronic forward rho");
-		//ylimits(-0.7, 0.3, Crop);
 	});
 	
 	RegisterPlot("B0", "hadronic forward slope", doubleScale=true, new void (string input_file, string option) {
 		NewPad("$\sqrt s\ung{GeV}$", "$B(s, t=0) \equiv \left . {\d \log |F^{\rm H}|^2\over\d t} \right|_{t = 0}\ung{GeV^{-2}}$");
 		scale(Log, Linear(true));
 		PlotAllModels(input_file, "<model>/B0", "hadronic forward slope");
-		//ylimits(0, 50, Crop);
 	});
 	
 	ProcessSPlots(mode, "s-distributions");
