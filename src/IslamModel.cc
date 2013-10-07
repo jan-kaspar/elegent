@@ -127,7 +127,7 @@ void IslamModel::Init()
 	// low-x gluons variant
 	if (variant == vLxG)
 	{
-		double tgagg = 0.0056;	// TODO: no reference found!
+		double tgagg = 0.0056;	// obtained in private communication with the authors
 
 		// parameters from page 8 of [5]
 		lambda = 0.29;
