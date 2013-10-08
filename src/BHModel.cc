@@ -42,10 +42,11 @@ void BHModel::Init()
 	Cp_gg = 0.00103;
 	epsilon = 0.05;
 
-	// TODO: which is correct?
+	// Inconsitency in the definition of Ng:
 	// [1] : Ng = (6.-epsilon)*(5.-epsilon)*(4.-epsilon)*(3.-epsilon)*(2.-epsilon)*(1.-epsilon) /5./4./3./2. / 2.;	// = 2.649
 	// [2] : Ng = 3./2. * (5.-epsilon)*(4.-epsilon)*(3.-epsilon)*(2.-epsilon)*(1.-epsilon) /5./4./3./2.;	// = 1.335
-	// Value from [2] seems wrong
+	// Confirmed by F. Halzen: the Ng must be such that "average x carried by the gluons is 1/2",
+	//	which corresponds the definition in [1]
 	Ng = (6.-epsilon)*(5.-epsilon)*(4.-epsilon)*(3.-epsilon)*(2.-epsilon)*(1.-epsilon) /5./4./3./2. / 2.;
 		
 	a.push_back(-41.1);
@@ -178,8 +179,6 @@ double BHModel::W(double b, double mu) const
 
 TComplex BHModel::chi_without_i(double b) const
 {
-	// TODO: why the one half?
-
 	// Eqs. (B1) without the leading i factor and Eq. (B12) in [1]
 	double odd_sign = (cnts->pMode == cnts->mAPP) ? +1. : -1.;
 	return (
