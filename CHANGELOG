@@ -5,6 +5,8 @@ future release
 	* BHModel: updated to match with BLOCK, M. M., Phys. Rept. 436 (2006) 71-215
 	* new model labeling scheme: name:mode (variant) [version]
 	* added s-distribution sampler
+	* BHModel: inconsistencies checked with the authors
+	* BSWModel: reggeon contribution fully functional, correct difference between pp and app reactions
 
 release 1.0
 	* first fully operational version

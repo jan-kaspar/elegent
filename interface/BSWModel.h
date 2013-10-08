@@ -29,9 +29,18 @@ class BSWModel : public Model
 		/// a Regge trajectory
 		struct Trajectory
 		{
-			double C, b, a, ap, sig;
-			void Init(double _C, double _b, double _a, double _ap, double _sig)
-				{ C=_C; b=_b; a=_a; ap=_ap; sig = _sig; }
+			/// the parameters from Eq. (7) in [3]
+			double C, b, a, ap, signature;
+
+			/// Non-documented overall sign of the amplitude. These signs make
+			/// the difference between pp and app reactions (see the Init method).
+			double sign;
+
+			void Init(double _C, double _b, double _a, double _ap, double _signature)
+			{
+				C=_C; b=_b; a=_a; ap=_ap; signature = _signature;
+				sign = 0.;
+			}
 		};
 
 		/// available modes
@@ -46,7 +55,6 @@ class BSWModel : public Model
 		
 		~BSWModel() {}
 
-		/// the Pom+Reg mode still broken
 		void Configure(ModeType _mode = mPomReg, bool _presampled = true);
 		
 		virtual void Init();
@@ -69,8 +77,10 @@ class BSWModel : public Model
 		/// the 3 Regge trajectories
 		Trajectory A2, rho, omega;
 
-		/// temporary constants: Omega0 = S0*F + R0 / s / regge_fac;
-		TComplex regge_fac;
+		/// constants to resolve ambiguities in the source papers
+		TComplex regge_fac;		///< Omega0 = S0*F + R0 / s / regge_fac
+		signed int k_u;			///< u = -|u| exp(i * (2 k pi - pi))
+		signed int k_lnu;		///< ln u = |ln u| exp(i * (al + 2 k_lnu pi)), al = atan2(Im ln u, Re ln u) in (-pi, +pi)
 
 		double upper_bound_t, precision_t;
 		double upper_bound_b, precision_b;
