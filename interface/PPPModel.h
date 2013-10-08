@@ -25,7 +25,7 @@ class PPPModel : public Model
 			TComplex gamma;
 		};
 
-		/// available variant
+		/// available variants
 		enum VariantType
 		{
 			v2P,	///< with 2 Pomerons
@@ -41,7 +41,9 @@ class PPPModel : public Model
 		virtual void Print() const;
 
 		virtual TComplex Amp(double t) const;
-		virtual TComplex Prf(double b) const;		 ///< b in fm
+
+		/// b in fm
+		virtual TComplex Prf(double b) const;
 
 	protected:
 		Trajectory pom1, pom2, pom3, oder, regf, rego;
@@ -50,10 +52,10 @@ class PPPModel : public Model
 
 		static void SetTrajectory(Trajectory &t, double D, double c, double ap, double r2, double s0);
 
-		TComplex tr_eik(Trajectory, double s, double t) const;
+		static TComplex Delta(const Trajectory &, double t);
 
-
-		virtual TComplex prf0(double b) const;		///< b in GeV^-1
+		/// b in GeV^-1
+		virtual TComplex prf0(double b) const;
 		static	TComplex prf_J0(double *b, double *t, const void *obj);
 };
 

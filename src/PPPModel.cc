@@ -64,7 +64,7 @@ void PPPModel::Init()
 	//						1			1			GeV^2	GeV^2
 	if (variant == v2P)
 	{
-		// two pomerons
+		// parameters from Table 1 in [1]
 		SetTrajectory(pom1, 0.08590,	53.18,		0.360,	9.595,	s0);
 		SetTrajectory(pom2, 0.14437,	6.87,		0.082,	4.765,	s0);
 		SetTrajectory(oder, -0.2707,	1.8134,		0.029,	1.159,	s0);
@@ -74,7 +74,7 @@ void PPPModel::Init()
 	
 	if (variant == v3P)
 	{
-		// three pomerons
+		// parameters from Table 2 in [1]
 		SetTrajectory(pom1, 0.0578,		53.007,	 	0.5596, 6.3096, s0);
 		SetTrajectory(pom2, 0.1669,		9.6762,		0.2733,	3.1097, s0);
 		SetTrajectory(pom3, 0.2032,		1.6654,		0.0937,	2.4771, s0);
@@ -107,28 +107,32 @@ void PPPModel::Print() const
 
 //----------------------------------------------------------------------------------------------------
 
-TComplex PPPModel::tr_eik(Trajectory t, double , double b) const
+TComplex PPPModel::Delta(const Trajectory &traj, double b)
 {
-	// delta+-(s, b) ... eq (11), (12) without the leading i
-	// the s-dependence is now computed during initialization
-	// therefore any cnts->s change after init() won't have any affect
-	return t.gamma * exp(- b * b / t.rho2) / (4. * cnts->pi * t.rho2);
+	/// delta+-(s, b) according Eq. (11) without the leading i and Eq. (12)
+
+	// NOTE: the s-dependence is calculated during initialization, therefore any cnts->s change
+	// after Init() will have no effect
+
+	return traj.gamma * exp(- b * b / traj.rho2) / (4. * cnts->pi * traj.rho2);
 }
 
 //----------------------------------------------------------------------------------------------------
 
 TComplex PPPModel::prf0(double b) const
 {
-	TComplex delta = i*tr_eik(pom1, cnts->s, b) + i*tr_eik(pom2, cnts->s, b) + i*tr_eik(regf, cnts->s, b);
+	/// delta as from Eq. (9) from [1]
+	TComplex delta = i*Delta(pom1, b) + i*Delta(pom2, b) + i*Delta(regf, b);
 
 	if (cnts->pMode == cnts->mPP)
-		delta += tr_eik(oder, cnts->s, b) + tr_eik(rego, cnts->s, b);
+		delta += Delta(oder, b) + Delta(rego, b);
 	else
-		delta -= tr_eik(oder, cnts->s, b) + tr_eik(rego, cnts->s, b);
+		delta -= Delta(oder, b) + Delta(rego, b);
 
 	if (variant == v3P)
-		delta += i*tr_eik(pom3, cnts->s, b);
+		delta += i*Delta(pom3, b);
 
+	/// scattering amplitude according to Eq. (1) in [1]
 	return (TComplex::Exp(2.*i*delta) - 1.) / 2. / i;
 }
 
