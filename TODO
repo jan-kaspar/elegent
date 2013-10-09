@@ -1,13 +1,20 @@
 * problem with low |t| sampling: visible in B(t)
 
 * make new release
+ - and regenerate all distributions and plots
 
-* email model authors: BSW, Islam, Jenkovszky, PPP, (Dremin ?)
+* email
+ - BSW
+ - Islam
+ - Jenkovszky: other trajectory parameterisations than Eq. (8)?
+ - PPP
+ - Dremin ?
+ - Vojtech, Jiri
 
 * paper
- - upload to arXiv
- - link to home page
-
+ - corrections to BH and BSW models
+ - program summary table
+ - submit
 
 -------------------- long term --------------------
 
