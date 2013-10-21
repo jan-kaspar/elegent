@@ -22,6 +22,7 @@ tar czf "$tarFile" \
 		"$prefix/plots/code.asy" \
 		"$prefix/plots/generate_plots" \
 		"$prefix/src" \
+		"$prefix/AUTHORS" \
 		"$prefix/CHANGELOG" \
 		"$prefix/Doxyfile" \
 		"$prefix/README" \
