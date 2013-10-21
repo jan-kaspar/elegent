@@ -405,6 +405,7 @@ void MakePlots(string pp_energies_str, string app_energies_str)
 	string pp_energies_a[] = split(pp_energies_str, " ");
 	string app_energies_a[] = split(app_energies_str, " ");
 
+	/*
 	write(f_out, "<h1>t-distributions</h1>", endl);
 	MakeTPlots("pp", pp_energies_a);
 	MakeTPlots("app", app_energies_a);
@@ -412,6 +413,7 @@ void MakePlots(string pp_energies_str, string app_energies_str)
 	write(f_out, "<h1>b-distributions</h1>", endl);
 	MakeBPlots("pp", pp_energies_a);
 	MakeBPlots("app", app_energies_a);
+	*/
 	
 	write(f_out, "<h1>s-distributions</h1>", endl);
 	MakeSPlots("pp");

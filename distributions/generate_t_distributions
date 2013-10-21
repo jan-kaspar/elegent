@@ -21,18 +21,4 @@ function Generate()
 
 #----------------------------------------------------------------------------------------------------
 
-Generate "pp" "23" &
-Generate "pp" "31" &
-Generate "pp" "53" &
-Generate "pp" "200" &
-Generate "pp" "2760" &
-Generate "pp" "7000" &
-Generate "pp" "8000" &
-Generate "pp" "13000" &
 Generate "pp" "14000" &
-
-Generate "app" "31" &
-Generate "app" "53" &
-Generate "app" "546" &
-Generate "app" "630" &
-Generate "app" "1800" &

@@ -1,30 +1,47 @@
 * problem with low |t| sampling: visible in B(t)
 
 * make new release
- - and regenerate all distributions and plots
+ - and regenerate all distributions and plots; upload them to web
 
 * email
- - BSW
- - Islam
- - Jenkovszky: other trajectory parameterisations than Eq. (8)?
- - PPP
  - Dremin ?
- - Vojtech, Jiri
+
+* license - GPL?
+ - 'COPYING' file
+ - header to each source file - template: http://www.gnu.org/licenses/gpl-howto.html
 
 * paper
- - corrections to BH and BSW models
- - program summary table
  - submit
+ - move sources to elegent subversion?
 
 -------------------- long term --------------------
+
+* use of autotools system
+ - redesign structure of source files, scripts, ...
+	- implications on the interface to CMSSW
+    - need to have two subdirectories (library and utilities) ??
+ - which files go to release tar balls?
+ - which files go to installation (and where)? In particular what to do with scripts?
+ - targets: shared library and executables (linked againts the library)
+ - search for dependencies (ROOT and HepMC): in the order: input by user (if entered via a switch), $ROOTSYS, /usr
+ - for ROOT: there are 3 subdirs of relevance: /bin(/root-config), /lib(/libCore.so), /include(/TObject.h)
+ - for HepMC: there are 2 subdirs of relevance: /lib(/libHepMC), /include/HepMC(/GenEvent.h)
+ - finaly update: README, web, Wiki
+
+* middle range t-plots: linear, up to ~1.5 GeV^2
+
+* traceable Elegent version - a la Asymptote? 
+ - in ROOT files, in plots
 
 * add more models
  - group of Ferreira contacted, waiting for response
 
 * s-distributions: add si_el(s), si_inel(s) and their ratios
 
+* experimental data to plots
+
 * Jenkovszky model: other trajectory parameterisations than Eq. (8)?
 
-* custom integration --> some standard library (e.g. GSL)
+* Islam model: implement updates (multiple omega exchange, new sign for LxG amplitude)
 
-* use of GNU automake system
+* custom integration --> some standard library (e.g. GSL)
