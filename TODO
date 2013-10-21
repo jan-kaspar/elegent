@@ -1,4 +1,5 @@
 * problem with low |t| sampling: visible in B(t)
+ - then finish the TODO in "code.asy"
 
 * make new release
  - and regenerate all distributions and plots; upload them to web
@@ -6,13 +7,8 @@
 * email
  - Dremin ?
 
-* license - GPL?
- - 'COPYING' file
- - header to each source file - template: http://www.gnu.org/licenses/gpl-howto.html
-
 * paper
  - submit
- - move sources to elegent subversion?
 
 -------------------- long term --------------------
 
@@ -27,6 +23,8 @@
  - for ROOT: there are 3 subdirs of relevance: /bin(/root-config), /lib(/libCore.so), /include(/TObject.h)
  - for HepMC: there are 2 subdirs of relevance: /lib(/libHepMC), /include/HepMC(/GenEvent.h)
  - finaly update: README, web, Wiki
+
+* rename ElegentTest to ElegentGeneratorTest ?
 
 * middle range t-plots: linear, up to ~1.5 GeV^2
 
