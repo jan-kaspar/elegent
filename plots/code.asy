@@ -304,47 +304,49 @@ void MakeTPlots(string mode, string energies[])
 	RegisterPlot("diff_cs", "hadronic differential cross-section", doubleScale=true, new void (string input_file, string option) {
 		NewPad("$|t|\ung{GeV^2}$", "$\d\si / \d t \ung{mb/GeV^2}$");
 		scale((option == "low |t|") ? Log : Linear, Log(true));
-		PlotAllModels(input_file, "full range/<model>/PH/differential cross-section", "hadronic differential cross-section");
+		PlotAllModels(input_file, option+"/<model>/PH/differential cross-section", "hadronic differential cross-section");
 	});
 	
 	RegisterPlot("B", "hadronic slope", doubleScale=true, new void (string input_file, string option) {
 		NewPad("$|t|\ung{GeV^2}$", "$B(t) \equiv {\d\over \d t} \log{\d\si\over\d t} \ung{GeV^{-2}}$");
 		scale((option == "low |t|") ? Log : Linear, Linear(true));
+		// TODO
 		PlotAllModels(input_file, "full range/<model>/PH/B", "hadronic slope");
+		//PlotAllModels(input_file, option+"/<model>/PH/B", "hadronic slope");
 	});
 	
 	RegisterPlot("phase", "hadronic phase", doubleScale=true, new void (string input_file, string option) {
 		NewPad("$|t|\ung{GeV^2}$", "$\arg F^{\rm H}(t)$");
 		scale((option == "low |t|") ? Log : Linear, Linear);
-		PlotAllModels(input_file, "full range/<model>/PH/phase", "hadronic phase", true, 1);
+		PlotAllModels(input_file, option+"/<model>/PH/phase", "hadronic phase", true, 1);
 		ylimits(-3.141593, +3.141593, Crop);
 	});
 	
 	RegisterPlot("rho", "hadronic rho", doubleScale=true, new void (string input_file, string option) {
 		NewPad("$|t|\ung{GeV^2}$", "$\rh(t) \equiv {\Re F^{\rm H}\over \Im F^{\rm H}}$");
 		scale((option == "low |t|") ? Log : Linear, Linear(true));
-		PlotAllModels(input_file, "full range/<model>/PH/rho", "rho parameter", true, 8);
+		PlotAllModels(input_file, option+"/<model>/PH/rho", "rho parameter", true, 8);
 		ylimits(-10, 10, Crop);
 	});
 	
 	RegisterPlot("C", "influence of Coulomb interaction", doubleScale=true, new void (string input_file, string option) {
 		NewPad("$|t|\ung{GeV^2}$", "$C(t) \equiv {|F^{\rm C+H}|^2 - |F^{\rm H}|^2 \over |F^{\rm H}|^2}$");
 		scale((option == "low |t|") ? Log : Linear, Linear(true));
-		PlotAllModels(input_file, "full range/<model>/C", "influence of Coulomb interaction");
+		PlotAllModels(input_file, option+"/<model>/C", "influence of Coulomb interaction");
 		//ylimits(-10, 10, Crop);
 	});
 	
 	RegisterPlot("Z", "importance of the interference term", doubleScale=true, new void (string input_file, string option) {
 		NewPad("$|t|\ung{GeV^2}$", "$Z(t) \equiv {|F^{\rm C+H}|^2 - |F^{\rm H}|^2 - |F^{\rm C}|^2 \over |F^{\rm C+H}|^2}$");
 		scale((option == "low |t|") ? Log : Linear, Linear(true));
-		PlotAllModels(input_file, "full range/<model>/Z", "importance of the interference term");
+		PlotAllModels(input_file, option+"/<model>/Z", "importance of the interference term");
 		//ylimits(-10, 10, Crop);
 	});
 	
 	RegisterPlot("R", "difference between SWY and KL formulae", doubleScale=true, new void (string input_file, string option) {
 		NewPad("$|t|\ung{GeV^2}$", "$R(t) \equiv {|F^{\rm KL}|^2 - |F^{\rm WY}|^2 \over |F^{\rm KL}|^2}$");
 		scale((option == "low |t|") ? Log : Linear, Linear(true));
-		PlotAllModels(input_file, "full range/<model>/R", "difference between SWY and KL formulae");
+		PlotAllModels(input_file, option+"/<model>/R", "difference between SWY and KL formulae");
 		//ylimits(-10, 10, Crop);
 	});
 
@@ -405,7 +407,6 @@ void MakePlots(string pp_energies_str, string app_energies_str)
 	string pp_energies_a[] = split(pp_energies_str, " ");
 	string app_energies_a[] = split(app_energies_str, " ");
 
-	/*
 	write(f_out, "<h1>t-distributions</h1>", endl);
 	MakeTPlots("pp", pp_energies_a);
 	MakeTPlots("app", app_energies_a);
@@ -413,7 +414,6 @@ void MakePlots(string pp_energies_str, string app_energies_str)
 	write(f_out, "<h1>b-distributions</h1>", endl);
 	MakeBPlots("pp", pp_energies_a);
 	MakeBPlots("app", app_energies_a);
-	*/
 	
 	write(f_out, "<h1>s-distributions</h1>", endl);
 	MakeSPlots("pp");
