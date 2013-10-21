@@ -1,4 +1,6 @@
 future release
+
+release 1.1
 	* naming scheme for distributions and plots
 		...<mode>,<sqrt(s)>GeV...
 	* minor modification: JenkovszkyModel updated to match with Int. J. Mod. Phys. A26 (2011)

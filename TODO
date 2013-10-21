@@ -1,21 +1,12 @@
 * problem with low |t| sampling: visible in B(t)
  - then finish the TODO in "code.asy"
 
-* make new release
- - and regenerate all distributions and plots; upload them to web
-
-* email
- - Dremin ?
-
-* paper
- - submit
-
 -------------------- long term --------------------
 
 * use of autotools system
  - redesign structure of source files, scripts, ...
 	- implications on the interface to CMSSW
-    - need to have two subdirectories (library and utilities) ??
+    - need to have two src subdirectories (library and utilities) ??
  - which files go to release tar balls?
  - which files go to installation (and where)? In particular what to do with scripts?
  - targets: shared library and executables (linked againts the library)
@@ -30,6 +21,7 @@
 
 * traceable Elegent version - a la Asymptote? 
  - in ROOT files, in plots
+ - release or SVN revision
 
 * add more models
  - group of Ferreira contacted, waiting for response
