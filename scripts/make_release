@@ -15,13 +15,15 @@ then
 fi
 
 tar czf "$tarFile" \
-		"$prefix/interface" \
 		"$prefix/distributions/generate_t_distributions" \
 		"$prefix/distributions/generate_b_distributions" \
 		"$prefix/distributions/generate_s_distributions" \
+		"$prefix/interface" \
 		"$prefix/plots/code.asy" \
 		"$prefix/plots/generate_plots" \
+		"$prefix/scripts/make_release" \
 		"$prefix/src" \
+		"$prefix/test/package_test" \
 		"$prefix/AUTHORS" \
 		"$prefix/CHANGELOG" \
 		"$prefix/COPYING" \
