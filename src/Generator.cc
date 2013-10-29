@@ -139,6 +139,9 @@ void Generator::GenerateBase(double rn1, double rn2, GenEvent* gEv)
 {
 	gEv->set_signal_process_id(Generator::ElasticScattering);
 
+	// set event units
+	gEv->use_units(Units::GEV, Units::MM);
+
 	// create vertex at t = 0, position 0;
 	GenVertex* gVx = new GenVertex(FourVector(0., 0., 0., 0.));
 	gEv->add_vertex(gVx);
