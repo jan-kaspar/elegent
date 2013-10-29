@@ -1,5 +1,9 @@
 future release
 
+release 1.2
+	* fixed make_release script
+	* explict unit specification (GeV, mm) in HepMC event description
+
 release 1.1
 	* naming scheme for distributions and plots
 		...<mode>,<sqrt(s)>GeV...
