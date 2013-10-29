@@ -34,15 +34,20 @@ scripts/make_release : script to make a release tar ball
 
 test/package_test : script to test various functionalities of the package
 
+AUTHORS : authors contact info
+
 CHANGELOG : history of changes relevant for a user
 
-Doxyfile : configuration file for code documentation generation by Doxygen
+COPYING : text of the GPLv3 license
 
-makefile : build system configuration
+Doxyfile : configuration file for code documentation generation by Doxygen
 
 README : this file
 
 TODO : a "to do" list
+
+makefile : build system configuration
+
 
 
 ----------------------------------------------------------------------------------------------------
@@ -58,7 +63,7 @@ from Subversion:
 BUILD
 
 Edit the `makefile' such that `ROOTDIR' and `HepMCDIR' point to your ROOT and HepMC installations.
-The run
+Then run
 	make
 
 ENVIRONMENT
