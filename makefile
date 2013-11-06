@@ -79,7 +79,7 @@ lib/libElegent.so: $(dict_modules_obj) $(modules_obj)
 
 bin/% : src/%.cc lib/libElegent.so
 	@echo BUILDING $@
-	$(GCC) $(INCS) $(LIBS) -Llib -lElegent $< -o $@
+	$(GCC) $< -Llib -lElegent $(INCS) $(LIBS) -o $@
 
 info:
 	echo $(dirsToCreate)

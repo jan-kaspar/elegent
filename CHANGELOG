@@ -1,5 +1,8 @@
 future release
 
+release 1.2.1
+	* fixed build problem on Ubuntu
+
 release 1.2
 	* fixed make_release script
 	* explict unit specification (GeV, mm) in HepMC event description
