@@ -24,6 +24,11 @@ tar czf "$tarFile" \
 		"$prefix/scripts/make_release" \
 		"$prefix/src" \
 		"$prefix/test/package_test" \
+		"$prefix/test/check_graph_points.cc" \
+		"$prefix/test/test1" \
+		"$prefix/test/test2" \
+		"$prefix/test/test3" \
+		"$prefix/test/test4" \
 		"$prefix/AUTHORS" \
 		"$prefix/CHANGELOG" \
 		"$prefix/COPYING" \

@@ -32,7 +32,7 @@ plots/generate_plots, plots/code.asy : scripts to produce the plots available at
 
 scripts/make_release : script to make a release tar ball
 
-test/package_test : script to test various functionalities of the package
+test/* : scripts to test various functionalities of the package
 
 AUTHORS : authors contact info
 
@@ -65,6 +65,13 @@ BUILD
 Edit the `makefile' such that `ROOTDIR' and `HepMCDIR' point to your ROOT and HepMC installations.
 Then run
 	make
+
+BUILD TEST
+
+To verify the success of your build, you can do the following:
+	cd test
+	./package_test
+Prior to that, make sure that ROOT and HepMC libraries can be found in LD_LIBRARY_PATH.
 
 ENVIRONMENT
 

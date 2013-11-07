@@ -1,0 +1,27 @@
+#!/bin/bash
+
+# test for root
+which "root" &> /dev/null
+if [ $? -ne 0 ]
+then
+	echo "ERROR: cannot run 'root'."	
+	exit 77
+fi
+
+if [ ! -f "t-distribution_test.root" ]
+then
+	echo "ERROR: cannot find file 't-distribution_test.root' - it should be produced by test1."	
+	exit 77
+fi
+
+# run program
+../bin/ElegentTest "t-distribution_test.root" "full range/petrov (3p) [02]/PH/cumulative cross-section" 0 10 3 &> "test4.out" \
+	|| exit 1
+
+# test output
+cat test4.out|grep "GenEvent: #0 ID=91" || exit 2
+cat test4.out|grep "GenEvent: #1 ID=91" || exit 2
+cat test4.out|grep "GenEvent: #2 ID=91" || exit 2
+
+# succes
+exit 0

@@ -13,6 +13,7 @@
  - search for dependencies (ROOT and HepMC): in the order: input by user (if entered via a switch), $ROOTSYS, /usr
  - for ROOT: there are 3 subdirs of relevance: /bin(/root-config), /lib(/libCore.so), /include(/TObject.h)
  - for HepMC: there are 2 subdirs of relevance: /lib(/libHepMC), /include/HepMC(/GenEvent.h)
+ - integrate tests
  - finaly update: README, web, Wiki
 
 * rename ElegentTest to ElegentGeneratorTest ?

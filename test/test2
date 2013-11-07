@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# test for root
+which "root" &> /dev/null
+if [ $? -ne 0 ]
+then
+	echo "ERROR: cannot run 'root'."	
+	exit 77
+fi
+
+# run sampler
+../bin/ElegentBDistributionSampler\
+	 -energy 7000 -pp -models "petrov (3p) [02]" -output "b-distribution_test.root"\
+	 -N 10 -bmin 0 -bmax 10\
+	 	|| exit 1
+
+# check output
+root -b -q -l 'check_graph_points.cc("b-distribution_test.root", "petrov (3p) [02]/prf_re", 10)'
+if [ $? -ne 0 ]
+then
+	echo "ERROR: wrong number of points."
+	exit 2
+fi
+
+# succes
+exit 0
