@@ -24,6 +24,26 @@ function RunTest()
 # set up environment
 LD_LIBRARY_PATH=$LD_LIBRARY_PATH:`pwd`/../lib
 
+#----------------------------------------------------------------------------------------------------
+
+# determine ROOT executable
+
+root_exe=`which "root"`
+if [ -z "$root_exe" ]
+then
+	root_exe=`which "root.exe"`
+fi
+
+if [ -z "$root_exe" ]
+then
+	echo "ERROR: Cannot determine ROOT executable. No tests will be run."
+	exit 1
+fi
+
+export root_exe=$root_exe
+
+#----------------------------------------------------------------------------------------------------
+
 # run all tests
 RunTest "test1"
 RunTest "test2"

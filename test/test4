@@ -1,13 +1,6 @@
 #!/bin/bash
 
-# test for root
-which "root" &> /dev/null
-if [ $? -ne 0 ]
-then
-	echo "ERROR: cannot run 'root'."	
-	exit 77
-fi
-
+# input file present?
 if [ ! -f "t-distribution_test.root" ]
 then
 	echo "ERROR: cannot find file 't-distribution_test.root' - it should be produced by test1."	

@@ -1,13 +1,5 @@
 #!/bin/bash
 
-# test for root
-which "root" &> /dev/null
-if [ $? -ne 0 ]
-then
-	echo "ERROR: cannot run 'root'."	
-	exit 77
-fi
-
 # run sampler
 ../bin/ElegentSDistributionSampler\
 	-pp -models "petrov (3p) [02]" -output "s-distribution_test.root"\
@@ -15,7 +7,7 @@ fi
 		|| exit 1
 
 # check output
-root -b -q -l 'check_graph_points.cc("s-distribution_test.root", "petrov (3p) [02]/si_tot", 100)'
+$root_exe -b -q -l 'check_graph_points.cc("s-distribution_test.root", "petrov (3p) [02]/si_tot", 100)'
 if [ $? -ne 0 ]
 then
 	echo "ERROR: wrong number of points."
