@@ -1,7 +1,8 @@
 future release
 
 release 1.2.1
-	* fixed build problem on Ubuntu
+	* fixed build problem: correct order of libraries
+	* improved test suite
 
 release 1.2
 	* fixed make_release script
