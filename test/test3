@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # run sampler
-../bin/ElegentSDistributionSampler\
+"$bin_dir/ElegentSDistributionSampler"\
 	-pp -models "petrov (3p) [02]" -output "s-distribution_test.root"\
 	-N 100 -Wmin 2 -Wmax "1E5"\
 		|| exit 1

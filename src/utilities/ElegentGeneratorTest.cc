@@ -34,7 +34,7 @@ using namespace HepMC;
 
 void PrintUsage()
 {
-	printf("USAGE: ElegentTest <file name> <model path> <t_min> <t_max> <number of events>\n");
+	printf("USAGE: ElegentGeneratorTest <file name> <model path> <t_min> <t_max> <number of events>\n");
 }
 
 //----------------------------------------------------------------------------------------------------

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # run sampler
-../bin/ElegentBDistributionSampler\
+"$bin_dir/ElegentBDistributionSampler"\
 	 -energy 7000 -pp -models "petrov (3p) [02]" -output "b-distribution_test.root"\
 	 -N 10 -bmin 0 -bmax 10\
 	 	|| exit 1

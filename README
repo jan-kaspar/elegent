@@ -2,6 +2,8 @@
 PACKGAGE CONTENTS
 ----------------------------------------------------------------------------------------------------
 
+!!!!!!!!!!!!!! TODO: UPDATE !!!!!!!!!!!!!
+
 interface/Math.h, src/Math.cc : implementation of numerical integration routines
 
 interface/Constants.h, src/Constants.cc : mathematical and physics constants as well as process
@@ -62,18 +64,27 @@ from Subversion:
 
 BUILD
 
-Edit the `makefile' such that `ROOTDIR' and `HepMCDIR' point to your ROOT and HepMC installations.
-Then run
+The build is based on the CMake system (http://www.cmake.org/). While you may use any functionality
+it supports, the recommended build is as follows:
+	mkdir build
+	cd build
+	cmake ../src <options>
 	make
+CMake will automatically search for ROOT and HepMC installations. If it fails or if you wish to use
+a given installation, apply the following options:
+	-DHEPMC_PREFIX:STRING=<your chosen directory>
+	-DROOT_PREFIX:STRING=<your chosen directory>
 
 BUILD TEST
 
-To verify the success of your build, you can do the following:
-	cd test
+To verify the success of the recommended build, you can do the following:
+	cd ../test
 	./package_test
 Prior to that, make sure that ROOT and HepMC libraries can be found in LD_LIBRARY_PATH.
 
 ENVIRONMENT
+
+!!!!!!!!!!! TODO !!!!!!!!!!!!!!!!
 
 Depending on your system, you might want to add
   * `lib' sub-directory to the `LD_LIBRARY_PATH' environment variable and

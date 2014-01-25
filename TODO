@@ -1,28 +1,21 @@
+* use of CMake system
+ - redesign structure of source files, scripts, ...
+	- implications on the interface to CMSSW
+ - which files go to release tar balls?
+ - which files go to installation (and where)? In particular what to do with scripts?
+ - integrate tests
+ - version(s) to some config file - traceable Elegent version - a la Asymptote?
+ 	- in ROOT files, in plots
+ 	- release or SVN revision
+ - finaly update: README, web, Wiki
+ - test on: pckasparek, lxplus, hepforge
+
 * problem with low |t| sampling: visible in B(t)
  - then finish the TODO in "code.asy"
 
--------------------- long term --------------------
-
-* use of autotools system
- - redesign structure of source files, scripts, ...
-	- implications on the interface to CMSSW
-    - need to have two src subdirectories (library and utilities) ??
- - which files go to release tar balls?
- - which files go to installation (and where)? In particular what to do with scripts?
- - targets: shared library and executables (linked againts the library)
- - search for dependencies (ROOT and HepMC): in the order: input by user (if entered via a switch), $ROOTSYS, /usr
- - for ROOT: there are 3 subdirs of relevance: /bin(/root-config), /lib(/libCore.so), /include(/TObject.h)
- - for HepMC: there are 2 subdirs of relevance: /lib(/libHepMC), /include/HepMC(/GenEvent.h)
- - integrate tests
- - finaly update: README, web, Wiki
-
-* rename ElegentTest to ElegentGeneratorTest ?
-
 * middle range t-plots: linear, up to ~1.5 GeV^2
 
-* traceable Elegent version - a la Asymptote? 
- - in ROOT files, in plots
- - release or SVN revision
+-------------------- long term --------------------
 
 * add more models
  - group of Ferreira contacted, waiting for response

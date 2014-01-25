@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # run sampler
-../bin/ElegentTDistributionSampler\
+"$bin_dir/ElegentTDistributionSampler"\
 	-energy 7000 -pp -models "petrov (3p) [02]" -output "t-distribution_test.root"\
 	-model-N 20 -model-tmax 20\
 	-full-N 10 -full-tmax 10\
