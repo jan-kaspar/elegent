@@ -7,7 +7,7 @@
 		|| exit 1
 
 # check output
-$root_exe -b -q -l 'check_graph_points.cc("s-distribution_test.root", "petrov (3p) [02]/si_tot", 100)'
+$root_exe -b -q -l '../check_graph_points.cc("s-distribution_test.root", "petrov (3p) [02]/si_tot", 100)'
 if [ $? -ne 0 ]
 then
 	echo "ERROR: wrong number of points."

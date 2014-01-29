@@ -1,5 +1,14 @@
 #!/bin/bash
 
+#----------------------------------------------------------------------------------------------------
+
+function PrintUsage()
+{
+	echo "USAGE: package_test [path-to-build]"
+}
+
+#----------------------------------------------------------------------------------------------------
+
 function RunTest()
 {
 	echo ">> running test '$1'"
@@ -25,6 +34,18 @@ function RunTest()
 LD_LIBRARY_PATH=$LD_LIBRARY_PATH:`pwd`/../lib
 
 #----------------------------------------------------------------------------------------------------
+# directory with executables
+
+if [ $# -ne 1 ]
+then
+	echo "ERROR: Wrong number of parameters."
+	PrintUsage
+	exit 1
+fi
+
+export bin_dir="../$1/utilities"
+
+#----------------------------------------------------------------------------------------------------
 
 # determine ROOT executable
 
@@ -37,21 +58,16 @@ fi
 if [ -z "$root_exe" ]
 then
 	echo "ERROR: Cannot determine ROOT executable. No tests will be run."
-	exit 1
+	exit 2
 fi
 
 export root_exe=$root_exe
 
 #----------------------------------------------------------------------------------------------------
-# directory with executables
-
-export bin_dir="../../build/utilities"
-
-#----------------------------------------------------------------------------------------------------
 # prepare test directory
 
 mkdir -p "tests"
-cd "tests" || exit 2
+cd "tests" || exit 3
 
 #----------------------------------------------------------------------------------------------------
 

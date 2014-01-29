@@ -8,7 +8,7 @@ then
 fi
 
 # run program
-"$bin_dir/ElegentTest" "t-distribution_test.root" "full range/petrov (3p) [02]/PH/cumulative cross-section" 0 10 3 &> "test4.out" \
+"$bin_dir/ElegentGeneratorTest" "t-distribution_test.root" "full range/petrov (3p) [02]/PH/cumulative cross-section" 0 10 3 &> "test4.out" \
 	|| exit 1
 
 # test output
