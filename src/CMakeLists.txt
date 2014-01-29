@@ -26,6 +26,10 @@ configure_file(
 
 include_directories("${PROJECT_BINARY_DIR}/libElegent")
 
+# compiler flags
+add_definitions("-Wall")
+set(CMAKE_CXX_FLAGS "-O3")
+
 # list of subdirectories
 add_subdirectory(libElegent)
 add_subdirectory(utilities)
