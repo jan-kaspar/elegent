@@ -55,7 +55,7 @@ unsigned int Generator::Init()
 	}
 
 	// get cms energy
-	TGraph *data = (TGraph *) file.Get("data");
+	TGraph *data = (TGraph *) file.Get("meta-data");
 	if (!data)
 	{
 		printf("ERROR in Elegent::Generator::Init > File `%s' does not contain `data' object.\n", fileName.c_str());

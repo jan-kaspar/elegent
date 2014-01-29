@@ -23,6 +23,7 @@
 #include <vector>
 #include <map>
 
+#include "interface/Config.h"
 #include "interface/Constants.h"
 #include "interface/ModelFactory.h"
 
@@ -123,6 +124,7 @@ int main(int argc, char **argv)
 		
 		if (strcmp(argv[i], "-l") == 0 || strcmp(argv[i], "-model-list") == 0)
 		{
+			printf("Elegent version: " Elegent_VERSION "\n");
 			PrintModelList();
 			return 0;
 		}
@@ -224,6 +226,13 @@ int main(int argc, char **argv)
 
 	// prepare output
 	TFile *outF = new TFile(outputFileName.c_str(), "recreate");
+
+	// a trick to
+	//	* save Elegent version number
+	TGraph *data = new TGraph();
+	data->SetName("meta-data");
+	data->SetTitle(Elegent_VERSION);
+	data->Write();
 
 	// build the s-distributions
 	for (unsigned int mi = 0; mi < models.size(); mi++)

@@ -23,6 +23,7 @@
 #include <vector>
 #include <map>
 
+#include "interface/Config.h"
 #include "interface/Constants.h"
 #include "interface/ModelFactory.h"
 
@@ -117,9 +118,10 @@ int main(int argc, char **argv)
 		
 		if (strcmp(argv[i], "-l") == 0 || strcmp(argv[i], "-model-list") == 0)
 		{
+			printf("Elegent version: " Elegent_VERSION "\n");
 			PrintModelList();
 			return 0;
-		}
+	}
 
 		if (strcmp(argv[i], "-energy") == 0)
 		{
@@ -235,9 +237,12 @@ int main(int argc, char **argv)
 	// prepare output
 	TFile *outF = new TFile(outputFileName.c_str(), "recreate");
 
-	// a trick to save E, since of->WriteObject(&E, "cmsEnergy") doesn't work
+	// a trick to
+	//	* save E, since of->WriteObject(&E, "cmsEnergy") doesn't work
+	//	* save Elegent version number
 	TGraph *data = new TGraph();
-	data->SetName("data");
+	data->SetName("meta-data");
+	data->SetTitle(Elegent_VERSION);
 	data->SetPoint(0, 0., W/2.);
 	data->Write();
 
