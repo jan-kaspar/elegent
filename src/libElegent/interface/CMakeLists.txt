@@ -1,0 +1,18 @@
+cmake_minimum_required(VERSION 2.6)
+
+install(FILES
+	BHModel.h
+	BSWModel.h
+	Constants.h
+	CoulombInterference.h
+	ExpModel.h
+	Generator.h
+	InterpolationModel.h
+	IslamModel.h
+	JenkovszkyModel.h
+	Math.h
+	ModelFactory.h
+	Model.h
+	PPPModel.h
+	"${PROJECT_BINARY_DIR}/libElegent/interface/Config.h"	
+		DESTINATION "include/Elegent")
