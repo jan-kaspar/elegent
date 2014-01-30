@@ -1,12 +1,6 @@
 * use of CMake system
- - redesign structure of source files, scripts, ...
-	- implications on the interface to CMSSW
- - which files go to release tar balls?
- - which files go to installation (and where)? In particular what to do with scripts?
- - integrate tests
- - version(s) to some config file - traceable Elegent version - a la Asymptote?
- 	- in ROOT files, in plots
- 	- release or SVN revision
+ - update interface to CMSSW
+ - version(s) to some config file - traceable Elegent version - in plots
  - finaly update: README, web, Wiki
  - test on: pckasparek, lxplus, hepforge
 
@@ -17,12 +11,12 @@
 
 -------------------- long term --------------------
 
+* experimental data to plots
+
 * add more models
  - group of Ferreira contacted, waiting for response
 
 * s-distributions: add si_el(s), si_inel(s) and their ratios
-
-* experimental data to plots
 
 * Jenkovszky model: other trajectory parameterisations than Eq. (8)?
 

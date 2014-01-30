@@ -1,6 +1,7 @@
 future release
 	* build based on CMake
 	* ElegentTest renamed to ElegentGeneratorTest
+	* Elegent version in ROOT files
 
 release 1.2.1
 	* fixed build problem: correct order of libraries

@@ -2,7 +2,7 @@
 PACKGAGE CONTENTS
 ----------------------------------------------------------------------------------------------------
 
-!!!!!!!!!!!!!! TODO: UPDATE !!!!!!!!!!!!!
+!!!!!!!!!!!!!! TODO: UPDATE or REMOVE !!!!!!!!!!!!!
 
 interface/Math.h, src/Math.cc : implementation of numerical integration routines
 
@@ -57,12 +57,15 @@ USAGE INSTRUCTIONS
 ----------------------------------------------------------------------------------------------------
 
 DOWNLOAD
+--------
 
 Either download an Elegent release (http://www.hepforge.org/downloads/elegent) or checkout the code
 from Subversion:
 	svn co http://elegent.hepforge.org/svn/trunk
 
+
 BUILD
+-----
 
 The build is based on the CMake system (http://www.cmake.org/). While you may use any functionality
 it supports, the recommended build is as follows:
@@ -74,15 +77,24 @@ CMake will automatically search for ROOT and HepMC installations. If it fails or
 a given installation, apply the following options:
 	-DHEPMC_PREFIX:STRING=<your chosen directory>
 	-DROOT_PREFIX:STRING=<your chosen directory>
+The program files (executables, library and header files) can be installed by
+	make install
+The installation destination can be set by option
+	-DCMAKE_INSTALL_PREFIX=<your chosen directory>
+passed to cmake at configure time.
+
 
 BUILD TEST
+----------
 
 To verify the success of the recommended build, you can do the following:
 	cd ../test
-	./package_test
+	./package_test ../build
 Prior to that, make sure that ROOT and HepMC libraries can be found in LD_LIBRARY_PATH.
 
+
 ENVIRONMENT
+-----------
 
 !!!!!!!!!!! TODO !!!!!!!!!!!!!!!!
 
@@ -91,7 +103,9 @@ Depending on your system, you might want to add
   * `bin' sub-directory to `PATH'
 before your run any of the programs below.
 
+
 PROGRAM EXECUTION
+-----------------
 
 All executable programs can be run with `-h' option in oder to get help. Alternatively, you can
 consult the Wiki pages:
