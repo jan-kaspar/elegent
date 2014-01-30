@@ -1,7 +1,8 @@
 future release
 	* build based on CMake
 	* ElegentTest renamed to ElegentGeneratorTest
-	* Elegent version in ROOT files
+	* traceable Elegent version (and SVN revision) in ROOT files and plots
+	* middle range t-plots: linear, up to 1.5 GeV^2
 
 release 1.2.1
 	* fixed build problem: correct order of libraries

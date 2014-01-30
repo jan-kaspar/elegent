@@ -122,6 +122,13 @@ void PlotAllModels(string input_file, string template, string legend_title,
 			draw(obj, "l", model_pens[mi], label);
 	}
 
+	// try to get Elegent version
+	rObject metadata = rGetObj(input_file, "meta-data", error=false);
+	if (metadata.valid)
+	{
+		legend_title += "\quad{\it (Elegent version: " + metadata.sExec("GetTitle") + ")}";
+	}
+
 	legend_frame = BuildLegend(legend_title);
 }
 
@@ -157,34 +164,36 @@ struct PlotDesc
 {
 	PlotFcn plotFcn;
 	string fileName, htmlLabel;
-	bool doubleScale;
+	bool tripleScale;
 };
 
 //----------------------------------------------------------------------------------------------------
 
 PlotDesc plots[];
 
-void RegisterPlot(string fn, string hl, bool doubleScale, PlotFcn pf)
+void RegisterPlot(string fn, string hl, bool tripleScale, PlotFcn pf)
 {
 	PlotDesc pd;
 	pd.plotFcn = pf;
 	pd.fileName = fn;
 	pd.htmlLabel = hl;
-	pd.doubleScale = doubleScale;
+	pd.tripleScale = tripleScale;
 
 	plots.push(pd);
 }
 
 //----------------------------------------------------------------------------------------------------
 
-void ProcessOnePlot(int pi, string mode, string energies[], string tag, string file_suffix, string obj_prefix, int html_flag)
+void ProcessOnePlot(int pi, string mode, string energies[], string tag, string file_suffix,
+	string obj_prefix, string link_name, int html_flag)
 {
 	write(f_out, "	<tr>", endl);
 
 	if (html_flag == 1)
 		write(f_out, "		<td class=\"quantity\">"+plots[pi].htmlLabel+"</td>", endl);
+
 	if (html_flag == 2)
-		write(f_out, "		<td rowspan=\"2\" class=\"quantity\">"+plots[pi].htmlLabel+"</td>", endl);
+		write(f_out, "		<td rowspan=\"3\" class=\"quantity\">"+plots[pi].htmlLabel+"</td>", endl);
 
 	for (int ei : energies.keys)
 	{
@@ -198,10 +207,6 @@ void ProcessOnePlot(int pi, string mode, string energies[], string tag, string f
 
 		plots[pi].plotFcn(dist_file, obj_prefix);
 		FinalizeFile(out_file);
-
-		string link_name = obj_prefix;
-		if (link_name == "")
-			link_name = "full range";
 
 		write(f_out, "		<td><a href=\""+out_file+".pdf\">"+link_name+"</td>", endl);
 	}
@@ -233,14 +238,18 @@ void ProcessPlots(string mode, string energies[], string tag)
 
 	for (int pi : plots.keys)
 	{
-		if (plots[pi].doubleScale)
+		if (plots[pi].tripleScale)
 		{
 			TGraph_highLimit = 10;
-			ProcessOnePlot(pi, mode, energies, tag, "full_range", "full range", 2);
+			ProcessOnePlot(pi, mode, energies, tag, "full_range", "full range", "full range", 2);
+
+			TGraph_highLimit = 1.5;
+			ProcessOnePlot(pi, mode, energies, tag, "mid_t", "full range", "medium |t|", 0);
+
 			TGraph_highLimit = +inf;
-			ProcessOnePlot(pi, mode, energies, tag, "low_t", "low |t|", 0);
+			ProcessOnePlot(pi, mode, energies, tag, "low_t", "low |t|", "low |t|", 0);
 		} else {
-			ProcessOnePlot(pi, mode, energies, tag, "", "", 1);
+			ProcessOnePlot(pi, mode, energies, tag, "", "", "full range", 1);
 		}
 	}
 	
@@ -291,7 +300,7 @@ void MakeTPlots(string mode, string energies[])
 {
 	plots.delete();
 
-	RegisterPlot("amp", "hadronic amplitude", doubleScale=true, new void (string input_file, string option) {
+	RegisterPlot("amp", "hadronic amplitude", tripleScale=true, new void (string input_file, string option) {
 		NewPad("$|t|\ung{GeV^2}$", "$\Re F^{\rm H}$");
 		scale((option == "low |t|") ? Log : Linear, Linear(true));
 		PlotAllModels(input_file, option+"/<model>/PH/amplitude_re", "hadronic amplitudes");
@@ -301,13 +310,13 @@ void MakeTPlots(string mode, string energies[])
 		PlotAllModels(input_file, option+"/<model>/PH/amplitude_im", "hadronic amplitudes");
 	});
 	
-	RegisterPlot("diff_cs", "hadronic differential cross-section", doubleScale=true, new void (string input_file, string option) {
+	RegisterPlot("diff_cs", "hadronic differential cross-section", tripleScale=true, new void (string input_file, string option) {
 		NewPad("$|t|\ung{GeV^2}$", "$\d\si / \d t \ung{mb/GeV^2}$");
 		scale((option == "low |t|") ? Log : Linear, Log(true));
 		PlotAllModels(input_file, option+"/<model>/PH/differential cross-section", "hadronic differential cross-section");
 	});
 	
-	RegisterPlot("B", "hadronic slope", doubleScale=true, new void (string input_file, string option) {
+	RegisterPlot("B", "hadronic slope", tripleScale=true, new void (string input_file, string option) {
 		NewPad("$|t|\ung{GeV^2}$", "$B(t) \equiv {\d\over \d t} \log{\d\si\over\d t} \ung{GeV^{-2}}$");
 		scale((option == "low |t|") ? Log : Linear, Linear(true));
 		// TODO
@@ -315,35 +324,35 @@ void MakeTPlots(string mode, string energies[])
 		//PlotAllModels(input_file, option+"/<model>/PH/B", "hadronic slope");
 	});
 	
-	RegisterPlot("phase", "hadronic phase", doubleScale=true, new void (string input_file, string option) {
+	RegisterPlot("phase", "hadronic phase", tripleScale=true, new void (string input_file, string option) {
 		NewPad("$|t|\ung{GeV^2}$", "$\arg F^{\rm H}(t)$");
 		scale((option == "low |t|") ? Log : Linear, Linear);
 		PlotAllModels(input_file, option+"/<model>/PH/phase", "hadronic phase", true, 1);
 		ylimits(-3.141593, +3.141593, Crop);
 	});
 	
-	RegisterPlot("rho", "hadronic rho", doubleScale=true, new void (string input_file, string option) {
+	RegisterPlot("rho", "hadronic rho", tripleScale=true, new void (string input_file, string option) {
 		NewPad("$|t|\ung{GeV^2}$", "$\rh(t) \equiv {\Re F^{\rm H}\over \Im F^{\rm H}}$");
 		scale((option == "low |t|") ? Log : Linear, Linear(true));
 		PlotAllModels(input_file, option+"/<model>/PH/rho", "rho parameter", true, 8);
 		ylimits(-10, 10, Crop);
 	});
 	
-	RegisterPlot("C", "influence of Coulomb interaction", doubleScale=true, new void (string input_file, string option) {
+	RegisterPlot("C", "influence of Coulomb interaction", tripleScale=true, new void (string input_file, string option) {
 		NewPad("$|t|\ung{GeV^2}$", "$C(t) \equiv {|F^{\rm C+H}|^2 - |F^{\rm H}|^2 \over |F^{\rm H}|^2}$");
 		scale((option == "low |t|") ? Log : Linear, Linear(true));
 		PlotAllModels(input_file, option+"/<model>/C", "influence of Coulomb interaction");
 		//ylimits(-10, 10, Crop);
 	});
 	
-	RegisterPlot("Z", "importance of the interference term", doubleScale=true, new void (string input_file, string option) {
+	RegisterPlot("Z", "importance of the interference term", tripleScale=true, new void (string input_file, string option) {
 		NewPad("$|t|\ung{GeV^2}$", "$Z(t) \equiv {|F^{\rm C+H}|^2 - |F^{\rm H}|^2 - |F^{\rm C}|^2 \over |F^{\rm C+H}|^2}$");
 		scale((option == "low |t|") ? Log : Linear, Linear(true));
 		PlotAllModels(input_file, option+"/<model>/Z", "importance of the interference term");
 		//ylimits(-10, 10, Crop);
 	});
 	
-	RegisterPlot("R", "difference between SWY and KL formulae", doubleScale=true, new void (string input_file, string option) {
+	RegisterPlot("R", "difference between SWY and KL formulae", tripleScale=true, new void (string input_file, string option) {
 		NewPad("$|t|\ung{GeV^2}$", "$R(t) \equiv {|F^{\rm KL}|^2 - |F^{\rm WY}|^2 \over |F^{\rm KL}|^2}$");
 		scale((option == "low |t|") ? Log : Linear, Linear(true));
 		PlotAllModels(input_file, option+"/<model>/R", "difference between SWY and KL formulae");
@@ -359,7 +368,7 @@ void MakeBPlots(string mode, string energies[])
 {
 	plots.delete();
 
-	RegisterPlot("amp", "hadronic amplitude", doubleScale=false, new void (string input_file, string option) {
+	RegisterPlot("amp", "hadronic amplitude", tripleScale=false, new void (string input_file, string option) {
 		NewPad("$b\ung{fm}$", "$\Re A^{\rm H}$");
 		scale(Linear, Linear(true));
 		PlotAllModels(input_file, "<model>/prf_re", "hadronic amplitudes");
@@ -379,19 +388,19 @@ void MakeSPlots(string mode)
 
 	plots.delete();
 
-	RegisterPlot("si_tot", "hadronic total cross-section", doubleScale=true, new void (string input_file, string option) {
+	RegisterPlot("si_tot", "hadronic total cross-section", tripleScale=true, new void (string input_file, string option) {
 		NewPad("$\sqrt s\ung{GeV}$", "$\si_{\rm tot}(s)\ung{mb}$");
 		scale(Log, Linear(true));
 		PlotAllModels(input_file, "<model>/si_tot", "hadronic total cross-section");
 	});
 
-	RegisterPlot("rho", "hadronic forward rho", doubleScale=true, new void (string input_file, string option) {
+	RegisterPlot("rho", "hadronic forward rho", tripleScale=true, new void (string input_file, string option) {
 		NewPad("$\sqrt s\ung{GeV}$", "$\rh(s, t = 0) \equiv \left. {\Re F^{\rm H}\over \Im F^{\rm H}} \right|_{t = 0}$");
 		scale(Log, Linear(true));
 		PlotAllModels(input_file, "<model>/rho", "hadronic forward rho");
 	});
 	
-	RegisterPlot("B0", "hadronic forward slope", doubleScale=true, new void (string input_file, string option) {
+	RegisterPlot("B0", "hadronic forward slope", tripleScale=true, new void (string input_file, string option) {
 		NewPad("$\sqrt s\ung{GeV}$", "$B(s, t=0) \equiv \left . {\d \log |F^{\rm H}|^2\over\d t} \right|_{t = 0}\ung{GeV^{-2}}$");
 		scale(Log, Linear(true));
 		PlotAllModels(input_file, "<model>/B0", "hadronic forward slope");
