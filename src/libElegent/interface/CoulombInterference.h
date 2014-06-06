@@ -24,6 +24,8 @@
 
 #include "Model.h"
 
+#include <gsl/gsl_integration.h>
+
 namespace Elegent
 {
 
@@ -60,6 +62,8 @@ class CoulombInterference
 
 		CoulombInterference();
 
+		~CoulombInterference();
+
 		double GetT()
 			{ return T; }
 
@@ -72,18 +76,35 @@ class CoulombInterference
 		/// precision of the integration
 		double precision;
 
+		// TODO
+		struct GSLFunctionParams
+		{
+			const CoulombInterference *obj;
+			double *params;
+		};
+
+		/// TODO
+		unsigned long gsl_w_size;
+		gsl_integration_workspace *gsl_w;
+		gsl_integration_workspace *gsl_w2;
+
 		/// print the parameters
 		void Print() const;
 
 	protected:
-		/// the integrand of I(t, t') integral
-		static double I_integrand(double *phi, double *par, const void *obj);
-
 		/// the integrand of the A term
 		static double A_integrand(double *tt, double *t, const void *obj);
+		static double A_integrand(double tt, void *obj);	// for GSL
+
+		/// the integrand of I(t, t') integral
+		static double I_integrand(double *phi, double *par, const void *obj);
+		static double I_integrand(double phi, void *obj);	// for GSL
 
 		/// the integrand of the B term
 		static TComplex B_integrand(double *tt, double *par, const void *obj);
+		static TComplex B_integrand(double tt, void *obj);	// for GSL
+		static double B_integrand_Re(double tt, void *obj);	// for GSL
+		static double B_integrand_Im(double tt, void *obj);	// for GSL
 		
 	public:
 		/// A: $\int_{t_{min}}^0 \log(t'/t) * d/dt(FF^2(t'))$

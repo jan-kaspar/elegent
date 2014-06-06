@@ -28,13 +28,29 @@ namespace Elegent
 
 ModelFactory::ModelFactory()
 {
+	BHModel *bh = new BHModel();
+	bh->Configure();
+	model_map[bh->CompileShortLabel()] = bh;
+
+	BSWModel *bsw = new BSWModel();
+	bsw->Configure(BSWModel::mPomReg);
+	model_map[bsw->CompileShortLabel()] = bsw;
+
+	GodizovModel *godizov = new GodizovModel();
+	godizov->Configure();
+	model_map[godizov->CompileShortLabel()] = godizov;
+	
+	IslamModel *islam_lxg = new IslamModel();
+	islam_lxg->Configure(IslamModel::vLxG, IslamModel::mFull);
+	model_map[islam_lxg->CompileShortLabel()] = islam_lxg;
+	
 	IslamModel *islam_hp = new IslamModel();
 	islam_hp->Configure(IslamModel::vHP, IslamModel::mFull);
 	model_map[islam_hp->CompileShortLabel()] = islam_hp;
 
-	IslamModel *islam_lxg = new IslamModel();
-	islam_lxg->Configure(IslamModel::vLxG, IslamModel::mFull);
-	model_map[islam_lxg->CompileShortLabel()] = islam_lxg;
+	JenkovszkyModel *jenkovszky = new JenkovszkyModel();
+	jenkovszky->Configure();
+	model_map[jenkovszky->CompileShortLabel()] = jenkovszky;
 
 	PPPModel *ppp2 = new PPPModel();
 	ppp2->Configure(PPPModel::v2P);
@@ -43,18 +59,6 @@ ModelFactory::ModelFactory()
 	PPPModel *ppp3 = new PPPModel();
 	ppp3->Configure(PPPModel::v3P);
 	model_map[ppp3->CompileShortLabel()] = ppp3;
-	
-	BSWModel *bsw = new BSWModel();
-	bsw->Configure(BSWModel::mPomReg);
-	model_map[bsw->CompileShortLabel()] = bsw;
-
-	BHModel *bh = new BHModel();
-	bh->Configure();
-	model_map[bh->CompileShortLabel()] = bh;
-	
-	JenkovszkyModel *jenkovszky = new JenkovszkyModel();
-	jenkovszky->Configure();
-	model_map[jenkovszky->CompileShortLabel()] = jenkovszky;
 }
 
 //----------------------------------------------------------------------------------------------------

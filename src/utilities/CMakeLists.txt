@@ -4,7 +4,7 @@ include_directories(${Elegent_SOURCE_DIR}/libElegent)
 include_directories(${ROOT_INCLUDE_DIR})
 include_directories(${HEPMC_INCLUDE})
 
-set(LIBS Elegent ${HEPMC_LIB} ${ROOT_LIBRARIES})
+set(LIBS Elegent ${HEPMC_LIB} ${ROOT_LIBRARIES} ${GSL_LIBRARIES})
 
 add_executable(ElegentBDistributionSampler ElegentBDistributionSampler.cc)
 target_link_libraries(ElegentBDistributionSampler ${LIBS})
@@ -17,5 +17,8 @@ target_link_libraries(ElegentTDistributionSampler ${LIBS})
 
 add_executable(ElegentGeneratorTest ElegentGeneratorTest.cc)
 target_link_libraries(ElegentGeneratorTest ${LIBS})
+
+add_executable(debugger debugger.cc)
+target_link_libraries(debugger ${LIBS})
 
 install(TARGETS ElegentBDistributionSampler ElegentSDistributionSampler ElegentTDistributionSampler ElegentGeneratorTest DESTINATION bin)

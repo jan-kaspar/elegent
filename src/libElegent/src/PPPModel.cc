@@ -26,6 +26,8 @@
 using namespace std;
 using namespace Elegent;
 
+//#define USE_GSL
+
 //----------------------------------------------------------------------------------------------------
 
 PPPModel::PPPModel()
@@ -102,6 +104,10 @@ void PPPModel::Init()
 	// integration parameters
 	precision = 1E-14;
 	upper_bound = 60.;
+
+	gsl_w_size = 1000000;	// TODO: tune
+	gsl_w = gsl_integration_workspace_alloc(gsl_w_size);
+	// TODO: needs to be freed!!
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -168,7 +174,57 @@ TComplex PPPModel::prf_J0(double *b, double *t, const void *obj)
 
 //----------------------------------------------------------------------------------------------------
 
+TComplex PPPModel::prf_J0(double b, void *vpa)
+{
+	void **vp = (void **) vpa;
+	const PPPModel *obj = (PPPModel *) vp[0];
+
+	//printf("obj = %p\n", obj);
+
+	double *par = (double *) vp[1];
+	double t = par[0];
+
+	return obj->prf0(b) * b * TMath::BesselJ0(b * sqrt(-t));
+}
+
+double PPPModel::prf_J0_Re(double b, void *vp) { return PPPModel::prf_J0(b, vp).Re(); }
+double PPPModel::prf_J0_Im(double b, void *vp) { return PPPModel::prf_J0(b, vp).Im(); }
+
+//----------------------------------------------------------------------------------------------------
+
 TComplex PPPModel::Amp(double t) const
 {
-	return 2.*cnts->p_cms*cnts->sqrt_s * CmplxInt(this, prf_J0, 0, upper_bound, &t, precision);
+	//printf(">> PPPModel::Amp(%E)\n", t);
+
+#ifdef USE_GSL
+	double precision_GSL = 1E-4;
+	
+	double result_re, result_im;
+
+	const void* par[] = { this, &t };
+
+	{
+		double error;
+		gsl_function F;
+	  	F.function = prf_J0_Re;
+	  	F.params = par;
+	
+		gsl_integration_qag(&F, 0., upper_bound, 0., precision_GSL, gsl_w_size, GSL_INTEG_GAUSS61, gsl_w, &result_re, &error);
+	}
+
+	{
+		double error;
+		gsl_function F;
+	  	F.function = prf_J0_Im;
+	  	F.params = par;
+	
+		gsl_integration_qag(&F, 0., upper_bound, 0., precision_GSL, gsl_w_size, GSL_INTEG_GAUSS61, gsl_w, &result_im, &error);
+	}
+
+	TComplex I(result_re, result_im);
+#else
+	TComplex I = CmplxInt(this, prf_J0, 0., upper_bound, &t, precision);
+#endif
+
+	return 2.*cnts->p_cms*cnts->sqrt_s * I;
 }

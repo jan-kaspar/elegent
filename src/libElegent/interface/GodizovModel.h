@@ -19,8 +19,8 @@
  
 ********************************************************************************/
 
-#ifndef _elegent_ppp_model_
-#define _elegent_ppp_model_
+#ifndef _elegent_godizov_model_
+#define _elegent_godizov_model_
 
 #include "Model.h"
 
@@ -30,29 +30,16 @@ namespace Elegent
 {
 
 /**
- * \brief Predazzi, Petrov and Prokudin model of p-p and p-anti p elastic scattering.
+ * \brief TODO
  * References:
- *	[1] PETROV, V. A. and PROKUDIN, A. V., Eur. Phys. J. C23 (2002) 135–143
+ *	[1] arXiv:1404.2851v2
  **/
-class PPPModel : public Model
+class GodizovModel : public Model
 {
 	public:
-		struct Trajectory
-		{
-			double D, c, ap, r2, rho2;
-			TComplex gamma;
-		};
-
-		/// available variants
-		enum VariantType
-		{
-			v2P,	///< with 2 Pomerons
-			v3P		///< with 3 Pomerons
-		} variant;
+		GodizovModel();
 		
-		PPPModel();
-		
-		void Configure(VariantType v);
+		void Configure();
 
 		virtual void Init();
 
@@ -64,13 +51,38 @@ class PPPModel : public Model
 		virtual TComplex Prf(double b) const;
 
 	protected:
-		Trajectory pom1, pom2, pom3, oder, regf, rego;
+		double De;		// al_P(0) - 1
+		double ta_a;
+		double Ga_P0;
+		double ta_g;
 		double s0;
-		double precision, upper_bound;
+
+		/// Eq. (2) in [1]
+		TComplex delta_t(double t) const;
+
+		static TComplex delta_t_J0(double t, void *vpa);
+		static double delta_t_J0_Re(double t, void *vpa);
+		static double delta_t_J0_Im(double t, void *vpa);
+		
+		/// bottom relation from Eq. (1) in [1]
+		TComplex delta_b(double b) const;
+
+		/// profile function, b in GeV^-1, see Eq. (1) in [1]
+		TComplex prf0(double b) const;
+
+		static TComplex prf_J0(double b, void *vpa);
+		static double prf_J0_Re(double b, void *vpa);
+		static double prf_J0_Im(double b, void *vpa);
 
 		/// TODO: for GSL
 		unsigned long gsl_w_size;
 		gsl_integration_workspace *gsl_w;
+
+		/*
+		Trajectory pom1, pom2, pom3, oder, regf, rego;
+		double s0;
+		double precision, upper_bound;
+
 
 		static void SetTrajectory(Trajectory &t, double D, double c, double ap, double r2, double s0);
 
@@ -84,6 +96,7 @@ class PPPModel : public Model
 		static TComplex prf_J0(double b, void *vp);
 		static double prf_J0_Re(double b, void *vp);
 		static double prf_J0_Im(double b, void *vp);
+		*/
 };
 
 } // namespace

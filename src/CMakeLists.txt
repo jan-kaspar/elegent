@@ -2,12 +2,13 @@ cmake_minimum_required(VERSION 2.6)
 
 # project name and version
 project(Elegent)
-set(Elegent_VERSION "1.3pre")
+set(Elegent_VERSION "2.0pre")
 
 # search for installations of required packages
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${Elegent_SOURCE_DIR}/../cmake/modules/")
 find_package(ROOT REQUIRED)
 find_package(HepMC REQUIRED)
+find_package(GSL REQUIRED)
 
 # include SVN revision in project version, if available
 include(FindSubversion)
@@ -27,7 +28,7 @@ configure_file(
 include_directories("${PROJECT_BINARY_DIR}/libElegent")
 
 # compiler flags
-add_definitions("-Wall")
+add_definitions("-Wall -Wextra -Werror")
 set(CMAKE_CXX_FLAGS "-O3")
 
 # list of subdirectories

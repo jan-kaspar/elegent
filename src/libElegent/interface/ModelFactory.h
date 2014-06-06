@@ -22,12 +22,13 @@
 #ifndef _elegent_modelfactory_
 #define _elegent_modelfactory_
 
+#include "BHModel.h"
+#include "BSWModel.h"
+#include "ExpModel.h"
+#include "GodizovModel.h"
 #include "IslamModel.h"
 #include "PPPModel.h"
-#include "BSWModel.h"
-#include "BHModel.h"
 #include "JenkovszkyModel.h"
-#include "ExpModel.h"
 
 #include <string>
 #include <map>

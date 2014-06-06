@@ -7,6 +7,7 @@ install(FILES
 	CoulombInterference.h
 	ExpModel.h
 	Generator.h
+	GodizovModel.h
 	InterpolationModel.h
 	IslamModel.h
 	JenkovszkyModel.h

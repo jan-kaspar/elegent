@@ -20,4 +20,14 @@
 
 * Islam model: implement updates (multiple omega exchange, new sign for LxG amplitude)
 
-* custom integration --> some standard library (e.g. GSL)
+* custom integration --> some standard library
+	- GSL
+		- CQUAD
+		- QAG (key = 6)
+		- generalisation of QAWO?
+		- generalisation of discrete Hankel transform?
+		- zeros of Bessel function: gsl_sf_bessel_zero_J0
+	- Clenshaw-Curtis quadrature rules
+	- example program on p. 118 of QUADPACK document: R. Piessens (1983)
+	- guide from R. Piessens (2000)
+	- NAG library: function d01akc

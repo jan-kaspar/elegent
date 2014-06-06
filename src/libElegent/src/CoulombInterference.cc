@@ -26,6 +26,8 @@
 using namespace std;
 using namespace Elegent;
 
+#define USE_GSL
+
 namespace Elegent
 {
 
@@ -36,21 +38,39 @@ CoulombInterference *coulomb = new CoulombInterference();
 
 //----------------------------------------------------------------------------------------------------
 
-CoulombInterference::CoulombInterference() :	mode(mPC), ffType(ffPuckett),
+CoulombInterference::CoulombInterference() : mode(mPC), ffType(ffPuckett),
 	tau(1E-10), T(10.), precision(1E-4)
 {
+	// TODO: tune
+	gsl_w_size = 1000000;
+	gsl_w = gsl_integration_workspace_alloc(gsl_w_size);
+	gsl_w2 = gsl_integration_workspace_alloc(gsl_w_size);
+}
+
+//----------------------------------------------------------------------------------------------------
+
+CoulombInterference::~CoulombInterference()
+{
+	gsl_integration_workspace_free(gsl_w);
+	gsl_integration_workspace_free(gsl_w2);
 }
 
 //----------------------------------------------------------------------------------------------------
 
 void CoulombInterference::Print() const
 {
-	printf(">> CoulombInterference::print\n");
+	printf(">> CoulombInterference::Print\n");
 	printf("\tmode: %s\n", GetModeString().c_str());
 	printf("\tform factor: %s\n", GetFFName().c_str());
 	printf("\tT = %E\n", T);
 	printf("\ttau = %E\n", tau);
 	printf("\tprecision = %E\n", precision);
+
+#ifdef USE_GSL
+	printf("\tusing GSL integration\n");
+#else
+	printf("\tusing internal integration\n");
+#endif
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -100,9 +120,8 @@ double pol(double p[], unsigned int N, double tau)
 {
 	double s = 0.;
 	double f = 1.;
-	for (unsigned int i = 0; i < N; i++, f *= tau) {
+	for (unsigned int i = 0; i < N; i++, f *= tau)
 		s += p[i] * f;
-	}
 
 	return s;
 }
@@ -259,10 +278,34 @@ double CoulombInterference::A_integrand(double *tt, double *t, const void *obj)
 
 //--------------------------------------------------------------------------------------------------
 
+double CoulombInterference::A_integrand(double tt, void *vp)
+{
+	/// tt ... t'
+	GSLFunctionParams *params = (GSLFunctionParams *) vp;
+	const CoulombInterference *obj = params->obj;
+	double t = params->params[0];
+	return log(tt / t) * obj->FF_sq_prime(tt);
+}
+
+//--------------------------------------------------------------------------------------------------
+
 double CoulombInterference::A_term(double t) const
 {
-	//return DoubleInt(this, A_integrand, cnts->t_min, 0., &t);
+#ifdef USE_GSL
+  	double result, error;
+	gsl_function F;
+  	F.function = A_integrand;
+	GSLFunctionParams fp;
+	fp.obj = this;
+	fp.params = &t;
+  	F.params = &fp;
+
+	gsl_integration_qag(&F, t-T, 0., 0., 1E-4, gsl_w_size, GSL_INTEG_GAUSS61, gsl_w, &result, &error);
+
+	return result;
+#else
 	return DoubleInt(this, A_integrand, t-T, 0., &t);
+#endif
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -279,10 +322,42 @@ double CoulombInterference::I_integrand(double *phi, double *par, const void *ob
 
 //--------------------------------------------------------------------------------------------------
 
+double CoulombInterference::I_integrand(double phi, void *vp)
+{
+	/// par[0] ... t'
+	/// par[1] ... t
+	
+	GSLFunctionParams *params = (GSLFunctionParams *) vp;
+	const CoulombInterference *obj = params->obj;
+	double tt = params->params[0];
+	double t = params->params[1];
+
+	// t2 ... t''
+	double t2 = tt + t + 2. * sqrt(tt * t) * cos(phi);
+
+	return obj->FF_sq(t2) / t2;
+}
+
+//--------------------------------------------------------------------------------------------------
+
 double CoulombInterference::I_integral(double t, double tp) const
 {
 	double par[] = {tp, t};
+
+#ifdef USE_GSL
+  	double result, error;
+	gsl_function F;
+  	F.function = I_integrand;
+	GSLFunctionParams fp;
+	fp.obj = this;
+	fp.params = par;
+  	F.params = &fp;
+
+	gsl_integration_qag(&F, 0., 2.*cnts->pi, 0., precision, gsl_w_size, GSL_INTEG_GAUSS61, gsl_w, &result, &error);
+	return result;
+#else
 	return DoubleInt(this, I_integrand, 0., 2.*cnts->pi, par);
+#endif
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -295,14 +370,59 @@ TComplex CoulombInterference::B_integrand(double *tt, double *par, const void *o
 	/// par[2] ... IM T_H(t)
 	
 	TComplex T_hadron_t(par[1], par[2]);
-	double ppar[] = { tt[0], par[0] };
 
 	TComplex a = model->Amp(tt[0]) / T_hadron_t;
 
-	const double &I = DoubleInt(obj, I_integrand, 0., 2.*cnts->pi, ppar);
+#ifdef USE_GSL
+	printf("%p\n", obj);
+	double I = 0.;
+#else
+	double ppar[] = { tt[0], par[0] };
+	double I = DoubleInt(obj, I_integrand, 0., 2.*cnts->pi, ppar);
+#endif
 	
 	return (a - 1.) * I	/ 2. / cnts->pi;
 }
+
+//--------------------------------------------------------------------------------------------------
+
+TComplex CoulombInterference::B_integrand(double tt, void *vp)
+{
+	/// tt[0] ... t'
+	/// par[0] ... t
+	/// par[1] ... Re T_H(t) 
+	/// par[2] ... IM T_H(t)
+
+	GSLFunctionParams *params = (GSLFunctionParams *) vp;
+	
+	TComplex T_hadron_t(params->params[1], params->params[2]);
+
+	TComplex a = model->Amp(tt) / T_hadron_t;
+
+#ifdef USE_GSL
+	const CoulombInterference *obj = params->obj;
+	double ppar[] = { tt, params->params[0] };
+
+  	double result, error;
+	gsl_function F;
+  	F.function = I_integrand;
+	GSLFunctionParams fp;
+	fp.obj = obj;
+	fp.params = ppar;
+  	F.params = &fp;
+
+	gsl_integration_qag(&F, 0., 2.*cnts->pi, 0., obj->precision, obj->gsl_w_size, GSL_INTEG_GAUSS61, obj->gsl_w2, &result, &error);
+
+	double I = result;
+#else
+	double I = 0.;
+#endif
+	
+	return (a - 1.) * I	/ 2. / cnts->pi;
+}
+
+double CoulombInterference::B_integrand_Re(double tt, void *vp) { return CoulombInterference::B_integrand(tt, vp).Re(); }
+double CoulombInterference::B_integrand_Im(double tt, void *vp) { return CoulombInterference::B_integrand(tt, vp).Im(); }
 
 //--------------------------------------------------------------------------------------------------
 
@@ -324,9 +444,53 @@ TComplex CoulombInterference::B_term(double t) const
 	region (t+tau, 0) isn't present.
 	**/
 
+#ifdef USE_GSL
+	double result_re, result_im;
+
+	{
+		double result, error;
+		gsl_function F;
+	  	F.function = B_integrand_Re;
+		GSLFunctionParams fp;
+		fp.obj = this;
+		fp.params = par;
+	  	F.params = &fp;
+	
+		gsl_integration_qag(&F, t - T, t - tau, 0., precision, gsl_w_size, GSL_INTEG_GAUSS61, gsl_w, &result, &error);
+		result_re = result;
+
+		if (t + tau < 0.)
+		{
+			gsl_integration_qag(&F, t + tau, 0., 0., precision, gsl_w_size, GSL_INTEG_GAUSS61, gsl_w, &result, &error);
+			result_re += result;
+		}
+	}
+
+	{
+		double result, error;
+		gsl_function F;
+	  	F.function = B_integrand_Im;
+		GSLFunctionParams fp;
+		fp.obj = this;
+		fp.params = par;
+	  	F.params = &fp;
+	
+		gsl_integration_qag(&F, t - T, t - tau, 0., precision, gsl_w_size, GSL_INTEG_GAUSS61, gsl_w, &result, &error);
+		result_im = result;
+
+		if (t + tau < 0.)
+		{
+			gsl_integration_qag(&F, t + tau, 0., 0., precision, gsl_w_size, GSL_INTEG_GAUSS61, gsl_w, &result, &error);
+			result_im += result;
+		}
+	}
+
+	TComplex ret(result_re, result_im);
+#else
 	TComplex ret = CmplxInt(this, B_integrand, t - T, t - tau, par, precision);
-	if (t+tau < 0.)
+	if (t + tau < 0.)
 		ret += CmplxInt(this, B_integrand, t + tau, 0., par, precision);
+#endif
 
 	return ret;
 }
