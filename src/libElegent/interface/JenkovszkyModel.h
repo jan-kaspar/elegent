@@ -23,6 +23,7 @@
 #define _elegent_jenkovszky_model_
 
 #include "Model.h"
+#include "interface/Math.h"
 
 namespace Elegent
 {
@@ -36,6 +37,7 @@ class JenkovszkyModel : public Model
 {
 	public:
 		JenkovszkyModel();
+		~JenkovszkyModel();
 
 		void Configure();
 		virtual void Init();
@@ -60,8 +62,12 @@ class JenkovszkyModel : public Model
 		
 		/// integration parameters for profile-funcion calculation
 		double precision_t, upper_bound_t;
+
+		bool integ_workspace_initialized;
+		unsigned long integ_workspace_size;
+		gsl_integration_workspace *integ_workspace;
 		
-		static TComplex Amp_J0(double *t, double *b, const void *obj);
+		static TComplex Amp_J0(double t, double *par, const void *obj);
 };
 
 } // namespace

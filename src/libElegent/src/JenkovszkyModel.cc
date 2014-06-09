@@ -21,13 +21,24 @@
 
 #include "interface/JenkovszkyModel.h"
 #include "interface/Constants.h"
-#include "interface/Math.h"
 
 using namespace Elegent;
 
 JenkovszkyModel::JenkovszkyModel()
 {
 	fullLabel.name = "Jenkovszky et al."; shortLabel.name = "jenkovszky";
+
+	integ_workspace_initialized = false;
+}
+
+//----------------------------------------------------------------------------------------------------
+
+JenkovszkyModel::~JenkovszkyModel()
+{
+	if (integ_workspace_initialized)
+	{
+		gsl_integration_workspace_free(integ_workspace);
+	}
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -72,8 +83,17 @@ void JenkovszkyModel::Init()
 	al0_f = 0.70;
 	al1_f = 0.84;
 
+	// integration parameters
 	precision_t = 1E-4;
 	upper_bound_t = -50.;
+
+	// prepare integration workspace
+	if (!integ_workspace_initialized)
+	{
+		integ_workspace_size = 100;
+		integ_workspace = gsl_integration_workspace_alloc(integ_workspace_size);
+		integ_workspace_initialized = true;
+	}
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -137,11 +157,12 @@ TComplex JenkovszkyModel::Amp(double t) const
 
 //----------------------------------------------------------------------------------------------------
 
-TComplex JenkovszkyModel::Amp_J0(double *t, double *b, const void *obj)
+TComplex JenkovszkyModel::Amp_J0(double t, double *par, const void *vobj)
 {
-	/// t[0] ... t in GeV^2
-	/// b[0] ... impact parameter in fm
-	return ((JenkovszkyModel *)obj)->Amp(t[0]) * TMath::BesselJ0(b[0] * sqrt(-t[0]));
+	const JenkovszkyModel *obj = (JenkovszkyModel *) vobj;
+	const double &b = par[0];	// impact parameter in fm
+
+	return obj->Amp(t) * TMath::BesselJ0(b * sqrt(-t));
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -149,5 +170,9 @@ TComplex JenkovszkyModel::Amp_J0(double *t, double *b, const void *obj)
 TComplex JenkovszkyModel::Prf(double b_fm) const
 {
 	double b = b_fm / cnts->hbarc;	// b in GeV^-1
-	return CmplxInt(this, Amp_J0, upper_bound_t, 0., &b, precision_t) / 4. / cnts->p_cms / cnts->sqrt_s;
+	double par[] = { b };
+
+	TComplex I = ComplexIntegrate(Amp_J0, par, this, upper_bound_t, 0., precision_t, integ_workspace_size, integ_workspace);
+
+	return I / 4. / cnts->p_cms / cnts->sqrt_s;
 }
