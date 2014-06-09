@@ -184,7 +184,7 @@ TComplex PPPModel::Prf(double b) const
 TComplex PPPModel::prf_J0(double b, double *par, const void *vobj)
 {
 	const PPPModel *obj = (PPPModel *) vobj;
-	double t = par[0];
+	const double &t = par[0];
 
 	return obj->prf0(b) * b * TMath::BesselJ0(b * sqrt(-t));
 }
@@ -193,8 +193,6 @@ TComplex PPPModel::prf_J0(double b, double *par, const void *vobj)
 
 TComplex PPPModel::Amp(double t) const
 {
-	//printf(">> PPPModel::Amp(%E)\n", t);
-
 	double par[] = { t };
 	TComplex I = ComplexIntegrate(prf_J0, par, this, 0., upper_bound, precision, integ_workspace_size, integ_workspace);
 

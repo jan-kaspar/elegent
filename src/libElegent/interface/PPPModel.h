@@ -23,7 +23,7 @@
 #define _elegent_ppp_model_
 
 #include "Model.h"
-#include "interface/Math.h"
+#include "Math.h"
 
 namespace Elegent
 {
