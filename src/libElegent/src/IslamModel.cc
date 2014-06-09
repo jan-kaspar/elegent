@@ -20,7 +20,6 @@
 ********************************************************************************/
 
 #include "interface/IslamModel.h"
-#include "interface/Math.h"
 #include "interface/Constants.h"
 
 using namespace std;
@@ -33,6 +32,19 @@ using namespace Elegent;
 IslamModel::IslamModel()
 {
 	fullLabel.name = "Islam et al."; shortLabel.name = "islam";
+
+	integ_workspace_initialized = false;
+}
+
+//----------------------------------------------------------------------------------------------------
+
+IslamModel::~IslamModel()
+{
+	if (integ_workspace_initialized)
+	{
+		gsl_integration_workspace_free(integ_workspace_b);
+		gsl_integration_workspace_free(integ_workspace_t);
+	}
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -157,10 +169,23 @@ void IslamModel::Init()
 	}
 	
 	// integration parameters
-	precision = 1E-11;
-   	precision_t = 1E-4;
-	upper_bound = 50.;
+	upper_bound_b = 50.;
+	precision_b = 1E-2;
+
 	upper_bound_t = -15.;
+   	precision_t = 1E-3;
+
+		// prepare integration workspace
+	if (!integ_workspace_initialized)
+	{
+		integ_workspace_size_b = 100;
+		integ_workspace_b = gsl_integration_workspace_alloc(integ_workspace_size_b);
+
+		integ_workspace_size_t = 100;
+		integ_workspace_t = gsl_integration_workspace_alloc(integ_workspace_size_b);
+
+		integ_workspace_initialized = true;
+	}
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -210,9 +235,9 @@ void IslamModel::Print() const
 	printf("\t\tcgcMaxOrder = %i\n", cgcMaxOrder);
 
 	printf("\tintegration variables\n");
-	printf("\t\tprecision = %E\n", precision);
+	printf("\t\tprecision_b = %E\n", precision_b);
 	printf("\t\tprecision_t = %E\n", precision_t);
-	printf("\t\tupper_bound = %E\n", upper_bound);
+	printf("\t\tupper_bound_b = %E\n", upper_bound_b);
 	printf("\t\tupper_bound_t = %E\n", upper_bound_t);
 }
 
@@ -227,11 +252,12 @@ TComplex IslamModel::GammaD(double b) const
 
 //----------------------------------------------------------------------------------------------------
 
-TComplex IslamModel::GammaD_J0(double *b, double *t, const void *obj)
+TComplex IslamModel::GammaD_J0(double b, double *par, const void *vobj)
 {
-	/// b[0] ... impact parameter in fm
-	/// t[0] ... t in GeV^2
-	return ((IslamModel *)obj)->GammaD(b[0]) * b[0] * TMath::BesselJ0(b[0]*sqrt(-t[0]));
+	const IslamModel *obj = (IslamModel *) vobj;
+	const double &t = par[0];	
+
+	return obj->GammaD(b) * b * TMath::BesselJ0(b*sqrt(-t));
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -243,7 +269,8 @@ TComplex IslamModel::T_diff(double t) const
 #endif
 
 	/// t < 0
-	return Diff_fac * CmplxInt(this, GammaD_J0, 0, upper_bound, &t, precision);
+	double par[] = { t };
+	return Diff_fac * ComplexIntegrate(GammaD_J0, par, this, 0., upper_bound_b, precision_b, integ_workspace_size_b, integ_workspace_b);
 }
 
 //----------------------------------------- CORE AMPLITUDE ----------------------------------------
@@ -453,11 +480,12 @@ TComplex IslamModel::Amp(double t) const
 //----------------------------------------------------------------------------------------------------
 //---------------------------------------- PROFILE FUNCTIONS --------------------------------------
 
-TComplex IslamModel::Amp_J0(double *t, double *b, const void *obj)
+TComplex IslamModel::Amp_J0(double t, double *par, const void *vobj)
 {
-	/// b[0] ... impact parameter in fm
-	/// t[0] ... t in GeV^2
-	return ((IslamModel *)obj)->Amp(t[0]) * TMath::BesselJ0(b[0]*sqrt(-t[0]));
+	const IslamModel *obj = (IslamModel *) vobj;
+	const double &b = par[0];	
+
+	return obj->Amp(t) * TMath::BesselJ0(b*sqrt(-t));
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -465,5 +493,8 @@ TComplex IslamModel::Amp_J0(double *t, double *b, const void *obj)
 TComplex IslamModel::Prf(double b_fm) const
 {
 	double b = b_fm / cnts->hbarc;	// b in GeV^-1
-	return CmplxInt(this, Amp_J0, upper_bound_t, 0., &b, precision_t) / 4. / cnts->p_cms / cnts->sqrt_s;
+	double par[] = { b };
+
+	TComplex I = ComplexIntegrate(Amp_J0, par, this, upper_bound_t, 0., precision_t, integ_workspace_size_t, integ_workspace_t);
+	return I / 4. / cnts->p_cms / cnts->sqrt_s;
 }

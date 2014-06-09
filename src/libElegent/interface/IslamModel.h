@@ -23,6 +23,7 @@
 #define _elegent_islam_model_
 
 #include "Model.h"
+#include "Math.h"
 
 namespace Elegent
 {
@@ -58,6 +59,7 @@ class IslamModel : public Model
 		} mode;
 
 		IslamModel();
+		~IslamModel();
 
 		void Configure(VariantType _v, ModeType _m);
 
@@ -101,12 +103,18 @@ class IslamModel : public Model
 		int cgcMaxOrder;
 	
 		/// integration variables
-		double precision, precision_t, upper_bound, upper_bound_t;
+		double precision_b, precision_t, upper_bound_b, upper_bound_t;
+
+		bool integ_workspace_initialized;
+		unsigned long integ_workspace_size_b;
+		gsl_integration_workspace *integ_workspace_b;
+		unsigned long integ_workspace_size_t;
+		gsl_integration_workspace *integ_workspace_t;
 
 		/// diffraction amplitude
 		TComplex T_diff(double t) const;
 		TComplex GammaD(double b) const;
-		static TComplex GammaD_J0(double *b, double *t, const void *obj);
+		static TComplex GammaD_J0(double b, double *par, const void *obj);
 		
 		/// core amplitude
 		TComplex T_core(double t) const;
@@ -129,7 +137,7 @@ class IslamModel : public Model
 		TComplex T_lxg(double t) const;
 
 		/// profile funcion methods
-		static TComplex Amp_J0(double *t, double *b, const void *obj);
+		static TComplex Amp_J0(double t, double *par, const void *obj);
 };
 
 } // namespace
