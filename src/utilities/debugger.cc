@@ -45,14 +45,20 @@ int main()
 
 
 	ModelFactory mf;
-	//model = mf.MakeInstance("petrov (3p) [02]");
+	//model = mf.MakeInstance("block [06]");
+	//model = mf.MakeInstance("bourrely [03]");
 	model = mf.MakeInstance("godizov [14]");
+	//model = mf.MakeInstance("islam (hp) [06,09]");
+	//model = mf.MakeInstance("islam (lxg) [06,09]");
+	//model = mf.MakeInstance("jenkovszky [11]");
+	//model = mf.MakeInstance("petrov (2p) [02]");
+	//model = mf.MakeInstance("petrov (3p) [02]");
 	model->Print();
 
 	// dsdt
 	TGraph *g_dsdt = new TGraph();
 	g_dsdt->SetName("g_dsdt");
-	for (double mt = 1e-4; mt < 1.; mt += 0.01)
+	for (double mt = 1e-4; mt < 20.; mt += 0.01)
 	{
 		double dsdt = cnts->sig_fac * model->Amp(-mt).Rho2();
 		printf("t = %E: dsdt = %E\n", mt, dsdt);
@@ -62,11 +68,10 @@ int main()
 	}
 	g_dsdt->Write();
 
-	/*
 	// profile
 	TGraph *g_prof = new TGraph();
 	g_prof->SetName("g_prof");
-	for (double b = 0.; b < 8.; b += 0.1)
+	for (double b = 0.; b < 8.; b += 0.2)
 	{
 		double prof = model->Prf(b).Rho();
 		printf("b = %E: |prof| = %E\n", b, prof);
@@ -75,7 +80,6 @@ int main()
 		g_prof->SetPoint(idx, b, prof);
 	}
 	g_prof->Write();
-	*/
 
 	// test A term
 	/*
@@ -107,6 +111,29 @@ int main()
 		TComplex r = coulomb->B_term(-mt);
 		printf(" => %.3E, %.3E\n", r.Re(), r.Im());
 	}
+	*/
+
+	// C, R, Z graphs
+	/*
+	TGraph *g_C = new TGraph(); g_C->SetName("g_C"); g_C->SetLineColor(2);
+	TGraph *g_R = new TGraph(); g_R->SetName("g_R"); g_R->SetLineColor(4);
+	TGraph *g_Z = new TGraph(); g_Z->SetName("g_Z"); g_Z->SetLineColor(6);
+	for (double mt = 4e-3; mt < 10.; mt += 0.02)
+	{
+		printf("* mt = %E\n", mt);
+		double C = coulomb->C(-mt);
+		double R = coulomb->R(-mt);
+		double Z = coulomb->Z(-mt);
+
+		int idx = g_C->GetN();
+		g_C->SetPoint(idx, mt, C);
+		g_R->SetPoint(idx, mt, R);
+		g_Z->SetPoint(idx, mt, Z);
+	}
+
+	g_C->Write();
+	g_R->Write();
+	g_Z->Write();
 	*/
 
 	delete f_out;
