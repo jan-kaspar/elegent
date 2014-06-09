@@ -23,6 +23,7 @@
 #define _elegent_bh_model_
 
 #include "Model.h"
+#include "Math.h"
 
 namespace Elegent
 {
@@ -37,6 +38,7 @@ class BHModel : public Model
 {
 	public:
 		BHModel();
+		~BHModel();
 		
 		void Configure();
 		virtual void Init();
@@ -70,6 +72,10 @@ class BHModel : public Model
 		/// integration parameters
 		double precision, upper_bound;
 
+		bool integ_workspace_initialized;
+		unsigned long integ_workspace_size;
+		gsl_integration_workspace *integ_workspace;
+
 		/// profile defined by Eq. (B2) in [1]
 		double W(double b, double mi) const;
 
@@ -80,7 +86,7 @@ class BHModel : public Model
 		TComplex chi_without_i(double b) const;
 
 		TComplex prf0(double b) const;
-		static TComplex prf0_J0(double *y, double *t, const void *obj);
+		static TComplex prf0_J0(double b, double *par, const void *vobj);
 };
 
 } // namespace

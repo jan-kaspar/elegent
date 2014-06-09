@@ -20,7 +20,6 @@
 ********************************************************************************/
 
 #include "interface/BHModel.h"
-#include "interface/Math.h"
 #include "interface/Constants.h"
 
 using namespace Elegent;
@@ -30,6 +29,18 @@ using namespace Elegent;
 BHModel::BHModel()
 {
 	fullLabel.name = "Block et al."; shortLabel.name = "block";
+
+	integ_workspace_initialized = false;
+}
+
+//----------------------------------------------------------------------------------------------------
+
+BHModel::~BHModel()
+{
+	if (integ_workspace_initialized)
+	{
+		gsl_integration_workspace_free(integ_workspace);
+	}
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -94,10 +105,6 @@ void BHModel::Init()
 	mu_odd = 0.53;
 	mu_qq = 0.89;
 
-	// integration settings
-	upper_bound = 50.;
-	precision = 1E-12;
-
 	// precompute mu_qg
 	mu_qg = sqrt(mu_qq*mu_gg);
 		
@@ -113,6 +120,18 @@ void BHModel::Init()
 	// precompute sigma_odd, Eq. (B12) in [1] - the factor in front of W(b, mu_odd)
 	// plus additional factor (-i) to match the normalization used in chi_without_i
 	sigma_odd = -i * C_odd * Sigma_gg * m0 / cnts->sqrt_s * TComplex::Exp(i * cnts->pi / 4.);
+
+	// integration settings
+	upper_bound = 50.;
+	precision = 1E-3;
+
+	// prepare integration workspace
+	if (!integ_workspace_initialized)
+	{
+		integ_workspace_size = 100;
+		integ_workspace = gsl_integration_workspace_alloc(integ_workspace_size);
+		integ_workspace_initialized = true;
+	}
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -153,6 +172,10 @@ void BHModel::Print() const
 	printf("\t\tmu_qq = %E\n", mu_qq);
 	printf("\t\tmu_qg = %E\n", mu_qg);
 	printf("\t\tmu_odd = %E\n", mu_odd);
+	
+	printf("\tintegration parameters:\n");
+	printf("\t\tupper_bound = %.lf\n", upper_bound);
+	printf("\t\tprecision = %.lE\n", precision);
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -221,17 +244,21 @@ TComplex BHModel::Prf(double b) const
 
 //----------------------------------------------------------------------------------------------------
 
-TComplex BHModel::prf0_J0(double *b, double *q, const void *obj)
+TComplex BHModel::prf0_J0(double b, double *par, const void *vobj)
 {
-	return b[0] * TMath::BesselJ0(b[0]*q[0]) * ((BHModel *)obj)->prf0(b[0]);
+	const BHModel *obj = (BHModel *) vobj;
+	const double &q = par[0];
+
+	return b * TMath::BesselJ0(b*q) * obj->prf0(b);
 } 
 
 //----------------------------------------------------------------------------------------------------
 
 TComplex BHModel::Amp(double t) const
 {
-	double q = sqrt(-t);
-
 	// from Eqs. (A11) and (A12)
-	return	i * cnts->p_cms * cnts->sqrt_s * CmplxInt(this, prf0_J0, 0., upper_bound, &q, precision);
+	double q = sqrt(-t);
+	double par[] = { q };
+	TComplex I = ComplexIntegrate(prf0_J0, par, this, 0., upper_bound, precision, integ_workspace_size, integ_workspace);
+	return i * cnts->p_cms * cnts->sqrt_s * I;
 }
