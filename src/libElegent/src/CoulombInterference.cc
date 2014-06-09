@@ -20,13 +20,10 @@
 ********************************************************************************/
 
 #include "interface/CoulombInterference.h"
-#include "interface/Math.h"
 #include "interface/Constants.h"
 
 using namespace std;
 using namespace Elegent;
-
-#define USE_GSL
 
 namespace Elegent
 {
@@ -39,20 +36,19 @@ CoulombInterference *coulomb = new CoulombInterference();
 //----------------------------------------------------------------------------------------------------
 
 CoulombInterference::CoulombInterference() : mode(mPC), ffType(ffPuckett),
-	tau(1E-10), T(10.), precision(1E-4)
+	tau(1E-10), T(10.), precision(1E-3)
 {
-	// TODO: tune
-	gsl_w_size = 1000000;
-	gsl_w = gsl_integration_workspace_alloc(gsl_w_size);
-	gsl_w2 = gsl_integration_workspace_alloc(gsl_w_size);
+	integ_workspace_size = 100;
+	integ_workspace = gsl_integration_workspace_alloc(integ_workspace_size);
+	integ_workspace2 = gsl_integration_workspace_alloc(integ_workspace_size);
 }
 
 //----------------------------------------------------------------------------------------------------
 
 CoulombInterference::~CoulombInterference()
 {
-	gsl_integration_workspace_free(gsl_w);
-	gsl_integration_workspace_free(gsl_w2);
+	gsl_integration_workspace_free(integ_workspace);
+	gsl_integration_workspace_free(integ_workspace2);
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -269,21 +265,11 @@ TComplex CoulombInterference::Amp_pure(double t) const
 
 //--------------------------------------------------------------------------------------------------
 
-double CoulombInterference::A_integrand(double *tt, double *t, const void *obj)
+double CoulombInterference::A_integrand(double tt, double *par, const void *vobj)
 {
-	/// tt[0] ... t'
-	/// t[0] ... t
-	return log(tt[0] / t[0]) * ((CoulombInterference *)obj)->FF_sq_prime(tt[0]);
-}
+	CoulombInterference *obj = (CoulombInterference *) vobj;
+	const double &t = par[0];
 
-//--------------------------------------------------------------------------------------------------
-
-double CoulombInterference::A_integrand(double tt, void *vp)
-{
-	/// tt ... t'
-	GSLFunctionParams *params = (GSLFunctionParams *) vp;
-	const CoulombInterference *obj = params->obj;
-	double t = params->params[0];
 	return log(tt / t) * obj->FF_sq_prime(tt);
 }
 
@@ -291,50 +277,21 @@ double CoulombInterference::A_integrand(double tt, void *vp)
 
 double CoulombInterference::A_term(double t) const
 {
-#ifdef USE_GSL
-  	double result, error;
-	gsl_function F;
-  	F.function = A_integrand;
-	GSLFunctionParams fp;
-	fp.obj = this;
-	fp.params = &t;
-  	F.params = &fp;
-
-	gsl_integration_qag(&F, t-T, 0., 0., 1E-4, gsl_w_size, GSL_INTEG_GAUSS61, gsl_w, &result, &error);
-
-	return result;
-#else
-	return DoubleInt(this, A_integrand, t-T, 0., &t);
-#endif
+	double par[] = { t };
+	return RealIntegrate(A_integrand, par, this, t-T, 0., precision, integ_workspace_size, integ_workspace);
 }
 
 //--------------------------------------------------------------------------------------------------
 
-double CoulombInterference::I_integrand(double *phi, double *par, const void *obj)
+double CoulombInterference::I_integrand(double phi, double *par, const void *vobj)
 {
-	/// par[0] ... t'
-	/// par[1] ... t
+	CoulombInterference *obj = (CoulombInterference *) vobj;
+
+	const double &tp = par[0];
+	const double &t = par[1];
 	
 	// t2 ... t''
-	double t2 = par[0] + par[1] + 2. * sqrt(par[0] * par[1]) * cos(phi[0]);
-	return ((CoulombInterference *)obj)->FF_sq(t2) / t2;
-}
-
-//--------------------------------------------------------------------------------------------------
-
-double CoulombInterference::I_integrand(double phi, void *vp)
-{
-	/// par[0] ... t'
-	/// par[1] ... t
-	
-	GSLFunctionParams *params = (GSLFunctionParams *) vp;
-	const CoulombInterference *obj = params->obj;
-	double tt = params->params[0];
-	double t = params->params[1];
-
-	// t2 ... t''
-	double t2 = tt + t + 2. * sqrt(tt * t) * cos(phi);
-
+	double t2 = tp + t + 2. * sqrt(tp * t) * cos(phi);
 	return obj->FF_sq(t2) / t2;
 }
 
@@ -342,98 +299,32 @@ double CoulombInterference::I_integrand(double phi, void *vp)
 
 double CoulombInterference::I_integral(double t, double tp) const
 {
-	double par[] = {tp, t};
+	double par[] = { tp, t };
 
-#ifdef USE_GSL
-  	double result, error;
-	gsl_function F;
-  	F.function = I_integrand;
-	GSLFunctionParams fp;
-	fp.obj = this;
-	fp.params = par;
-  	F.params = &fp;
-
-	gsl_integration_qag(&F, 0., 2.*cnts->pi, 0., precision, gsl_w_size, GSL_INTEG_GAUSS61, gsl_w, &result, &error);
-	return result;
-#else
-	return DoubleInt(this, I_integrand, 0., 2.*cnts->pi, par);
-#endif
+	//	return DoubleInt(this, I_integrand, 0., 2.*cnts->pi, par);
+	return RealIntegrate(I_integrand, par, this, 0., 2.*cnts->pi, precision, integ_workspace_size, integ_workspace2);
 }
 
 //--------------------------------------------------------------------------------------------------
 
-TComplex CoulombInterference::B_integrand(double *tt, double *par, const void *obj)
+TComplex CoulombInterference::B_integrand(double tp, double *par, const void *vobj)
 {
-	/// tt[0] ... t'
-	/// par[0] ... t
-	/// par[1] ... Re T_H(t) 
-	/// par[2] ... IM T_H(t)
+	CoulombInterference *obj = (CoulombInterference *) vobj;
 	
+	const double &t = par[0];
 	TComplex T_hadron_t(par[1], par[2]);
 
-	TComplex a = model->Amp(tt[0]) / T_hadron_t;
-
-#ifdef USE_GSL
-	printf("%p\n", obj);
-	double I = 0.;
-#else
-	double ppar[] = { tt[0], par[0] };
-	double I = DoubleInt(obj, I_integrand, 0., 2.*cnts->pi, ppar);
-#endif
+	double ppar[] = { tp, t };
+	double I = RealIntegrate(I_integrand, ppar, vobj, 0., 2.*cnts->pi, obj->precision, obj->integ_workspace_size, obj->integ_workspace2);
 	
+	TComplex a = model->Amp(tp) / T_hadron_t;
 	return (a - 1.) * I	/ 2. / cnts->pi;
 }
-
-//--------------------------------------------------------------------------------------------------
-
-TComplex CoulombInterference::B_integrand(double tt, void *vp)
-{
-	/// tt[0] ... t'
-	/// par[0] ... t
-	/// par[1] ... Re T_H(t) 
-	/// par[2] ... IM T_H(t)
-
-	GSLFunctionParams *params = (GSLFunctionParams *) vp;
-	
-	TComplex T_hadron_t(params->params[1], params->params[2]);
-
-	TComplex a = model->Amp(tt) / T_hadron_t;
-
-#ifdef USE_GSL
-	const CoulombInterference *obj = params->obj;
-	double ppar[] = { tt, params->params[0] };
-
-  	double result, error;
-	gsl_function F;
-  	F.function = I_integrand;
-	GSLFunctionParams fp;
-	fp.obj = obj;
-	fp.params = ppar;
-  	F.params = &fp;
-
-	gsl_integration_qag(&F, 0., 2.*cnts->pi, 0., obj->precision, obj->gsl_w_size, GSL_INTEG_GAUSS61, obj->gsl_w2, &result, &error);
-
-	double I = result;
-#else
-	double I = 0.;
-#endif
-	
-	return (a - 1.) * I	/ 2. / cnts->pi;
-}
-
-double CoulombInterference::B_integrand_Re(double tt, void *vp) { return CoulombInterference::B_integrand(tt, vp).Re(); }
-double CoulombInterference::B_integrand_Im(double tt, void *vp) { return CoulombInterference::B_integrand(tt, vp).Im(); }
 
 //--------------------------------------------------------------------------------------------------
 
 TComplex CoulombInterference::B_term(double t) const
 {
-	double par[3]; 
-	par[0] = t;											 // t
-	TComplex amp_t = model->Amp(t);	 // T_H(t)
-	par[1] = amp_t.Re();							// RE T_H(t)
-	par[2] = amp_t.Im();							// IM T_H(t)
-	
 	/**
 	Function B_integrand(t', t) has problems at point t' = t. It is not defined there (left and right limits are different),
 	it is not continuous at the point. To avoid problems, we cut out a small interval (t-tau, t+tau), tau > 0 from the
@@ -444,55 +335,14 @@ TComplex CoulombInterference::B_term(double t) const
 	region (t+tau, 0) isn't present.
 	**/
 
-#ifdef USE_GSL
-	double result_re, result_im;
+	TComplex amp_t = model->Amp(t);
+	double par[] = { t, amp_t.Re(), amp_t.Im() }; 
 
-	{
-		double result, error;
-		gsl_function F;
-	  	F.function = B_integrand_Re;
-		GSLFunctionParams fp;
-		fp.obj = this;
-		fp.params = par;
-	  	F.params = &fp;
-	
-		gsl_integration_qag(&F, t - T, t - tau, 0., precision, gsl_w_size, GSL_INTEG_GAUSS61, gsl_w, &result, &error);
-		result_re = result;
-
-		if (t + tau < 0.)
-		{
-			gsl_integration_qag(&F, t + tau, 0., 0., precision, gsl_w_size, GSL_INTEG_GAUSS61, gsl_w, &result, &error);
-			result_re += result;
-		}
-	}
-
-	{
-		double result, error;
-		gsl_function F;
-	  	F.function = B_integrand_Im;
-		GSLFunctionParams fp;
-		fp.obj = this;
-		fp.params = par;
-	  	F.params = &fp;
-	
-		gsl_integration_qag(&F, t - T, t - tau, 0., precision, gsl_w_size, GSL_INTEG_GAUSS61, gsl_w, &result, &error);
-		result_im = result;
-
-		if (t + tau < 0.)
-		{
-			gsl_integration_qag(&F, t + tau, 0., 0., precision, gsl_w_size, GSL_INTEG_GAUSS61, gsl_w, &result, &error);
-			result_im += result;
-		}
-	}
-
-	TComplex ret(result_re, result_im);
-#else
-	TComplex ret = CmplxInt(this, B_integrand, t - T, t - tau, par, precision);
+	TComplex I = ComplexIntegrate(B_integrand, par, this, t - T, t - tau, precision, integ_workspace_size, integ_workspace);
 	if (t + tau < 0.)
-		ret += CmplxInt(this, B_integrand, t + tau, 0., par, precision);
-#endif
+		I += ComplexIntegrate(B_integrand, par, this, t + tau, 0., precision, integ_workspace_size, integ_workspace);
 
-	return ret;
+	return I;
 }
 
 //--------------------------------------------------------------------------------------------------
