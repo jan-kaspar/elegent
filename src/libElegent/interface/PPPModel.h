@@ -23,8 +23,7 @@
 #define _elegent_ppp_model_
 
 #include "Model.h"
-
-#include <gsl/gsl_integration.h>
+#include "interface/Math.h"
 
 namespace Elegent
 {
@@ -51,6 +50,7 @@ class PPPModel : public Model
 		} variant;
 		
 		PPPModel();
+		~PPPModel();
 		
 		void Configure(VariantType v);
 
@@ -68,9 +68,9 @@ class PPPModel : public Model
 		double s0;
 		double precision, upper_bound;
 
-		/// TODO: for GSL
-		unsigned long gsl_w_size;
-		gsl_integration_workspace *gsl_w;
+		bool integ_workspace_initialized;
+		unsigned long integ_workspace_size;
+		gsl_integration_workspace *integ_workspace;
 
 		static void SetTrajectory(Trajectory &t, double D, double c, double ap, double r2, double s0);
 
@@ -78,12 +78,8 @@ class PPPModel : public Model
 
 		/// b in GeV^-1
 		virtual TComplex prf0(double b) const;
-		static TComplex prf_J0(double *b, double *t, const void *obj);
-		
-		// TODO: for GSL
-		static TComplex prf_J0(double b, void *vp);
-		static double prf_J0_Re(double b, void *vp);
-		static double prf_J0_Im(double b, void *vp);
+
+		static TComplex prf_J0(double b, double *par, const void *obj);
 };
 
 } // namespace

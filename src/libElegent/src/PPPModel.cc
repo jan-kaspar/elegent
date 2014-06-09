@@ -20,19 +20,28 @@
 ********************************************************************************/
 
 #include "interface/PPPModel.h"
-#include "interface/Math.h"
 #include "interface/Constants.h"
 
 using namespace std;
 using namespace Elegent;
-
-//#define USE_GSL
 
 //----------------------------------------------------------------------------------------------------
 
 PPPModel::PPPModel()
 {
 	fullLabel.name = "Petrov et al."; shortLabel.name = "petrov";
+
+	integ_workspace_initialized = false;
+}
+
+//----------------------------------------------------------------------------------------------------
+
+PPPModel::~PPPModel()
+{
+	if (integ_workspace_initialized)
+	{
+		gsl_integration_workspace_free(integ_workspace);
+	}
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -102,12 +111,16 @@ void PPPModel::Init()
 	}
 	
 	// integration parameters
-	precision = 1E-14;
-	upper_bound = 60.;
+	precision = 1E-3;
+	upper_bound = 40.;
 
-	gsl_w_size = 1000000;	// TODO: tune
-	gsl_w = gsl_integration_workspace_alloc(gsl_w_size);
-	// TODO: needs to be freed!!
+	// prepare integration workspace
+	if (!integ_workspace_initialized)
+	{
+		integ_workspace_size = 100;
+		integ_workspace = gsl_integration_workspace_alloc(integ_workspace_size);
+		integ_workspace_initialized = true;
+	}
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -125,6 +138,7 @@ void PPPModel::Print() const
 	printf("\toder: delta=%.4f, c=%.4f, a'=%.4f, r^2=%.4f\n", oder.D, oder.c, oder.ap, oder.r2);
 	printf("\tregf: delta=%.4f, c=%.4f, a'=%.4f, r^2=%.4f\n", regf.D, regf.c, regf.ap, regf.r2);
 	printf("\trego: delta=%.4f, c=%.4f, a'=%.4f, r^2=%.4f\n", rego.D, rego.c, rego.ap, rego.r2);
+	printf("\tupper_bound=%.1f, precision=%.1E\n", upper_bound, precision);
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -167,28 +181,13 @@ TComplex PPPModel::Prf(double b) const
 
 //----------------------------------------------------------------------------------------------------
 
-TComplex PPPModel::prf_J0(double *b, double *t, const void *obj)
+TComplex PPPModel::prf_J0(double b, double *par, const void *vobj)
 {
-	return ((PPPModel *)obj)->prf0(b[0]) * b[0] * TMath::BesselJ0(b[0] * sqrt(-t[0]));
-}
-
-//----------------------------------------------------------------------------------------------------
-
-TComplex PPPModel::prf_J0(double b, void *vpa)
-{
-	void **vp = (void **) vpa;
-	const PPPModel *obj = (PPPModel *) vp[0];
-
-	//printf("obj = %p\n", obj);
-
-	double *par = (double *) vp[1];
+	const PPPModel *obj = (PPPModel *) vobj;
 	double t = par[0];
 
 	return obj->prf0(b) * b * TMath::BesselJ0(b * sqrt(-t));
 }
-
-double PPPModel::prf_J0_Re(double b, void *vp) { return PPPModel::prf_J0(b, vp).Re(); }
-double PPPModel::prf_J0_Im(double b, void *vp) { return PPPModel::prf_J0(b, vp).Im(); }
 
 //----------------------------------------------------------------------------------------------------
 
@@ -196,35 +195,8 @@ TComplex PPPModel::Amp(double t) const
 {
 	//printf(">> PPPModel::Amp(%E)\n", t);
 
-#ifdef USE_GSL
-	double precision_GSL = 1E-4;
-	
-	double result_re, result_im;
-
-	const void* par[] = { this, &t };
-
-	{
-		double error;
-		gsl_function F;
-	  	F.function = prf_J0_Re;
-	  	F.params = par;
-	
-		gsl_integration_qag(&F, 0., upper_bound, 0., precision_GSL, gsl_w_size, GSL_INTEG_GAUSS61, gsl_w, &result_re, &error);
-	}
-
-	{
-		double error;
-		gsl_function F;
-	  	F.function = prf_J0_Im;
-	  	F.params = par;
-	
-		gsl_integration_qag(&F, 0., upper_bound, 0., precision_GSL, gsl_w_size, GSL_INTEG_GAUSS61, gsl_w, &result_im, &error);
-	}
-
-	TComplex I(result_re, result_im);
-#else
-	TComplex I = CmplxInt(this, prf_J0, 0., upper_bound, &t, precision);
-#endif
+	double par[] = { t };
+	TComplex I = ComplexIntegrate(prf_J0, par, this, 0., upper_bound, precision, integ_workspace_size, integ_workspace);
 
 	return 2.*cnts->p_cms*cnts->sqrt_s * I;
 }
