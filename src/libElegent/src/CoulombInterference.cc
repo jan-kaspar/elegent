@@ -61,12 +61,6 @@ void CoulombInterference::Print() const
 	printf("\tT = %E\n", T);
 	printf("\ttau = %E\n", tau);
 	printf("\tprecision = %E\n", precision);
-
-#ifdef USE_GSL
-	printf("\tusing GSL integration\n");
-#else
-	printf("\tusing internal integration\n");
-#endif
 }
 
 //----------------------------------------------------------------------------------------------------

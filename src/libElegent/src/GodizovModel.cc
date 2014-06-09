@@ -20,7 +20,9 @@
 ********************************************************************************/
 
 #include "interface/GodizovModel.h"
+
 #include "interface/Constants.h"
+#include "interface/Math.h"
 
 using namespace std;
 using namespace Elegent;
@@ -30,12 +32,27 @@ using namespace Elegent;
 GodizovModel::GodizovModel()
 {
 	fullLabel.name = "Godizov"; shortLabel.name = "godizov";
+
+	integ_workspace_initialized = false;
 }
 
 //----------------------------------------------------------------------------------------------------
 
-void GodizovModel::Configure()
+GodizovModel::~GodizovModel()
 {
+	if (integ_workspace_initialized)
+	{
+		gsl_integration_workspace_free(integ_workspace_b);
+		gsl_integration_workspace_free(integ_workspace_t);
+	}
+}
+
+//----------------------------------------------------------------------------------------------------
+
+void GodizovModel::Configure(bool _presampled)
+{
+	presampled = _presampled;
+
 	fullLabel.variant = "";
 	fullLabel.version = "arXiv:1404.2851v2";
 	fullLabel.mode = "";
@@ -58,10 +75,25 @@ void GodizovModel::Init()
 	Ga_P0 = 7.43;	
 	ta_g = 0.98;	// GeV^2
 
-	// TODO
-	gsl_w_size = 1000000;	// TODO: tune
-	gsl_w = gsl_integration_workspace_alloc(gsl_w_size);
-	// TODO: needs to be freed!!
+	// integration parameters
+	upper_bound_t = 60.; precision_t = 5E-2;
+	upper_bound_b = 50.; precision_b = 1E-2;
+
+	// prepare integration workspace
+	if (!integ_workspace_initialized)
+	{
+		integ_workspace_size_b = 100;	// TODO: tune
+		integ_workspace_b = gsl_integration_workspace_alloc(integ_workspace_size_b);
+
+		integ_workspace_size_t = 100;	// TODO: tune
+		integ_workspace_t = gsl_integration_workspace_alloc(integ_workspace_size_b);
+
+		integ_workspace_initialized = true;
+	}
+
+	// pre-sample profile function
+	if (presampled)
+		Prf0SampleBuild(10001);
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -75,6 +107,16 @@ void GodizovModel::Print() const
 	printf("\tGa_P(0) = %.3f\n", Ga_P0);
 	printf("\ttau_g = %.3f\n", ta_g);
 	printf("\ts0 = %.3f\n", s0);
+
+	printf("\n");
+	printf("\tpresampled = %u\n", presampled);
+	if (presampled)
+		printf("\t\tsample size = %u, db = %.1E\n", prf0_sample_N, prf0_sample_db);
+	
+	printf("\n");
+	printf("\tintegration parameters:\n");
+	printf("\t\tt: upper bound = %.1E, precision = %.1E\n", upper_bound_t, precision_t);
+	printf("\t\tb: upper bound = %.1E, precision = %.1E\n", upper_bound_b, precision_b);
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -92,54 +134,21 @@ TComplex GodizovModel::delta_t(double t) const
 
 //----------------------------------------------------------------------------------------------------
 
-TComplex GodizovModel::delta_t_J0(double t, void *vpa)
+TComplex GodizovModel::delta_t_J0(double t, double *par, const void *vobj)
 {
-	void **vp = (void **) vpa;
-	const GodizovModel *obj = (GodizovModel *) vp[0];
-
-	double *par = (double *) vp[1];
+	const GodizovModel *obj = (GodizovModel *) vobj;
 	double b = par[0];
-	
+
 	return obj->delta_t(t) * TMath::BesselJ0(b * sqrt(-t));
 }
-
-double GodizovModel::delta_t_J0_Re(double t, void *vpa) { return GodizovModel::delta_t_J0(t, vpa).Re(); }
-double GodizovModel::delta_t_J0_Im(double t, void *vpa) { return GodizovModel::delta_t_J0(t, vpa).Im(); }
 
 //----------------------------------------------------------------------------------------------------
 
 TComplex GodizovModel::delta_b(double b) const
 {
 	// bottom relation from Eq. (1) in [1]
-
-	// TODO: tune
-	double precision_GSL = 1E-4;
-	double upper_bound = 60.;	// GeV^-2
-	
-	double result_re, result_im;
-
-	const void* par[] = { this, &b };
-
-	{
-		double error;
-		gsl_function F;
-	  	F.function = delta_t_J0_Re;
-	  	F.params = par;
-	
-		gsl_integration_qag(&F, -upper_bound, 0., 0., precision_GSL, gsl_w_size, GSL_INTEG_GAUSS61, gsl_w, &result_re, &error);
-	}
-
-	{
-		double error;
-		gsl_function F;
-	  	F.function = delta_t_J0_Im;
-	  	F.params = par;
-	
-		gsl_integration_qag(&F, -upper_bound, 0., 0., precision_GSL, gsl_w_size, GSL_INTEG_GAUSS61, gsl_w, &result_im, &error);
-	}
-
-	TComplex I(result_re, result_im);
-
+	double par[] = { b };
+	TComplex I = ComplexIntegrate(delta_t_J0, par, this, -upper_bound_t, 0., precision_t, integ_workspace_size_t, integ_workspace_t);
 	return I / 16. / cnts->pi / cnts->s;
 }
 	
@@ -147,47 +156,7 @@ TComplex GodizovModel::delta_b(double b) const
 
 TComplex GodizovModel::prf0(double b) const
 {
-	//printf(">> GodizovModel::prf0(%E)\n", b);
-
 	return (TComplex::Exp(2. * i * delta_b(b)) - 1.) / (2. * i);
-}
-
-//----------------------------------------------------------------------------------------------------
-
-TComplex GodizovModel::Amp(double t) const
-{
-	//printf(">> GodizovModel::Amp(%E)\n", t);
-
-	// integral from upper part of Eq. (1) in [1]
-	// TODO: tune
-	double precision_GSL = 1E-4;
-	double upper_bound = 50.;	// GeV^-1
-	
-	double result_re, result_im;
-
-	const void* par[] = { this, &t };
-
-	{
-		double error;
-		gsl_function F;
-	  	F.function = prf_J0_Re;
-	  	F.params = par;
-	
-		gsl_integration_qag(&F, 0., upper_bound, 0., precision_GSL, gsl_w_size, GSL_INTEG_GAUSS61, gsl_w, &result_re, &error);
-	}
-
-	{
-		double error;
-		gsl_function F;
-	  	F.function = prf_J0_Im;
-	  	F.params = par;
-	
-		gsl_integration_qag(&F, 0., upper_bound, 0., precision_GSL, gsl_w_size, GSL_INTEG_GAUSS61, gsl_w, &result_im, &error);
-	}
-
-	TComplex I(result_re, result_im);
-
-	return 2. * cnts->p_cms * cnts->sqrt_s * I;
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -199,16 +168,63 @@ TComplex GodizovModel::Prf(double b) const
 
 //----------------------------------------------------------------------------------------------------
 
-TComplex GodizovModel::prf_J0(double b, void *vpa)
+TComplex GodizovModel::prf_J0(double b, double *par, const void *vobj)
 {
-	void **vp = (void **) vpa;
-	const GodizovModel *obj = (GodizovModel *) vp[0];
-
-	double *par = (double *) vp[1];
+	const GodizovModel *obj = (GodizovModel *) vobj;
 	double t = par[0];
 
-	return obj->prf0(b) * b * TMath::BesselJ0(b * sqrt(-t));
+	TComplex prf0_v = (obj->presampled) ? obj->Prf0SampleEval(b) : obj->prf0(b);
+	return prf0_v * b * TMath::BesselJ0(b * sqrt(-t));
 }
 
-double GodizovModel::prf_J0_Re(double b, void *vp) { return GodizovModel::prf_J0(b, vp).Re(); }
-double GodizovModel::prf_J0_Im(double b, void *vp) { return GodizovModel::prf_J0(b, vp).Im(); }
+//----------------------------------------------------------------------------------------------------
+
+TComplex GodizovModel::Amp(double t) const
+{
+	// integral from upper part of Eq. (1) in [1]
+	double par[] = { t };
+	TComplex I = ComplexIntegrate(prf_J0, par, this, 0., upper_bound_b, precision_b, integ_workspace_size_b, integ_workspace_b);
+
+	return 2. * cnts->p_cms * cnts->sqrt_s * I;
+}
+//----------------------------------------------------------------------------------------------------
+
+void GodizovModel::Prf0SampleBuild(unsigned int samples)
+{
+	printf(">> GodizovModel::Prf0SampleBuild > Building %u samples...\n", samples);
+
+	prf0_sample_re.clear();
+	prf0_sample_re.reserve(samples);
+	prf0_sample_im.clear();
+	prf0_sample_im.reserve(samples);
+
+	double db = upper_bound_b / (samples - 1);
+	prf0_sample_db = db;
+	prf0_sample_N = samples;
+
+	double b = 0.;
+	for (unsigned int i = 0; i < samples; i++, b += db)
+	{
+		TComplex v = prf0(b);
+
+		prf0_sample_re.push_back(v.Re());
+		prf0_sample_im.push_back(v.Im());
+	}
+}
+
+//----------------------------------------------------------------------------------------------------
+
+TComplex GodizovModel::Prf0SampleEval(double b) const
+{
+	unsigned int idx = (int)(b / prf0_sample_db);
+	
+	if (idx + 1 > prf0_sample_N - 1)
+		return TComplex(0, 0);
+
+	double f = b/prf0_sample_db - idx;
+
+	return TComplex(
+		(prf0_sample_re[idx+1] - prf0_sample_re[idx])*f + prf0_sample_re[idx],
+		(prf0_sample_im[idx+1] - prf0_sample_im[idx])*f + prf0_sample_im[idx]
+	);
+}
