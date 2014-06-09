@@ -64,7 +64,6 @@ void PrintModelList()
 
 int InitModels(const string& hadronicModelsString, vector<Model *> &models)
 {
-
 	ModelFactory mf;
 
 	size_t p_curr = 0;
@@ -83,7 +82,6 @@ int InitModels(const string& hadronicModelsString, vector<Model *> &models)
 		{
 			BSWModel *bswm = (BSWModel *) model;
 			bswm->presampled = false;
-			bswm->highAccuracy = false;
 		}
 
 		models.push_back(model);

@@ -23,6 +23,7 @@
 #define _elegent_bsw_model_
 
 #include "Model.h"
+#include "Math.h"
 
 #include <vector>
 
@@ -69,7 +70,7 @@ class BSWModel : public Model
 
 		BSWModel();
 		
-		~BSWModel() {}
+		~BSWModel();
 
 		void Configure(ModeType _mode = mPomReg, bool _presampled = true);
 		
@@ -84,9 +85,6 @@ class BSWModel : public Model
 		/// flag whether the presampled mode is on
 		bool presampled;
 
-		/// accuracy level (use true for differential cross-section, false is sufficient for total cross-section)
-		bool highAccuracy;
-
 		/// the pomeron exchange parameters
 		double c, cp, a, f, m1, m2, asq, m1sq, m2sq;
 
@@ -98,8 +96,15 @@ class BSWModel : public Model
 		signed int k_u;			///< u = -|u| exp(i * (2 k pi - pi))
 		signed int k_lnu;		///< ln u = |ln u| exp(i * (al + 2 k_lnu pi)), al = atan2(Im ln u, Re ln u) in (-pi, +pi)
 
+		/// integration variables
 		double upper_bound_t, precision_t;
 		double upper_bound_b, precision_b;
+
+		bool integ_workspace_initialized;
+		unsigned long integ_workspace_size_b;
+		gsl_integration_workspace *integ_workspace_b;
+		unsigned long integ_workspace_size_t;
+		gsl_integration_workspace *integ_workspace_t;
 
 		/// \tilde F(t), Eq. (4)
 		double Ft(double t) const;
@@ -119,7 +124,7 @@ class BSWModel : public Model
 		/// the Bessel transform of \Omega_0(s, b) in Eq. (2)
 		TComplex Omega0t(double t) const;
 
-		static TComplex Omega0t_J0(double *t, double *b, const void *obj);
+		static TComplex Omega0t_J0(double t, double *par, const void *vobj);
 
 		/// \Omega_0(s, b)
 		TComplex Omega0b(double b) const;
@@ -127,7 +132,7 @@ class BSWModel : public Model
 		/// the profile function with b in GeV^-1
 		TComplex prf0(double b) const;
 
-		static TComplex prf0_J0(double *b, double *q, const void *obj);
+		static TComplex prf0_J0(double b, double *par, const void *vobj);
 
 		/// the sampling-step size
 		double data_db;
@@ -146,7 +151,7 @@ class BSWModel : public Model
 		void BuildSample(unsigned int samples);
 
 		/// interpolates (linearly) the sample at point b
-		TComplex SampleEval(double b);
+		TComplex SampleEval(double b) const;
 };
 
 } // namespace

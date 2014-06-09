@@ -21,7 +21,6 @@
 
 #include "interface/BSWModel.h"
 #include "interface/Constants.h"
-#include "interface/Math.h"
 
 using namespace std;
 using namespace Elegent;
@@ -32,7 +31,18 @@ BSWModel::BSWModel()
 {
 	fullLabel.name = "Bourrely et al."; shortLabel.name = "bourrely";
 
-	highAccuracy = true;
+	integ_workspace_initialized = false;
+}
+
+//----------------------------------------------------------------------------------------------------
+
+BSWModel::~BSWModel()
+{
+	if (integ_workspace_initialized)
+	{
+		gsl_integration_workspace_free(integ_workspace_b);
+		gsl_integration_workspace_free(integ_workspace_t);
+	}
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -84,19 +94,26 @@ void BSWModel::Init()
 		A2.sign = +1.; omega.sign = rho.sign = -1.;
 	}
 
-	if (highAccuracy)
+	// integration parameters
+	upper_bound_t = -500.; precision_t = 1E-3;
+	upper_bound_b = 50.; precision_b = 1E-1;
+
+	// prepare integration workspace
+	if (!integ_workspace_initialized)
 	{
-		upper_bound_t = -500.; precision_t = 1E-15;
-		upper_bound_b = 50.; precision_b = 1E-12;
-	} else {
-		upper_bound_t = -200.; precision_t = 1E-5;
-		upper_bound_b = 30.; precision_b = 1E-5;
+		integ_workspace_size_b = 100;
+		integ_workspace_b = gsl_integration_workspace_alloc(integ_workspace_size_b);
+
+		integ_workspace_size_t = 100;
+		integ_workspace_t = gsl_integration_workspace_alloc(integ_workspace_size_b);
+
+		integ_workspace_initialized = true;
 	}
-	
+
 	// save value of S0(0)
 	S00 = S0(0.);
 	if (presampled)
-		BuildSample(25001);
+		BuildSample(10001);
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -125,7 +142,6 @@ void BSWModel::Print() const
 	printf("\n");
 
 	printf("\tintegration parameters:\n");
-	printf("\t\thigh accuracy = %u\n", highAccuracy);
 	printf("\t\tt: upper bound = %.1E, precision = %.1E\n", upper_bound_t, precision_t);
 	printf("\t\tb: upper bound = %.1E, precision = %.1E\n", upper_bound_b, precision_b);
 }
@@ -221,9 +237,12 @@ TComplex BSWModel::Omega0t(double t) const
 
 //----------------------------------------------------------------------------------------------------
 
-TComplex BSWModel::Omega0t_J0(double *t, double *b, const void *obj)
+TComplex BSWModel::Omega0t_J0(double t, double *par, const void *vobj)
 {
-	return ((BSWModel *)obj)->Omega0t(t[0]) * TMath::BesselJ0(b[0] * sqrt(-t[0]));
+	const BSWModel *obj = (BSWModel *) vobj;
+	const double &b = par[0];
+
+	return obj->Omega0t(t) * TMath::BesselJ0(b * sqrt(-t));
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -231,7 +250,8 @@ TComplex BSWModel::Omega0t_J0(double *t, double *b, const void *obj)
 TComplex BSWModel::Omega0b(double b) const
 {
 	// the 1/2 factor is consequence of dt integration (instead of q dq)
-	return 0.5 * CmplxInt(this, Omega0t_J0, upper_bound_t, 0., &b, precision_t);
+	double par[] = { b };
+	return 0.5 * ComplexIntegrate(Omega0t_J0, par, this, upper_bound_t, 0., precision_t, integ_workspace_size_t, integ_workspace_t);
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -250,14 +270,13 @@ TComplex BSWModel::Prf(double b) const
 
 //----------------------------------------------------------------------------------------------------
 
-TComplex BSWModel::prf0_J0(double *b, double *q, const void *obj)
+TComplex BSWModel::prf0_J0(double b, double *par, const void *vobj)
 {
-	BSWModel *m = (BSWModel *) obj;
+	const BSWModel *obj = (BSWModel *) vobj;
+	const double &q = par[0];
 
-	if (m->presampled)
-		return m->SampleEval(b[0]) * b[0] * TMath::BesselJ0(b[0] * q[0]);
-	else
-		return m->prf0(b[0]) * b[0] * TMath::BesselJ0(b[0] * q[0]);
+	TComplex prf0_v = (obj->presampled) ? obj->SampleEval(b) : obj->prf0(b);
+	return prf0_v  * b * TMath::BesselJ0(b * q);
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -265,8 +284,11 @@ TComplex BSWModel::prf0_J0(double *b, double *q, const void *obj)
 TComplex BSWModel::Amp(double t) const
 {
 	double q = sqrt(-t);
+	double par[] = { q };
+
+	TComplex I = ComplexIntegrate(prf0_J0, par, this, 0., upper_bound_b, precision_b, integ_workspace_size_b, integ_workspace_b);
 	
-	return i * cnts->p_cms * cnts->sqrt_s * CmplxInt(this, prf0_J0, 0., upper_bound_b, &q, precision_b);
+	return i * cnts->p_cms * cnts->sqrt_s * I;
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -293,8 +315,8 @@ void BSWModel::BuildSample(unsigned int samples)
 	{
 		TComplex v = prf0(b);
 
-#ifdef DEBUG
 		//printf("v=%.5f: re=%E, im=%E\n", b, v.Re(), v.Im());
+#ifdef DEBUG
 		data_b.push_back(b);
 #endif
 
@@ -305,7 +327,7 @@ void BSWModel::BuildSample(unsigned int samples)
 
 //----------------------------------------------------------------------------------------------------
 
-TComplex BSWModel::SampleEval(double b)
+TComplex BSWModel::SampleEval(double b) const
 {
 	unsigned int idx = (int)(b / data_db);
 	
