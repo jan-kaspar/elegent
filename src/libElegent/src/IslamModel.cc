@@ -170,12 +170,12 @@ void IslamModel::Init()
 	
 	// integration parameters
 	upper_bound_b = 50.;
-	precision_b = 1E-2;
+	precision_b = 5E-2;
 
 	upper_bound_t = -15.;
    	precision_t = 1E-3;
 
-		// prepare integration workspace
+	// prepare integration workspace
 	if (!integ_workspace_initialized)
 	{
 		integ_workspace_size_b = 100;
@@ -312,27 +312,28 @@ double IslamModel::I_integral(double qt, double al) const
 
 //----------------------------------------------------------------------------------------------------
 
-double IslamModel::F_cal_integ(double *x, double *par, const void *obj)
+double IslamModel::F_cal_integ(double x, double *par, const void *vobj)
 {
-	double &qt = par[0];
-	double &n = par[1];
-	double &omega = par[2];
-	double &m0sq = par[3];
-	double al_sq = m0sq/4. + cnts->M_sq * x[0] * x[0];
+	IslamModel *obj = (IslamModel *) vobj;
+
+	const double &qt = par[0];
+	const double &n = par[1];
+	const double &omega = par[2];
+	const double &m0sq = par[3];
+
+	double al_sq = m0sq/4. + cnts->M_sq * x * x;
 	double al = sqrt(al_sq);
-	return exp((1. + n * omega) * log(x[0])) / al_sq * ((IslamModel *)obj)->I_integral(qt, al);
+
+	return exp((1. + n * omega) * log(x)) / al_sq * obj->I_integral(qt, al);
 }
 
 //----------------------------------------------------------------------------------------------------
 
 double IslamModel::F_cal(int n, double qt, double omega, double m0sq) const
 {
-	double par[4];
-	par[0] = qt;
-	par[1] = n;
-	par[2] = omega;
-	par[3] = m0sq;
-	return cnts->M * exp(2.5 * log(m0sq)) / 8. / cnts->pi * DoubleInt(this, F_cal_integ, 0., 1., par, 1E-9);
+	double par[] = { qt, double(n), omega, m0sq };
+	double I = RealIntegrate(F_cal_integ, par, this, 0., 1., 1E-3, integ_workspace_size_b, integ_workspace_b);
+	return cnts->M * exp(2.5 * log(m0sq)) / 8. / cnts->pi * I;
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -351,12 +352,14 @@ TComplex IslamModel::T_quark(double t) const
 
 //----------------------------------------------------------------------------------------------------
 
-double IslamModel::T_hp_integ(double *bArr, double *par, const void *obj)
+double IslamModel::T_hp_integ(double b, double *par, const void *vobj)
 {
-	double &b = bArr[0];
-	double &q = par[0]; // par[0] ... q
-	double &n = par[1]; // par[1] ... n
-	return b * TMath::BesselJ0(b * q) * pow( TMath::BesselK0(b / ((IslamModel *)obj)->r0) , n);
+	IslamModel *obj = (IslamModel *) vobj;
+
+	const double &q = par[0];
+	const double &n = par[1];
+
+	return b * TMath::BesselJ0(b * q) * pow( TMath::BesselK0(b / obj->r0) , n);
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -377,12 +380,9 @@ TComplex IslamModel::T_hp_n(int n, double t) const
 	}
 	
 	// general formula
-	double par[2];
-	par[0] = q;
-	par[1] = n;
-
-	// correct -i
-	return -i / 2. / TMath::Factorial(n) * TComplex::Power(Quark_const, n) * DoubleInt(this, T_hp_integ, 0., 30., par, 1E-9);
+	double par[] = { q, double(n) };
+	double I = RealIntegrate(T_hp_integ, par, this, 0., 30., 1E-3, integ_workspace_size_b, integ_workspace_b);
+	return -i / 2. / TMath::Factorial(n) * TComplex::Power(Quark_const, n) * I; // correct -i
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -408,12 +408,14 @@ TComplex IslamModel::T_hp(double t) const
 
 //------------------------------------ CGC AMPLITUDE -------------------------------------------------
 
-double IslamModel::T_lxg_integ(double *bArr, double *par, const void *obj)
+double IslamModel::T_lxg_integ(double b, double *par, const void *vobj)
 {
-	double &b = bArr[0];
-	double &q = par[0]; // par[0] ... q
-	double &n = par[1]; // par[1] ... n
-	double &m_c = ((IslamModel *)obj)->m_c;
+	const double &q = par[0];
+	const double &n = par[1];
+
+	IslamModel *obj = (IslamModel *) vobj;
+	const double &m_c = obj->m_c;
+
 	return b * TMath::BesselJ0(b * q) * pow(exp(-b * m_c) * m_c*m_c * (1. + b*m_c) / 3., n);
 }
 
@@ -427,10 +429,9 @@ TComplex IslamModel::T_lxg_n(int n, double t) const
 		return i * cgc_fac / pow(1. - t/m_c/m_c, 2.5);
 	
 	// general formula
-	double par[2];
-	par[0] = q;
-	par[1] = n;
-	return i * pow(-2., n - 1) / TMath::Factorial(n) * TComplex::Power(cgc_fac, n) * DoubleInt(this, T_lxg_integ, 0., 30., par, 1E-9);
+	double par[] = { q, double(n) };
+	double I = RealIntegrate(T_lxg_integ, par, this, 0., 30., 1E-3, integ_workspace_size_b, integ_workspace_b);
+	return i * pow(-2., n - 1) / TMath::Factorial(n) * TComplex::Power(cgc_fac, n) * I;
 }
 
 //----------------------------------------------------------------------------------------------------

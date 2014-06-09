@@ -114,7 +114,7 @@ class IslamModel : public Model
 		/// diffraction amplitude
 		TComplex T_diff(double t) const;
 		TComplex GammaD(double b) const;
-		static TComplex GammaD_J0(double b, double *par, const void *obj);
+		static TComplex GammaD_J0(double b, double *par, const void *vobj);
 		
 		/// core amplitude
 		TComplex T_core(double t) const;
@@ -123,21 +123,21 @@ class IslamModel : public Model
 		/// quark-quark amplitude
 		TComplex T_quark(double t) const;
 		double I_integral(double qt, double al) const;
-		static double F_cal_integ(double *x, double *qt, const void *obj);
+		static double F_cal_integ(double x, double *par, const void *vobj);
 		double F_cal(int n, double qt, double om, double m0sq) const;
 		
 		/// quark-quark amplitude: hard-pomeron variant
-		static double T_hp_integ(double *, double *, const void *);
+		static double T_hp_integ(double b, double *par, const void *vobj);
 		TComplex T_hp_n(int n, double t) const;
 		TComplex T_hp(double t) const;
 
 		/// quark-quark amplitude: low-x gluons variant
-		static double T_lxg_integ(double *, double *, const void *);
+		static double T_lxg_integ(double b, double *par, const void *vobj);
 		TComplex T_lxg_n(int n, double t) const;
 		TComplex T_lxg(double t) const;
 
 		/// profile funcion methods
-		static TComplex Amp_J0(double t, double *par, const void *obj);
+		static TComplex Amp_J0(double t, double *par, const void *vobj);
 };
 
 } // namespace
