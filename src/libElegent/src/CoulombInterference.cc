@@ -36,9 +36,9 @@ CoulombInterference *coulomb = new CoulombInterference();
 //----------------------------------------------------------------------------------------------------
 
 CoulombInterference::CoulombInterference() : mode(mPC), ffType(ffPuckett),
-	tau(1E-10), T(10.), precision(1E-3)
+	tau(1E-10), T(10.), precision(1E-2)
 {
-	integ_workspace_size = 100;
+	integ_workspace_size = 1000;
 	integ_workspace = gsl_integration_workspace_alloc(integ_workspace_size);
 	integ_workspace2 = gsl_integration_workspace_alloc(integ_workspace_size);
 }
@@ -272,7 +272,8 @@ double CoulombInterference::A_integrand(double tt, double *par, const void *vobj
 double CoulombInterference::A_term(double t) const
 {
 	double par[] = { t };
-	return RealIntegrate(A_integrand, par, this, t-T, 0., precision, integ_workspace_size, integ_workspace);
+	return RealIntegrate(A_integrand, par, this, t-T, 0., precision, integ_workspace_size,
+		integ_workspace, "CoulombInterference::A_term");
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -296,7 +297,8 @@ double CoulombInterference::I_integral(double t, double tp) const
 	double par[] = { tp, t };
 
 	//	return DoubleInt(this, I_integrand, 0., 2.*cnts->pi, par);
-	return RealIntegrate(I_integrand, par, this, 0., 2.*cnts->pi, precision, integ_workspace_size, integ_workspace2);
+	return RealIntegrate(I_integrand, par, this, 0., 2.*cnts->pi, precision, integ_workspace_size,
+		integ_workspace2, "CoulombInterference::I_integral");
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -309,7 +311,8 @@ TComplex CoulombInterference::B_integrand(double tp, double *par, const void *vo
 	TComplex T_hadron_t(par[1], par[2]);
 
 	double ppar[] = { tp, t };
-	double I = RealIntegrate(I_integrand, ppar, vobj, 0., 2.*cnts->pi, obj->precision, obj->integ_workspace_size, obj->integ_workspace2);
+	double I = RealIntegrate(I_integrand, ppar, vobj, 0., 2.*cnts->pi, obj->precision,
+		obj->integ_workspace_size, obj->integ_workspace2, "B_integrand");
 	
 	TComplex a = model->Amp(tp) / T_hadron_t;
 	return (a - 1.) * I	/ 2. / cnts->pi;
@@ -332,9 +335,11 @@ TComplex CoulombInterference::B_term(double t) const
 	TComplex amp_t = model->Amp(t);
 	double par[] = { t, amp_t.Re(), amp_t.Im() }; 
 
-	TComplex I = ComplexIntegrate(B_integrand, par, this, t - T, t - tau, precision, integ_workspace_size, integ_workspace);
+	TComplex I = ComplexIntegrate(B_integrand, par, this, t - T, t - tau, precision,
+		integ_workspace_size, integ_workspace, "CoulombInterference::B_term");
 	if (t + tau < 0.)
-		I += ComplexIntegrate(B_integrand, par, this, t + tau, 0., precision, integ_workspace_size, integ_workspace);
+		I += ComplexIntegrate(B_integrand, par, this, t + tau, 0., precision, integ_workspace_size,
+			integ_workspace, "CoulombInterference::B_term");
 
 	return I;
 }

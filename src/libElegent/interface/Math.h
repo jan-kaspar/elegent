@@ -29,16 +29,19 @@
 namespace Elegent
 {
 
+// TODO: describe
+extern bool abortOnIntegrationError;
+
 typedef double (* RealFunction)(double x, double *par, const void *obj);
 typedef TComplex (* ComplexFunction)(double x, double *par, const void *obj);
 
 // TODO: describe
 double RealIntegrate(RealFunction fcn, double *par, const void *object, double from, double to, double rel_err,
-	unsigned long work_space_size, gsl_integration_workspace *work_space);
+	unsigned long work_space_size, gsl_integration_workspace *work_space, const char* errorLabel="");
 
 // TODO: describe
 TComplex ComplexIntegrate(ComplexFunction fcn, double *par, const void *object, double from, double to, double rel_err,
-	unsigned long work_space_size, gsl_integration_workspace *work_space);
+	unsigned long work_space_size, gsl_integration_workspace *work_space, const char* errorLabel="");
 
 } // namespace
 

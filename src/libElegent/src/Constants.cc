@@ -21,6 +21,9 @@
 
 #include "interface/Constants.h"
 
+// TODO: remove to better place
+#include <gsl/gsl_errno.h>
+
 namespace Elegent
 {
 
@@ -62,6 +65,11 @@ void Constants::Configure(double W, Constants::ParticleMode mode)
 void Constants::Init(double W, Constants::ParticleMode mode)
 {
 	cnts = new Constants(W, mode);
+
+	// TODO: find a better place
+	// 	maybe make a sort of Elegent master class, running all-common inits, 
+	//	providing also model factory, lists of available models etc.
+	gsl_set_error_handler_off();
 }
 
 //----------------------------------------------------------------------------------------------------

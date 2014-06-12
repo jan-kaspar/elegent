@@ -76,16 +76,16 @@ void GodizovModel::Init()
 	ta_g = 0.98;	// GeV^2
 
 	// integration parameters
-	upper_bound_t = 60.; precision_t = 5E-2;
-	upper_bound_b = 50.; precision_b = 1E-2;
+	upper_bound_t = 80.; precision_t = 1E-3;
+	upper_bound_b = 45.; precision_b = 1E-2;
 
 	// prepare integration workspace
 	if (!integ_workspace_initialized)
 	{
-		integ_workspace_size_b = 100;	// TODO: tune
+		integ_workspace_size_b = 100;
 		integ_workspace_b = gsl_integration_workspace_alloc(integ_workspace_size_b);
 
-		integ_workspace_size_t = 100;	// TODO: tune
+		integ_workspace_size_t = 100;
 		integ_workspace_t = gsl_integration_workspace_alloc(integ_workspace_size_b);
 
 		integ_workspace_initialized = true;
@@ -93,7 +93,7 @@ void GodizovModel::Init()
 
 	// pre-sample profile function
 	if (presampled)
-		Prf0SampleBuild(10001);
+		Prf0SampleBuild(25001);
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -148,7 +148,8 @@ TComplex GodizovModel::delta_b(double b) const
 {
 	// bottom relation from Eq. (1) in [1]
 	double par[] = { b };
-	TComplex I = ComplexIntegrate(delta_t_J0, par, this, -upper_bound_t, 0., precision_t, integ_workspace_size_t, integ_workspace_t);
+	TComplex I = ComplexIntegrate(delta_t_J0, par, this, -upper_bound_t, 0., precision_t,
+		integ_workspace_size_t, integ_workspace_t, "GodizovModel::delta_b");
 	return I / 16. / cnts->pi / cnts->s;
 }
 	
@@ -183,7 +184,8 @@ TComplex GodizovModel::Amp(double t) const
 {
 	// integral from upper part of Eq. (1) in [1]
 	double par[] = { t };
-	TComplex I = ComplexIntegrate(prf_J0, par, this, 0., upper_bound_b, precision_b, integ_workspace_size_b, integ_workspace_b);
+	TComplex I = ComplexIntegrate(prf_J0, par, this, 0., upper_bound_b, precision_b,
+		integ_workspace_size_b, integ_workspace_b, "GodizovModel::Amp");
 
 	return 2. * cnts->p_cms * cnts->sqrt_s * I;
 }

@@ -21,9 +21,15 @@
 
 #include "interface/Math.h"
 
+#include <gsl/gsl_errno.h>
+
 
 namespace Elegent
 {
+
+// TODO
+//bool abortOnIntegrationError = true;
+bool abortOnIntegrationError = false;
 
 //----------------------------------------------------------------------------------------------------
 
@@ -50,7 +56,7 @@ double RealIntegFcn(double x, void *vpar)
 //----------------------------------------------------------------------------------------------------
 
 double RealIntegrate(RealFunction fcn, double *par, const void *object, double from, double to, double rel_err,
-	unsigned long work_space_size, gsl_integration_workspace *work_space)
+	unsigned long work_space_size, gsl_integration_workspace *work_space, const char *errorLabel)
 {
 	// prepare structures
 	RealIntegPar ocip(fcn, par, object);
@@ -60,8 +66,14 @@ double RealIntegrate(RealFunction fcn, double *par, const void *object, double f
   	F.params = &ocip;
 
 	// real part
-	double result, error;
-	gsl_integration_qag(&F, from, to, 0., rel_err, work_space_size, GSL_INTEG_GAUSS61, work_space, &result, &error);
+	double result, unc;
+	int status = gsl_integration_qag(&F, from, to, 0., rel_err, work_space_size, GSL_INTEG_GAUSS61, work_space, &result, &unc);
+	if (status != 0) 
+	{
+		printf("WARNING in %s > Integration failed: %s.\n", errorLabel, gsl_strerror(status));
+		if (abortOnIntegrationError)
+			abort();
+	}
 
 	return result;
 }
@@ -97,7 +109,7 @@ double OneCompIntegFcn(double x, void *par)
 //----------------------------------------------------------------------------------------------------
 
 TComplex ComplexIntegrate(ComplexFunction fcn, double *par, const void *object, double from, double to, double rel_err,
-	unsigned long work_space_size, gsl_integration_workspace *work_space)
+	unsigned long work_space_size, gsl_integration_workspace *work_space, const char *errorLabel)
 {
 	// prepare structures
 	OneCompIntegPar ocip(fcn, par, object);
@@ -108,13 +120,25 @@ TComplex ComplexIntegrate(ComplexFunction fcn, double *par, const void *object, 
 
 	// real part
 	ocip.part = OneCompIntegPar::pReal;
-	double result_re, error_re;
-	gsl_integration_qag(&F, from, to, 0., rel_err, work_space_size, GSL_INTEG_GAUSS61, work_space, &result_re, &error_re);
+	double result_re, unc_re;
+	int status_re = gsl_integration_qag(&F, from, to, 0., rel_err, work_space_size, GSL_INTEG_GAUSS61, work_space, &result_re, &unc_re);
+	if (status_re != 0) 
+	{
+		printf("WARNING in %s > Real integration failed: %s.\n", errorLabel, gsl_strerror(status_re));
+		if (abortOnIntegrationError)
+			abort();
+	}
 
 	// imaginary part
 	ocip.part = OneCompIntegPar::pImaginary;
-	double result_im, error_im;
-	gsl_integration_qag(&F, from, to, 0., rel_err, work_space_size, GSL_INTEG_GAUSS61, work_space, &result_im, &error_im);
+	double result_im, unc_im;
+	int status_im = gsl_integration_qag(&F, from, to, 0., rel_err, work_space_size, GSL_INTEG_GAUSS61, work_space, &result_im, &unc_im);
+	if (status_im != 0) 
+	{
+		printf("WARNING in %s > Imaginary integration failed: %s.\n", errorLabel, gsl_strerror(status_im));
+		if (abortOnIntegrationError)
+			abort();
+	}
 
 	// result
 	return TComplex(result_re, result_im);

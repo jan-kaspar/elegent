@@ -251,7 +251,8 @@ TComplex BSWModel::Omega0b(double b) const
 {
 	// the 1/2 factor is consequence of dt integration (instead of q dq)
 	double par[] = { b };
-	return 0.5 * ComplexIntegrate(Omega0t_J0, par, this, upper_bound_t, 0., precision_t, integ_workspace_size_t, integ_workspace_t);
+	return 0.5 * ComplexIntegrate(Omega0t_J0, par, this, upper_bound_t, 0., precision_t,
+		integ_workspace_size_t, integ_workspace_t, "BSWModel::Omega0b");
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -286,7 +287,8 @@ TComplex BSWModel::Amp(double t) const
 	double q = sqrt(-t);
 	double par[] = { q };
 
-	TComplex I = ComplexIntegrate(prf0_J0, par, this, 0., upper_bound_b, precision_b, integ_workspace_size_b, integ_workspace_b);
+	TComplex I = ComplexIntegrate(prf0_J0, par, this, 0., upper_bound_b, precision_b,
+		integ_workspace_size_b, integ_workspace_b, "BSWModel::Amp");
 	
 	return i * cnts->p_cms * cnts->sqrt_s * I;
 }

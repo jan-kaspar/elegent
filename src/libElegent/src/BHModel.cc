@@ -259,6 +259,7 @@ TComplex BHModel::Amp(double t) const
 	// from Eqs. (A11) and (A12)
 	double q = sqrt(-t);
 	double par[] = { q };
-	TComplex I = ComplexIntegrate(prf0_J0, par, this, 0., upper_bound, precision, integ_workspace_size, integ_workspace);
+	TComplex I = ComplexIntegrate(prf0_J0, par, this, 0., upper_bound, precision,
+		integ_workspace_size, integ_workspace, "BHModel::Amp");
 	return i * cnts->p_cms * cnts->sqrt_s * I;
 }
