@@ -4,6 +4,9 @@
  - test on: pckasparek, lxplus, hepforge
  - when 2.0 version released: regenerate ROOT files and plots and place them on web
 
+* Godizov model - tune better the integration parameters
+ - problems visible in B(t) and then in KL cross-section
+
 * problem with low |t| sampling: visible in B(t)
  - then finish the TODO in "code.asy"
 

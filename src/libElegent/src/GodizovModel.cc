@@ -77,23 +77,23 @@ void GodizovModel::Init()
 
 	// integration parameters
 	upper_bound_t = 80.; precision_t = 1E-3;
-	upper_bound_b = 45.; precision_b = 1E-2;
+	upper_bound_b = 60.; precision_b = 1E-2;
 
 	// prepare integration workspace
 	if (!integ_workspace_initialized)
 	{
-		integ_workspace_size_b = 100;
-		integ_workspace_b = gsl_integration_workspace_alloc(integ_workspace_size_b);
-
 		integ_workspace_size_t = 100;
-		integ_workspace_t = gsl_integration_workspace_alloc(integ_workspace_size_b);
+		integ_workspace_t = gsl_integration_workspace_alloc(integ_workspace_size_t);
+
+		integ_workspace_size_b = 1000;
+		integ_workspace_b = gsl_integration_workspace_alloc(integ_workspace_size_b);
 
 		integ_workspace_initialized = true;
 	}
 
 	// pre-sample profile function
 	if (presampled)
-		Prf0SampleBuild(25001);
+		Prf0SampleBuild(40001);
 }
 
 //----------------------------------------------------------------------------------------------------
