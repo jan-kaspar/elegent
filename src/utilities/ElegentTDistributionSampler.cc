@@ -113,8 +113,12 @@ int InitModels(const string& hadronicModelsString, vector<Model *> &models)
 
 void SampleModels(const vector<Model *> &models, double t_max, unsigned int N, vector<InterpolationModel *> &models_sampled)
 {
+	printf(">> sampling models\n");
+
 	for (unsigned int mi = 0; mi < models.size(); mi++)
 	{
+		printf("\tmodel %u\n", mi);
+
 		model = models[mi];
 
 		InterpolationModel *ms = new InterpolationModel(N, -t_max, 0.);
@@ -172,6 +176,8 @@ void BuildAmplitudes(const vector<InterpolationModel*> &models_sampled,
 	double t_min_coulomb,
 	AmplitudeGraph &amplitude_pc, vector< map<CoulombInterference::CIMode, AmplitudeGraph> > &amplitudes)
 {
+	printf(">> building amplitudes\n");
+
 	// PC amplitude
 	coulomb->mode = CoulombInterference::mPC;
 	SampleAmplitude(logarithmic, N, t_min, t_max, t_min_coulomb, amplitude_pc, false);
@@ -181,12 +187,16 @@ void BuildAmplitudes(const vector<InterpolationModel*> &models_sampled,
 	amplitudes.resize(models_sampled.size());
 	for (unsigned int mi = 0; mi < models_sampled.size(); mi++)
 	{
+		printf("\tmodel %u\n", mi);
+	
 		model = models_sampled[mi];
 
 		map<CoulombInterference::CIMode, AmplitudeGraph> &as = amplitudes[mi];
 
 		for (unsigned int cii = 0; cii < amplitudeModes.size(); cii++)
 		{
+			printf("\tamplitude mode %u\n", cii);
+
 			coulomb->mode = amplitudeModes[cii];
 
 			AmplitudeGraph &a = as[amplitudeModes[cii]];
