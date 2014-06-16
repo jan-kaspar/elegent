@@ -19,6 +19,7 @@
  
 ********************************************************************************/
 
+#include "interface/Config.h"
 #include "interface/Constants.h"
 
 // TODO: remove to better place
@@ -77,22 +78,28 @@ void Constants::Init(double W, Constants::ParticleMode mode)
 void Constants::Print()
 {
 	printf(">> Constants::Print\n");
-	printf("	alpha = %E\n", alpha);
-	printf("	proton_mass = %E\n", proton_mass);
-	printf("	neutron_mass = %E\n", neutron_mass);
-	printf("	hbarc = %E\n", hbarc);
-	printf("	sq_hbarc = %E\n", sq_hbarc);
-	printf("	M = %E\n", M);
-	printf("	M_sq = %E\n", M_sq);
-	printf("	pi = %E\n", pi);
-	printf("	gamma = %E\n", gamma);
-	printf("	sqrt_s = %E\n", sqrt_s);
-	printf("	s = %E\n", s);
-	printf("	ln_s = %E\n", ln_s);
-	printf("	p_cms = %E\n", p_cms);
-	printf("	sig_fac = %E\n", sig_fac);
-	printf("	t_min = %E\n", t_min);
-	printf("	pMode = %s\n", (pMode == mPP) ? "pp" : "app");
+
+	// TODO: find a better place
+	// 	maybe make a sort of Elegent master class, running all-common inits, 
+	//	providing also model factory, lists of available models etc.
+	printf("\tElegent version: " Elegent_VERSION "\n");
+
+	printf("\talpha = %E\n", alpha);
+	printf("\tproton_mass = %E\n", proton_mass);
+	printf("\tneutron_mass = %E\n", neutron_mass);
+	printf("\thbarc = %E\n", hbarc);
+	printf("\tsq_hbarc = %E\n", sq_hbarc);
+	printf("\tM = %E\n", M);
+	printf("\tM_sq = %E\n", M_sq);
+	printf("\tpi = %E\n", pi);
+	printf("\tgamma = %E\n", gamma);
+	printf("\tsqrt_s = %E\n", sqrt_s);
+	printf("\ts = %E\n", s);
+	printf("\tln_s = %E\n", ln_s);
+	printf("\tp_cms = %E\n", p_cms);
+	printf("\tsig_fac = %E\n", sig_fac);
+	printf("\tt_min = %E\n", t_min);
+	printf("\tpMode = %s\n", (pMode == mPP) ? "pp" : "app");
 }
 
 } // namespace
