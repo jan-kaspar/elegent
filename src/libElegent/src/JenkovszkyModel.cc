@@ -172,7 +172,7 @@ TComplex JenkovszkyModel::Prf(double b_fm) const
 	double b = b_fm / cnts->hbarc;	// b in GeV^-1
 	double par[] = { b };
 
-	TComplex I = ComplexIntegrate(Amp_J0, par, this, upper_bound_t, 0., precision_t,
+	TComplex I = ComplexIntegrate(Amp_J0, par, this, upper_bound_t, 0., 0., precision_t,
 		integ_workspace_size, integ_workspace, "JenkovszkyModel::Prf");
 
 	return I / 4. / cnts->p_cms / cnts->sqrt_s;

@@ -272,7 +272,7 @@ double CoulombInterference::A_integrand(double tt, double *par, const void *vobj
 double CoulombInterference::A_term(double t) const
 {
 	double par[] = { t };
-	return RealIntegrate(A_integrand, par, this, t-T, 0., precision, integ_workspace_size,
+	return RealIntegrate(A_integrand, par, this, t-T, 0., 0., precision, integ_workspace_size,
 		integ_workspace, "CoulombInterference::A_term");
 }
 
@@ -296,8 +296,7 @@ double CoulombInterference::I_integral(double t, double tp) const
 {
 	double par[] = { tp, t };
 
-	//	return DoubleInt(this, I_integrand, 0., 2.*cnts->pi, par);
-	return RealIntegrate(I_integrand, par, this, 0., 2.*cnts->pi, precision, integ_workspace_size,
+	return RealIntegrate(I_integrand, par, this, 0., 2.*cnts->pi, 0., precision, integ_workspace_size,
 		integ_workspace2, "CoulombInterference::I_integral");
 }
 
@@ -311,7 +310,7 @@ TComplex CoulombInterference::B_integrand(double tp, double *par, const void *vo
 	TComplex T_hadron_t(par[1], par[2]);
 
 	double ppar[] = { tp, t };
-	double I = RealIntegrate(I_integrand, ppar, vobj, 0., 2.*cnts->pi, obj->precision,
+	double I = RealIntegrate(I_integrand, ppar, vobj, 0., 2.*cnts->pi, 0., obj->precision,
 		obj->integ_workspace_size, obj->integ_workspace2, "B_integrand");
 	
 	TComplex a = model->Amp(tp) / T_hadron_t;
@@ -335,11 +334,11 @@ TComplex CoulombInterference::B_term(double t) const
 	TComplex amp_t = model->Amp(t);
 	double par[] = { t, amp_t.Re(), amp_t.Im() }; 
 
-	TComplex I = ComplexIntegrate(B_integrand, par, this, t - T, t - tau, precision,
-		integ_workspace_size, integ_workspace, "CoulombInterference::B_term");
+	TComplex I = ComplexIntegrate(B_integrand, par, this, t - T, t - tau, 1E-7, precision,
+		integ_workspace_size, integ_workspace, "CoulombInterference::B_term/ht");
 	if (t + tau < 0.)
-		I += ComplexIntegrate(B_integrand, par, this, t + tau, 0., precision, integ_workspace_size,
-			integ_workspace, "CoulombInterference::B_term");
+		I += ComplexIntegrate(B_integrand, par, this, t + tau, 0., 1E-7, precision,
+			integ_workspace_size, integ_workspace, "CoulombInterference::B_term/lt");
 
 	return I;
 }

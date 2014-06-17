@@ -270,7 +270,7 @@ TComplex IslamModel::T_diff(double t) const
 
 	/// t < 0
 	double par[] = { t };
-	return Diff_fac * ComplexIntegrate(GammaD_J0, par, this, 0., upper_bound_b, precision_b,
+	return Diff_fac * ComplexIntegrate(GammaD_J0, par, this, 0., upper_bound_b, 0., precision_b,
 		integ_workspace_size_b, integ_workspace_b, "IslamModel::T_diff");
 }
 
@@ -333,7 +333,7 @@ double IslamModel::F_cal_integ(double x, double *par, const void *vobj)
 double IslamModel::F_cal(int n, double qt, double omega, double m0sq) const
 {
 	double par[] = { qt, double(n), omega, m0sq };
-	double I = RealIntegrate(F_cal_integ, par, this, 0., 1., 1E-3, integ_workspace_size_b,
+	double I = RealIntegrate(F_cal_integ, par, this, 0., 1., 0., 1E-3, integ_workspace_size_b,
 		integ_workspace_b, "IslamModel::F_cal");
 	return cnts->M * exp(2.5 * log(m0sq)) / 8. / cnts->pi * I;
 }
@@ -383,7 +383,7 @@ TComplex IslamModel::T_hp_n(int n, double t) const
 	
 	// general formula
 	double par[] = { q, double(n) };
-	double I = RealIntegrate(T_hp_integ, par, this, 0., 30., 1E-3, integ_workspace_size_b,
+	double I = RealIntegrate(T_hp_integ, par, this, 0., 30., 0., 1E-3, integ_workspace_size_b,
 		integ_workspace_b, "IslamModel::T_hp_n");
 	return -i / 2. / TMath::Factorial(n) * TComplex::Power(Quark_const, n) * I; // correct -i
 }
@@ -433,7 +433,7 @@ TComplex IslamModel::T_lxg_n(int n, double t) const
 	
 	// general formula
 	double par[] = { q, double(n) };
-	double I = RealIntegrate(T_lxg_integ, par, this, 0., 30., 1E-3, integ_workspace_size_b,
+	double I = RealIntegrate(T_lxg_integ, par, this, 0., 30., 0., 1E-3, integ_workspace_size_b,
 		integ_workspace_b, "IslamModel::T_lxg_n");
 	return i * pow(-2., n - 1) / TMath::Factorial(n) * TComplex::Power(cgc_fac, n) * I;
 }
@@ -500,7 +500,7 @@ TComplex IslamModel::Prf(double b_fm) const
 	double b = b_fm / cnts->hbarc;	// b in GeV^-1
 	double par[] = { b };
 
-	TComplex I = ComplexIntegrate(Amp_J0, par, this, upper_bound_t, 0., precision_t,
+	TComplex I = ComplexIntegrate(Amp_J0, par, this, upper_bound_t, 0., 0., precision_t,
 		integ_workspace_size_t, integ_workspace_t, "IslamModel::Prf");
 	return I / 4. / cnts->p_cms / cnts->sqrt_s;
 }

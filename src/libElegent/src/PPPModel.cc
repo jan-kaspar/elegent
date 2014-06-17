@@ -194,7 +194,7 @@ TComplex PPPModel::prf_J0(double b, double *par, const void *vobj)
 TComplex PPPModel::Amp(double t) const
 {
 	double par[] = { t };
-	TComplex I = ComplexIntegrate(prf_J0, par, this, 0., upper_bound, precision, integ_workspace_size,
+	TComplex I = ComplexIntegrate(prf_J0, par, this, 0., upper_bound, 0., precision, integ_workspace_size,
 		integ_workspace, "PPPModel::Amp");
 
 	return 2.*cnts->p_cms*cnts->sqrt_s * I;

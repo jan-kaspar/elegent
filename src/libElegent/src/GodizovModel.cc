@@ -148,7 +148,7 @@ TComplex GodizovModel::delta_b(double b) const
 {
 	// bottom relation from Eq. (1) in [1]
 	double par[] = { b };
-	TComplex I = ComplexIntegrate(delta_t_J0, par, this, -upper_bound_t, 0., precision_t,
+	TComplex I = ComplexIntegrate(delta_t_J0, par, this, -upper_bound_t, 0., 0., precision_t,
 		integ_workspace_size_t, integ_workspace_t, "GodizovModel::delta_b");
 	return I / 16. / cnts->pi / cnts->s;
 }
@@ -184,7 +184,7 @@ TComplex GodizovModel::Amp(double t) const
 {
 	// integral from upper part of Eq. (1) in [1]
 	double par[] = { t };
-	TComplex I = ComplexIntegrate(prf_J0, par, this, 0., upper_bound_b, precision_b,
+	TComplex I = ComplexIntegrate(prf_J0, par, this, 0., upper_bound_b, 0., precision_b,
 		integ_workspace_size_b, integ_workspace_b, "GodizovModel::Amp");
 
 	return 2. * cnts->p_cms * cnts->sqrt_s * I;
