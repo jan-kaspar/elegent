@@ -54,7 +54,7 @@ void GodizovModel::Configure(bool _presampled)
 	presampled = _presampled;
 
 	fullLabel.variant = "";
-	fullLabel.version = "arXiv:1404.2851v2";
+	fullLabel.version = "Phys. Lett. B735 (2014) 57-61";
 	fullLabel.mode = "";
 	
 	shortLabel.variant = "";
