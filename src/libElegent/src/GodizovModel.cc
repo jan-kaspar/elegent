@@ -66,10 +66,10 @@ void GodizovModel::Configure(bool _presampled)
 
 void GodizovModel::Init()
 {
-	// TODO: verify - not in the reference paper [1]
+	// neither in [1] nor [2], but confirmed by the author
 	s0 = 1.;	// in GeV^2
 	
-	// parameters from Table 1 from [1]
+	// parameters from Table 1 from [2]
 	De = 0.111;		// al_P(0) - 1
 	ta_a = 0.47;	// GeV^2
 	Ga_P0 = 7.43;	
@@ -123,12 +123,11 @@ void GodizovModel::Print() const
 
 TComplex GodizovModel::delta_t(double t) const
 {
-	/// Eq. (4) in [1]
+	/// Eq. (5) in [2]
 	double al_P = 1. + De / (1. - t/ta_a);
 	double Ga_P = Ga_P0 / (1. - t/ta_g) / (1. - t/ta_g);
 
-	/// delta(s, t) according Eq. (2) in [1]
-
+	/// delta(s, t) according Eq. (3) in [2]
 	return (i + tan(cnts->pi * De / 2.)) * Ga_P*Ga_P * pow(cnts->s / s0, al_P);
 }
 
@@ -146,7 +145,7 @@ TComplex GodizovModel::delta_t_J0(double t, double *par, const void *vobj)
 
 TComplex GodizovModel::delta_b(double b) const
 {
-	// bottom relation from Eq. (1) in [1]
+	// bottom relation from Eq. (1) in [2]
 	double par[] = { b };
 	TComplex I = ComplexIntegrate(delta_t_J0, par, this, -upper_bound_t, 0., 0., precision_t,
 		integ_workspace_size_t, integ_workspace_t, "GodizovModel::delta_b");
@@ -182,7 +181,7 @@ TComplex GodizovModel::prf_J0(double b, double *par, const void *vobj)
 
 TComplex GodizovModel::Amp(double t) const
 {
-	// integral from upper part of Eq. (1) in [1]
+	// integral from upper part of Eq. (1) in [2]
 	double par[] = { t };
 	TComplex I = ComplexIntegrate(prf_J0, par, this, 0., upper_bound_b, 0., precision_b,
 		integ_workspace_size_b, integ_workspace_b, "GodizovModel::Amp");

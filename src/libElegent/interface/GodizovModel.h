@@ -29,9 +29,10 @@ namespace Elegent
 {
 
 /**
- * \brief TODO
+ * \brief Model of elastic pp scattering by Anton Godizov.
  * References:
  *	[1] arXiv:1404.2851v2
+ *	[2] Phys. Lett. B735 (2014) 57-61
  **/
 class GodizovModel : public Model
 {
@@ -60,15 +61,15 @@ class GodizovModel : public Model
 		/// flag whether the profile function is presampled
 		bool presampled;
 
-		/// Eq. (2) in [1]
+		/// Eq. (3) in [2]
 		TComplex delta_t(double t) const;
 
 		static TComplex delta_t_J0(double t, double *par, const void *obj);
 		
-		/// bottom relation from Eq. (1) in [1]
+		/// bottom relation from Eq. (1) in [2]
 		TComplex delta_b(double b) const;
 
-		/// profile function, b in GeV^-1, see Eq. (1) in [1]
+		/// profile function, b in GeV^-1, see Eq. (1) in [2]
 		TComplex prf0(double b) const;
 
 		static TComplex prf_J0(double b, double *par, const void *obj);
