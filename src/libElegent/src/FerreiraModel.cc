@@ -31,7 +31,7 @@ using namespace Elegent;
 
 FerreiraModel::FerreiraModel()
 {
-	fullLabel.name = "Ferreira"; shortLabel.name = "ferreira";
+	fullLabel.name = "Ferreira et al."; shortLabel.name = "ferreira";
 
 	integ_workspace_initialized = false;
 }
