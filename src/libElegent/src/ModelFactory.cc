@@ -36,6 +36,10 @@ ModelFactory::ModelFactory()
 	bsw->Configure(BSWModel::mPomReg);
 	model_map[bsw->CompileShortLabel()] = bsw;
 
+	FerreiraModel *ferreira = new FerreiraModel();
+	ferreira->Configure();
+	model_map[ferreira->CompileShortLabel()] = ferreira;
+	
 	GodizovModel *godizov = new GodizovModel();
 	godizov->Configure();
 	model_map[godizov->CompileShortLabel()] = godizov;

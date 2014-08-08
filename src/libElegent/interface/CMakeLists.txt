@@ -6,6 +6,7 @@ install(FILES
 	Constants.h
 	CoulombInterference.h
 	ExpModel.h
+	FerreiraModel.h
 	Generator.h
 	GodizovModel.h
 	InterpolationModel.h

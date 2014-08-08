@@ -25,6 +25,7 @@
 #include "BHModel.h"
 #include "BSWModel.h"
 #include "ExpModel.h"
+#include "FerreiraModel.h"
 #include "GodizovModel.h"
 #include "IslamModel.h"
 #include "PPPModel.h"
