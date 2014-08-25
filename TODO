@@ -10,12 +10,10 @@
 * problem with low |t| sampling: visible in B(t)
  - then finish the TODO in "code.asy"
 
--------------------- long term --------------------
+* Generator class
+ - possibility to set seed
 
 * experimental data to plots
-
-* add more models
- - group of Ferreira contacted, waiting for response
 
 * s-distributions: add si_el(s), si_inel(s) and their ratios
 
