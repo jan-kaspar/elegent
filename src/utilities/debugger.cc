@@ -36,7 +36,9 @@ int main()
 	TFile *f_out = new TFile("debugger.root", "recreate");
 
 	// initialise constants etc.
-	Constants::Init(8000, Constants::mPP);
+	Constants::Init(53, Constants::mPP);
+	//Constants::Init(8000, Constants::mPP);
+	//Constants::Init(14000, Constants::mPP);
 	
 	coulomb->precision = 1E-2;
 
@@ -47,7 +49,8 @@ int main()
 	ModelFactory mf;
 	//model = mf.MakeInstance("block [06]");
 	//model = mf.MakeInstance("bourrely [03]");
-	model = mf.MakeInstance("godizov [14]");
+	model = mf.MakeInstance("dl [13]");
+	//model = mf.MakeInstance("godizov [14]");
 	//model = mf.MakeInstance("islam (hp) [06,09]");
 	//model = mf.MakeInstance("islam (lxg) [06,09]");
 	//model = mf.MakeInstance("jenkovszky [11]");
@@ -58,7 +61,7 @@ int main()
 	// dsdt
 	TGraph *g_dsdt = new TGraph();
 	g_dsdt->SetName("g_dsdt");
-	for (double mt = 1e-4; mt < 20.; mt += 0.01)
+	for (double mt = 1e-4; mt < 5.; mt += 0.01)
 	{
 		double dsdt = cnts->sig_fac * model->Amp(-mt).Rho2();
 		printf("t = %E: dsdt = %E\n", mt, dsdt);
@@ -68,6 +71,7 @@ int main()
 	}
 	g_dsdt->Write();
 
+	/*
 	// profile
 	TGraph *g_prof = new TGraph();
 	g_prof->SetName("g_prof");
@@ -80,6 +84,7 @@ int main()
 		g_prof->SetPoint(idx, b, prof);
 	}
 	g_prof->Write();
+	*/
 
 	// test A term
 	/*

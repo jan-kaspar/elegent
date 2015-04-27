@@ -36,6 +36,10 @@ ModelFactory::ModelFactory()
 	bsw->Configure(BSWModel::mPomReg);
 	model_map[bsw->CompileShortLabel()] = bsw;
 
+	DLModel *dl = new DLModel();
+	dl->Configure();
+	model_map[dl->CompileShortLabel()] = dl;
+
 	FerreiraModel *ferreira = new FerreiraModel();
 	ferreira->Configure();
 	model_map[ferreira->CompileShortLabel()] = ferreira;

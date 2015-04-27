@@ -6,6 +6,7 @@ future release
 	* added Godizov model
 	* numerical integration exploiting GSL library
 	* added model of Ferreira et al.
+	* added model of Donnachie and Landshoff
 
 release 1.2.1
 	* fixed build problem: correct order of libraries

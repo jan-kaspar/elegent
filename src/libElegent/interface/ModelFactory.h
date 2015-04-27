@@ -24,6 +24,7 @@
 
 #include "BHModel.h"
 #include "BSWModel.h"
+#include "DLModel.h"
 #include "ExpModel.h"
 #include "FerreiraModel.h"
 #include "GodizovModel.h"

@@ -5,6 +5,7 @@ install(FILES
 	BSWModel.h
 	Constants.h
 	CoulombInterference.h
+	DLModel.h
 	ExpModel.h
 	FerreiraModel.h
 	Generator.h

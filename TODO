@@ -7,6 +7,8 @@
 * Godizov model - tune better the integration parameters
  - problems visible in B(t) and then in KL cross-section
 
+* update PPP model: Petrov-Prokuding arXiv paper from 2012
+
 * problem with low |t| sampling: visible in B(t)
  - then finish the TODO in "code.asy"
 
