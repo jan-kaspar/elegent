@@ -48,7 +48,7 @@ class DLModel : public Model
 		virtual TComplex Amp(double t) const;
 
 		/// b in fm
-		virtual TComplex Prf(double b) const;
+		virtual TComplex Prf(double b_fm) const;
 
 	protected:
 		double ep_P, ep_pl, ep_mi;
@@ -56,7 +56,6 @@ class DLModel : public Model
 		double al_P_p, al_pl_p, al_mi_p;
 		double A, a, b;
 		double C, t0;
-		double nu;
 
 		/// integration variables
 		double upper_bound_t, precision_t;
@@ -64,6 +63,9 @@ class DLModel : public Model
 		bool integ_workspace_initialized;
 		unsigned long integ_workspace_size_t;
 		gsl_integration_workspace *integ_workspace_t;
+
+		/// evaluates nu
+		double Nu(double t) const;
 
 		/// Eq. (1c) in [1]
 		double F(double t) const;
@@ -76,6 +78,8 @@ class DLModel : public Model
 
 		/// Eqs. (3a) and (3b) in [1]
 		TComplex A_ggg(double t) const;
+
+		static TComplex Amp_J0(double t, double *par, const void *vobj);
 };
 
 } // namespace

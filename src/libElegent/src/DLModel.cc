@@ -85,12 +85,8 @@ void DLModel::Init()
 	al_pl_p = 0.8;		// GeV^-2
 	al_mi_p = 0.92;		// GeV^-2
 
-	// nowhere in [1]
-	//nu = 1.;
-	nu = cnts->s / 2.;	// TODO: relation guessed
-
 	// integration parameters
-	upper_bound_t = 80.; precision_t = 1E-3;
+	upper_bound_t = -100.; precision_t = 1E-4;
 
 	// prepare integration workspace
 	if (!integ_workspace_initialized)
@@ -109,7 +105,11 @@ void DLModel::Print() const
 	printf(">> DLModel::Print\n");
 	printf("\t%s\n", CompileFullLabel().c_str());
 
-	// TODO
+	printf("\tep_P = %.4E, ep_pl = %.4E, ep_mi = %.4E\n", ep_P, ep_pl, ep_mi);
+	printf("\tX_P = %.4E, X_pl = %.4E, X_mi = %.4E\n", X_P, X_pl, X_mi);
+	printf("\tal_P_p = %.4E, al_pl_p = %.4E, al_mi_p = %.4E\n", al_P_p, al_pl_p, al_mi_p);
+	printf("\tA = %.4E, a = %.4E, b = %.4E\n", A, a, b);
+	printf("\tC = %.4E, t0 = %.4E\n", C, t0);
 
 	printf("\n");
 	printf("\tintegration parameters:\n");
@@ -118,10 +118,14 @@ void DLModel::Print() const
 
 //----------------------------------------------------------------------------------------------------
 
-TComplex DLModel::Prf(double b) const
+double DLModel::Nu(double t) const
 {
-	// TODO
-	return 0. * b;
+	// private communication with authors:
+	//   2 nu = (s - u) / 2
+	// therefore
+	//   nu = s/2 + t/4 - m^2
+
+	return cnts->s/2. + t/4. - cnts->M_sq;
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -142,11 +146,14 @@ TComplex DLModel::A_single(double t) const
 	double al_pl = 1. + ep_pl + al_pl_p*t;
 	double al_mi = 1. + ep_mi + al_mi_p*t;
 
+	double nu = Nu(t);
+
+	// Eq. (1a) in [2]
 	TComplex A_P = X_P * F_P / 2. / nu * TComplex::Exp(-i*cnts->pi/2.*al_P) * pow(2.*nu*al_P_p, al_P); 
 	TComplex A_pl = X_pl * F_pl / 2. / nu * TComplex::Exp(-i*cnts->pi/2.*al_pl) * pow(2.*nu*al_pl_p, al_pl); 
 	TComplex A_mi = X_mi * F_mi / 2. / nu * TComplex::Exp(-i*cnts->pi/2.*al_mi) * pow(2.*nu*al_mi_p, al_mi); 
 
-	double sgn = (cnts->pMode = cnts->mPP) ? -1. : +1.;
+	double sgn = (cnts->pMode == cnts->mPP) ? -1. : +1.;
 
 	return -A_P - A_pl + sgn * i * A_mi;
 }
@@ -156,6 +163,8 @@ TComplex DLModel::A_single(double t) const
 TComplex DLModel::A_PP(double t) const
 {
 	double al_PP = 1. + 2.*ep_P + al_P_p/2. * t;
+	
+	double nu = Nu(t);
 
 	TComplex L = log(2.*nu*al_P_p) - i*cnts->pi/2.;
 
@@ -163,7 +172,7 @@ TComplex DLModel::A_PP(double t) const
 
 	TComplex orig = X_P*X_P/32./cnts->pi * TComplex::Exp(-i*cnts->pi/2.*al_PP) * pow(2.*nu*al_P_p, al_PP) * bracket;
 
-	return orig / (2.*nu) / 6.;	// TODO: factor needed to reproduce curves
+	return orig / (2.*nu) / 5.95;	// TODO: factor needed to reproduce curves
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -184,4 +193,28 @@ TComplex DLModel::Amp(double t) const
 
 	// normalisation given below Eq. (1b) in [1]
 	return A * cnts->p_cms * cnts->sqrt_s / 4. / cnts->pi;
+}
+
+//----------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------
+
+TComplex DLModel::Amp_J0(double t, double *par, const void *vobj)
+{
+	const DLModel *obj = (DLModel *) vobj;
+	const double &b = par[0];	// impact parameter in GeV^-1
+
+	return obj->Amp(t) * TMath::BesselJ0(b * sqrt(-t));
+}
+
+//----------------------------------------------------------------------------------------------------
+
+TComplex DLModel::Prf(double b_fm) const
+{
+	double b = b_fm / cnts->hbarc;	// b in GeV^-1
+	double par[] = { b };
+
+	TComplex I = ComplexIntegrate(Amp_J0, par, this, upper_bound_t, 0., 0., precision_t,
+		integ_workspace_size_t, integ_workspace_t, "DLModel::Prf");
+
+	return I / 4. / cnts->p_cms / cnts->sqrt_s;
 }
