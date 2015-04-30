@@ -32,7 +32,7 @@ namespace Elegent
  * \brief Model of elastic pp scattering by E. Ferreira et al.
  * References:
  *	[1] arXiv:1408.1599v1
- *	[2] A. K. Kohara, E. Ferreira, T. Kadama, Eur. Phys. J. C (2013) 73:2326
+ *	[2] A. K. Kohara, E. Ferreira, T. Kadama: Eur. Phys. J. C74 (2014) 11, 3175
  **/
 class FerreiraModel : public Model
 {
