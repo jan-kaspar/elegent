@@ -11,12 +11,11 @@ find_package(HepMC REQUIRED)
 find_package(GSL REQUIRED)
 
 # include SVN revision in project version, if available
-# TODO: uncomment
-#include(FindSubversion)
-#if (SUBVERSION_FOUND)
-#	Subversion_WC_INFO(${Elegent_SOURCE_DIR} SVN)
-#	set(Elegent_VERSION "${Elegent_VERSION} (revision ${SVN_WC_REVISION})")
-#endif()
+include(FindSubversion)
+if (SUBVERSION_FOUND)
+	Subversion_WC_INFO(${Elegent_SOURCE_DIR} SVN)
+	set(Elegent_VERSION "${Elegent_VERSION} (revision ${SVN_WC_REVISION})")
+endif()
 
 message(STATUS "Elegent version: " ${Elegent_VERSION})
 
