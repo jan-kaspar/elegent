@@ -77,12 +77,8 @@ int InitModels(const string& hadronicModelsString, vector<Model *> &models)
 		if (model == NULL)
 			return 3;
 
-		// force no presampling for model of Bourrely et al.
-		if (model->shortLabel.name.compare("bourrely") == 0)
-		{
-			BSWModel *bswm = (BSWModel *) model;
-			bswm->presampled = false;
-		}
+		// force no presampling
+		model->ForcePresampling(false);
 
 		models.push_back(model);
 

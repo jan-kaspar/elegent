@@ -84,6 +84,11 @@ class BSWModel : public Model
 	public:
 		/// flag whether the presampled mode is on
 		bool presampled;
+		
+		virtual void ForcePresampling(bool value)
+		{
+			presampled = value;
+		}
 
 		/// the pomeron exchange parameters
 		double c, cp, a, f, m1, m2, asq, m1sq, m2sq;

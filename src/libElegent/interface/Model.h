@@ -74,6 +74,12 @@ class Model
 		/// Normalisation is such that
 		///   Amp(t) = 2 p \sqrt{s} \int db b Prf() J_0(b \sqrt{-t})
 		virtual TComplex Prf(double b) const =0;
+
+		///\brief sets the presampling option, if available
+		/// This option determines whether calling Init would presample relevant distributions
+		/// (typically b distributions) for faster Amp calls. This behaviour is, in contrary,
+		/// undesirable for evaluating s distributions.
+		virtual void ForcePresampling(bool /*value*/) {}
 };
 
 /// current model

@@ -36,8 +36,8 @@ int main()
 	TFile *f_out = new TFile("debugger.root", "recreate");
 
 	// initialise constants etc.
-	Constants::Init(53, Constants::mPP);
-	//Constants::Init(8000, Constants::mPP);
+	//Constants::Init(53, Constants::mPP);
+	Constants::Init(8000, Constants::mPP);
 	//Constants::Init(14000, Constants::mPP);
 	
 	coulomb->precision = 1E-2;
@@ -45,19 +45,20 @@ int main()
 	cnts->Print();
 	coulomb->Print();
 
-
 	ModelFactory mf;
 	//model = mf.MakeInstance("block [06]");
-	//model = mf.MakeInstance("bourrely [03]");
-	model = mf.MakeInstance("dl [13]");
-	//model = mf.MakeInstance("godizov [14]");
+	//model = mf.MakeInstance("bourrely [03]", false);
+	//model = mf.MakeInstance("dl [13]");
+	model = mf.MakeInstance("godizov [14]", false);
 	//model = mf.MakeInstance("islam (hp) [06,09]");
 	//model = mf.MakeInstance("islam (lxg) [06,09]");
+	//model = mf.MakeInstance("islam (lxg13) [13]");
 	//model = mf.MakeInstance("jenkovszky [11]");
 	//model = mf.MakeInstance("petrov (2p) [02]");
 	//model = mf.MakeInstance("petrov (3p) [02]");
 	model->Print();
 
+/*
 	// dsdt
 	TGraph *g_dsdt = new TGraph();
 	g_dsdt->SetName("g_dsdt");
@@ -71,11 +72,10 @@ int main()
 	}
 	g_dsdt->Write();
 
-	/*
 	// profile
 	TGraph *g_prof = new TGraph();
 	g_prof->SetName("g_prof");
-	for (double b = 0.; b < 8.; b += 0.2)
+	for (double b = 0.; b < 8.; b += 0.02)
 	{
 		double prof = model->Prf(b).Rho();
 		printf("b = %E: |prof| = %E\n", b, prof);
@@ -84,7 +84,7 @@ int main()
 		g_prof->SetPoint(idx, b, prof);
 	}
 	g_prof->Write();
-	*/
+*/
 
 	// test A term
 	/*
@@ -140,6 +140,44 @@ int main()
 	g_R->Write();
 	g_Z->Write();
 	*/
+
+	// s-dependent quantities
+	model->ForcePresampling(false);
+
+	for (unsigned int mi = 0; mi < 2; mi++)
+	{
+		Constants::ParticleMode pMode = (mi == 0) ? Constants::mPP : Constants::mAPP;
+
+		gDirectory = f_out->mkdir((mi == 0) ? "pp" : "app");
+
+		TGraph *g_si_tot = new TGraph(); g_si_tot->SetName("g_si_tot");
+		TGraph *g_rho = new TGraph(); g_rho->SetName("g_rho");
+		TGraph *g_B0 = new TGraph(); g_B0->SetName("g_B0");
+		for (double W = 10; W <= 1e4; W *= 1.5)
+		{
+			Constants::Init(W, pMode);
+			model->Init();
+	
+			double ep = 1E-5;
+			TComplex amp0 = model->Amp(0.);
+			TComplex amp_ep = model->Amp(-ep);
+	
+			double si_tot = 4.*cnts->pi*cnts->sq_hbarc/cnts->p_cms/cnts->sqrt_s * amp0.Im();
+			double rho = (amp0.Im() != 0.) ? amp0.Re() / amp0.Im() : 0.;
+			double B0 = ( log(amp0.Rho2()) - log(amp_ep.Rho2()) ) / ep;
+	
+			int idx = g_si_tot->GetN();
+			g_si_tot->SetPoint(idx, W, si_tot);
+			g_rho->SetPoint(idx, W, rho);
+			g_B0->SetPoint(idx, W, B0);
+
+			printf("W = %.1f, si_tot = %.2f\n", W, si_tot);
+		}
+	
+		g_si_tot->Write();
+		g_rho->Write();
+		g_B0->Write();
+	}
 
 	delete f_out;
 	return 0;

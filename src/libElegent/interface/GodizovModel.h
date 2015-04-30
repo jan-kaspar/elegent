@@ -60,6 +60,11 @@ class GodizovModel : public Model
 
 		/// flag whether the profile function is presampled
 		bool presampled;
+		
+		virtual void ForcePresampling(bool value)
+		{
+			presampled = value;
+		}
 
 		/// Eq. (3) in [2]
 		TComplex delta_t(double t) const;
