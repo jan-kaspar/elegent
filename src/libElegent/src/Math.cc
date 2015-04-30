@@ -27,26 +27,24 @@
 namespace Elegent
 {
 
-// TODO
-//bool abortOnIntegrationError = true;
+/// false by default
 bool abortOnIntegrationError = false;
 
 //----------------------------------------------------------------------------------------------------
 
-// TODO: better names
-// TODO: describe
-
+/// \brief set of parameters for integration of a real function
 struct RealIntegPar
 {
-	RealFunction fcn;
-	double *parameters;
-	const void *object;
+	RealFunction fcn;		///< function to integrate
+	double *parameters;		///< additional numerical parameters
+	const void *object;		///< additional pointer to an object
 
 	RealIntegPar(RealFunction _f, double *_p, const void *_o) : fcn(_f), parameters(_p), object(_o) {}
 };
 
 //----------------------------------------------------------------------------------------------------
 
+/// \brief evaluates a given real function with a given parameter set
 double RealIntegFcn(double x, void *vpar)
 {
 	RealIntegPar *par = (RealIntegPar *) vpar;
@@ -83,11 +81,14 @@ double RealIntegrate(RealFunction fcn, double *par, const void *object,
 //----------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------
 
+/// \brief set of parameters for integration of a part of a complex function
 struct OneCompIntegPar
 {
-	ComplexFunction fcn;
-	double *parameters;
-	const void *object;
+	ComplexFunction fcn;	///< function to integrate
+	double *parameters; 	///< additional numerical parameters
+	const void *object; 	///< additional pointer to an object
+
+	/// part to integrate
 	enum Part { pUndefined, pReal, pImaginary } part;
 
 	OneCompIntegPar(ComplexFunction _f, double *_p, const void *_o, Part _pa = pUndefined) : fcn(_f), parameters(_p), object(_o), part(_pa) {}
@@ -95,6 +96,7 @@ struct OneCompIntegPar
 
 //----------------------------------------------------------------------------------------------------
 
+/// \brief evaluates a given part of a give complex function with a given parameter set
 double OneCompIntegFcn(double x, void *par)
 {
 	OneCompIntegPar *ocip = (OneCompIntegPar *) par;

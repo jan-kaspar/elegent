@@ -29,19 +29,30 @@
 namespace Elegent
 {
 
-// TODO: describe
+/// Abort when integration error occurs?
 extern bool abortOnIntegrationError;
 
+/// \brief represents a real function of real variable (\param x)
+/// \param par is intended for additional numerical parameters
+/// \param obj is inteded for an object pointer
 typedef double (* RealFunction)(double x, double *par, const void *obj);
-typedef TComplex (* ComplexFunction)(double x, double *par, const void *obj);
 
-// TODO: describe
+/// \brief integration of a real function of a real variable
+/// \param fcn: function to integrate
+/// \param par, \param object: additional parameters passed to the integrated function
+/// \param from, \param to: integration range
+/// \param abs_err, \param rel_err: requested absolute and relative error on the result
+/// \param work_space_size, \param work_space: size and reference to the GSL integration workspace
+/// \param errorLabel: caption of (possible) error messages
 double RealIntegrate(RealFunction fcn, double *par, const void *object,
 	double from, double to,
 	double abs_err, double rel_err,
 	unsigned long work_space_size, gsl_integration_workspace *work_space, const char* errorLabel="");
 
-// TODO: describe
+/// \brief represents a complex function of real variable (\param x)
+typedef TComplex (* ComplexFunction)(double x, double *par, const void *obj);
+
+/// \brief integration of a complex function of a real variable
 TComplex ComplexIntegrate(ComplexFunction fcn, double *par, const void *object,
 	double from, double to,
 	double abs_err, double rel_err,
