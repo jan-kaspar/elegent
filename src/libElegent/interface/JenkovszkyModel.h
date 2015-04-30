@@ -29,7 +29,8 @@ namespace Elegent
 {
 
 /**
- * \brief The model of Jenkovszky et al.
+ * The model of Jenkovszky et al.
+ * 
  * References:
  *	[1] L. L. JENKOVSZKY, A. I. LENGYEL, and D. I. LONTKOVSKYI, Int. J. Mod. Phys. A 26 (2011) 4755. DOI: 10.1142/S0217751X11054760 
  **/

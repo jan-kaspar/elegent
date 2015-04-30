@@ -39,7 +39,7 @@ namespace Elegent
 {
 
 /**
- * \brief A class to give list of available models and to create an instance of a model specified by tag.
+ * A class to give list of available models and to create an instance of a model specified by tag.
  **/
 class ModelFactory
 {

@@ -29,30 +29,43 @@
 namespace Elegent
 {
 
+/**
+ * \defgroup Math
+ * Group of utility functions for numerical integration.
+ **/
+
 /// Abort when integration error occurs?
+/// \ingroup Math
 extern bool abortOnIntegrationError;
 
-/// \brief represents a real function of real variable (\param x)
+/// Represents a real function of real variable.
+/// \ingroup Math
+/// \param x is the integration variable
 /// \param par is intended for additional numerical parameters
 /// \param obj is inteded for an object pointer
 typedef double (* RealFunction)(double x, double *par, const void *obj);
 
-/// \brief integration of a real function of a real variable
-/// \param fcn: function to integrate
-/// \param par, \param object: additional parameters passed to the integrated function
-/// \param from, \param to: integration range
-/// \param abs_err, \param rel_err: requested absolute and relative error on the result
-/// \param work_space_size, \param work_space: size and reference to the GSL integration workspace
-/// \param errorLabel: caption of (possible) error messages
-double RealIntegrate(RealFunction fcn, double *par, const void *object,
-	double from, double to,
-	double abs_err, double rel_err,
-	unsigned long work_space_size, gsl_integration_workspace *work_space, const char* errorLabel="");
+/// Integration of a real function of a real variable.
+/// \ingroup Math
+double RealIntegrate(
+		RealFunction fcn,							///< function to integrate
+		double *par,								///< optional numerical parameters
+		const void *object,							///< optional object parameter
+		double from,								///< lower integration bound
+		double to,									///< upper integration bound
+		double abs_err,								///< requested absolute error on the result
+		double rel_err,								///< requested relative error on the result
+		unsigned long work_space_size,				///< size to GSL integration workspace
+		gsl_integration_workspace *work_space,		///< pointer to GSL integration workspace
+		const char* errorLabel=""					///< caption of (possible) error messages
+	);
 
-/// \brief represents a complex function of real variable (\param x)
+/// Represents a complex function of real variable.
+/// \ingroup Math
 typedef TComplex (* ComplexFunction)(double x, double *par, const void *obj);
 
-/// \brief integration of a complex function of a real variable
+/// Integration of a complex function of a real variable.
+/// \ingroup Math
 TComplex ComplexIntegrate(ComplexFunction fcn, double *par, const void *object,
 	double from, double to,
 	double abs_err, double rel_err,

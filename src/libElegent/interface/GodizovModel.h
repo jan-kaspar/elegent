@@ -29,7 +29,8 @@ namespace Elegent
 {
 
 /**
- * \brief Model of elastic pp scattering by Anton Godizov.
+ * Model of elastic pp scattering by Anton Godizov.
+ * 
  * References:
  *	[1] arXiv:1404.2851v2
  *	[2] Phys. Lett. B735 (2014) 57-61

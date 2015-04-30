@@ -29,7 +29,8 @@ namespace Elegent
 {
 
 /**
- * \brief Predazzi, Petrov and Prokudin model of p-p and p-anti p elastic scattering.
+ * Predazzi, Petrov and Prokudin model of p-p and p-anti p elastic scattering.
+ *
  * References:
  *	[1] PETROV, V. A. and PROKUDIN, A. V., Eur. Phys. J. C23 (2002) 135–143
  **/

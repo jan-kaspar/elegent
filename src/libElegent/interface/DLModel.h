@@ -29,7 +29,8 @@ namespace Elegent
 {
 
 /**
- * \brief Model of elastic pp scattering by Donnachie and Landshoff.
+ * Model of elastic pp scattering by Donnachie and Landshoff.
+ *
  * References:
  *	[1] Physics Letters B 727 (2013) 500-505
  **/

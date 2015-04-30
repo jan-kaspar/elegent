@@ -32,7 +32,7 @@ namespace Elegent
 {
 
 /**
- * \brief Model that interpolates stored amplitude points.
+ * Model that interpolates stored amplitude points.
  **/
 class InterpolationModel : public Model
 {

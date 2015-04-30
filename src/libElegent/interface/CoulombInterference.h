@@ -30,7 +30,7 @@ namespace Elegent
 {
 
 /**
- * \brief Coulomb hadron interference for elastic scattering.
+ * Coulomb hadron interference for elastic scattering.
  **/
 class CoulombInterference
 {
@@ -93,19 +93,19 @@ class CoulombInterference
 		static TComplex B_integrand(double tp, double *par, const void *vobj);
 		
 	public:
-		/// A: $\int_{t_{min}}^0 \log(t'/t) * d/dt(FF^2(t'))$
-		/// \par t in GeV^2, negative
+		/// A: \f$\int_{t_{min}}^0 \log(t'/t) * d/dt(FF^2(t'))\f$.
+		/// \param t in GeV^2, negative
 		double A_term(double t) const;
 
 		double I_integral(double t, double tp) const;
 		
-		/// B: ${1 / 2\pi} \int_{t_{min}}^0 [ F^N(t') / F^N(t) - 1] I(t, t')$
-		/// \par t in GeV^2, negative
+		/// B: \f${1 / 2\pi} \int_{t_{min}}^0 [ F^N(t') / F^N(t) - 1] I(t, t')\f$.
+		/// \param t in GeV^2, negative
 		TComplex B_term(double t) const;
 
-		/// C: the correction for non-vanishing form factors at t_min
-		/// $FF^2(t_{min} \log(t/t_{min}))$
-		/// \par t in GeV^2, negative
+		/// C: the correction for non-vanishing form factors at t_min.
+		/// \f$FF^2(t_{min} \log(t/t_{min}))\f$
+		/// \param t in GeV^2, negative
 		double C_term(double t) const;
 
 		//-------------------- form factors --------------------
@@ -116,20 +116,20 @@ class CoulombInterference
 		/// dipole form factor
 		double FF_dipole(double t) const;
 	
-		/// eletric form factor
+		/// eletric form factor.
 		/// normalized such FF_e(0) = 1, t negative
 		double FF_e(double t) const;
 
-		/// magnetic form factor
+		/// magnetic form factor.
 		/// normalized such FF_m(0) = 1, t negative
 		double FF_m(double t) const;
 		
-		/// square of the effective form factor
-		/// \par t in GeV^2, negative
+		/// square of the effective form factor.
+		/// \param t in GeV^2, negative
 		double FF_sq(double t) const;
 
-		/// d/dt of the effective form factor square
-		/// \par t in GeV^2, negative
+		/// d/dt of the effective form factor square.
+		/// \param t in GeV^2, negative
 		double FF_sq_prime(double t) const
 		{
 			double ep = 1E-5;
@@ -138,28 +138,28 @@ class CoulombInterference
 
 		//-------------------- interference phases --------------------
 
-		/// full West-Yennie phase (with alpha factor)
-		/// that is the $\alpha\Phi$ in the decomposition $F^{C+H} = F^C e^{i \alpha \Phi} +	F^H$
-		/// \par t in GeV^2, negative
+		/// full West-Yennie phase (with alpha factor).
+		/// that is the \f$\alpha\Phi\f$ in the decomposition \f$F^{C+H} = F^C e^{i \alpha \Phi} + F^H\f$
+		/// \param t in GeV^2, negative
 		TComplex Phi_WY(double t) const;
 		
 		/// simplified West-Yennie phase
 		TComplex Phi_SWY(double t) const;
 
-		/// Kundrat-Lokajicek phase (with alpha factor)
-		/// that is the $\alpha\Phi$ in the decomposition $F^{C+H} = F^C + F^H * e^{i \alpha \Psi}$
-		/// \par t in GeV^2, negative
+		/// Kundrat-Lokajicek phase (with alpha factor).
+		/// that is the \f$\alpha\Phi\f$ in the decomposition \f$F^{C+H} = F^C + F^H * e^{i \alpha \Psi}\f$
+		/// \param t in GeV^2, negative
 		TComplex Psi_KL(double t) const;
 
-		///\brief the interference phase WITH the alpha factor
-		/// returns either $-\Phi$ or $\Psi$
-		/// \par t in GeV^2, negative
+		/// interference phase WITH the alpha factor.
+		/// returns either \f$-\Phi\f$ or \f$\Psi\f$
+		/// \param t in GeV^2, negative
 		TComplex Phase(double t) const;
 
 		//-------------------- amplitudes --------------------
 
-		/// pure Coulomb amplitude (PC)
-		/// \par t in GeV^2, negative
+		/// pure Coulomb amplitude (PC).
+		/// \param t in GeV^2, negative
 		TComplex Amp_pure(double t) const;	
 		
 		TComplex Amp_WY(double t) const;	
@@ -171,21 +171,21 @@ class CoulombInterference
 
 		//-------------------- standard quantities --------------------
 
-		/// ratio (|KL|^2 - |WY|^2) / |KL|^2
-		/// \par t in GeV^2, negative
+		/// ratio (|KL|^2 - |WY|^2) / |KL|^2.
+		/// \param t in GeV^2, negative
 		TComplex R(double t) const;
 		
-		/// for |t| < |cutoff|: (|KL|^2 - |WY|^2) / |KL|^2, otherwise (|KL|^2 - |PH|^2) / |KL|^2
-		/// \par t in GeV^2, negative
-		/// \par cutoff in GeV^2, negative
+		/// for |t| < |cutoff|: (|KL|^2 - |WY|^2) / |KL|^2, otherwise (|KL|^2 - |PH|^2) / |KL|^2.
+		/// \param t in GeV^2, negative
+		/// \param cutoff in GeV^2, negative
 		TComplex R_with_cutoff(double t, double cutoff) const;
 
-		/// ratio (|KL|^2 - |PH|^2 - |PC|^2) / |KL|^2
-		/// \par t in GeV^2, negative
+		/// ratio (|KL|^2 - |PH|^2 - |PC|^2) / |KL|^2.
+		/// \param t in GeV^2, negative
 		TComplex Z(double t) const;
 		
-		/// ratio (|KL|^2 - |PH|^2) / |PH|^2
-		/// \par t in GeV^2, negative
+		/// ratio (|KL|^2 - |PH|^2) / |PH|^2.
+		/// \param t in GeV^2, negative
 		TComplex C(double t) const;
 };
 

@@ -34,7 +34,8 @@ namespace Elegent
 {
 
 /**
- * \brief MC generator of proton-proton elastic scattering events.
+ * MC generator of proton-proton elastic scattering events.
+ *
  * All internal quantities are in GeV or in mm.
  **/
 class Generator

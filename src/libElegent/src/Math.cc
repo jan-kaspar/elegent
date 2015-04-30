@@ -32,7 +32,8 @@ bool abortOnIntegrationError = false;
 
 //----------------------------------------------------------------------------------------------------
 
-/// \brief set of parameters for integration of a real function
+/// Set of parameters for integration of a real function.
+/// \ingroup Math
 struct RealIntegPar
 {
 	RealFunction fcn;		///< function to integrate
@@ -44,7 +45,8 @@ struct RealIntegPar
 
 //----------------------------------------------------------------------------------------------------
 
-/// \brief evaluates a given real function with a given parameter set
+/// Evaluates a given real function with a given parameter set.
+/// \ingroup Math
 double RealIntegFcn(double x, void *vpar)
 {
 	RealIntegPar *par = (RealIntegPar *) vpar;
@@ -81,7 +83,8 @@ double RealIntegrate(RealFunction fcn, double *par, const void *object,
 //----------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------
 
-/// \brief set of parameters for integration of a part of a complex function
+/// Set of parameters for integration of a part of a complex function.
+/// \ingroup Math
 struct OneCompIntegPar
 {
 	ComplexFunction fcn;	///< function to integrate
@@ -96,7 +99,8 @@ struct OneCompIntegPar
 
 //----------------------------------------------------------------------------------------------------
 
-/// \brief evaluates a given part of a give complex function with a given parameter set
+/// Evaluates a given part of a give complex function with a given parameter set.
+/// \ingroup Math
 double OneCompIntegFcn(double x, void *par)
 {
 	OneCompIntegPar *ocip = (OneCompIntegPar *) par;

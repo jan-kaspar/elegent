@@ -28,7 +28,7 @@ namespace Elegent
 {
 
 /**
- *\brief Set of constants used in Elegent calculations.
+ * Set of constants used in Elegent calculations.
  **/
 struct Constants
 {
@@ -55,17 +55,19 @@ struct Constants
 	double sig_fac;							///< d sig/dt = sig_fac * |A|^2
 	double t_min;							///< negative
 	
-	enum ParticleMode {mPP, mAPP} pMode; 	///< particle mode
+	/// particle mode
+	enum ParticleMode {mPP, mAPP} pMode;
  
-	/// \param W = sqrt(s)
 	Constants(double W = 0., ParticleMode mode = mPP)
 	{
 		Configure(W, mode);
 	}
 	
+	/// Configure the constants.
+	/// \param W = sqrt(s)
 	void Configure(double W, ParticleMode mode);
 
-	/// \brief initilize new instance of Constants and save its pointer to the `cnts' global variable
+	/// initilize new instance of Constants and save its pointer to the `cnts' global variable.
 	/// \param W = sqrt(s)
 	static void Init(double W, ParticleMode mode);
 

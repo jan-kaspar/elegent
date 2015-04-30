@@ -33,7 +33,8 @@ namespace Elegent
 {
 
 /**
- * \brief Bourelly, Soffer and Wu model of p-p and p-anti p elastic scattering.
+ * Bourelly, Soffer and Wu model of p-p and p-anti p elastic scattering.
+ *
  * References:
  *	[1] BOURRELY C., SOFFER, J. and WU, T. T., Phys. Rev. D19 (1979) 3249
  *	[2] BOURRELY C., SOFFER, J. and WU, T. T., Nucl. Phys. B247 (1984) 15
@@ -49,8 +50,8 @@ class BSWModel : public Model
 			/// the parameters from Eq. (7) in [3]
 			double C, b, a, ap, signature;
 
-			/// Non-documented overall sign of the amplitude. These signs make
-			/// the difference between pp and app reactions (see the Init method).
+			/// Non-documented overall sign of the amplitude.
+			/// These signs make the difference between pp and app reactions (see the Init method).
 			double sign;
 
 			void Init(double _C, double _b, double _a, double _ap, double _signature)

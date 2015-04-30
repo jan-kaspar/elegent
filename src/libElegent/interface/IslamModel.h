@@ -30,7 +30,8 @@ namespace Elegent
 
 
 /**
- * \brief Islam model of p-p and p-anti p elastic scattering.
+ * Islam model of p-p and p-anti p elastic scattering.
+ * 
  * References:
  *	[1] ISLAM, M. M., FEARNLEY, T. and GUILLAUD, J. P., Nuovo Cim. A81 (1984) 737
  *	[2] ISLAM, M. M., INNOCENTE V., FEARNLEY T. and SANGUIETTI, G., Europhys. Lett. 4 (1987) 189-196

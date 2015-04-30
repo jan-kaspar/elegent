@@ -63,19 +63,21 @@ class Model
 		/// prints model info
 		virtual void Print() const	=0;
 
-		///\brief amplitude, t in GeV^-2, t < 0
+		/// Amplitude in t-space.
 		/// Normalisation is such that
-		///   dsigma/dt = (\hbar c)^2 * \pi / (s p^2) * |Amp(t)|^2
+		///   \f$ dsigma/dt = (\hbar c)^2 * \pi / (s p^2) * |Amp(t)|^2 \f$
 		/// Differential cross-section can be obtained as
 		///   Constants::sig_fac * |Amp(t)|^2
+		/// \param t in GeV^-2, t < 0
 		virtual TComplex Amp(double t) const =0;
 
-		///\brief profile function, b in fm
+		/// Profile function (amplitude in b-space).
 		/// Normalisation is such that
-		///   Amp(t) = 2 p \sqrt{s} \int db b Prf() J_0(b \sqrt{-t})
+		///   \f$ Amp(t) = 2 p \sqrt{s} \int db b Prf() J_0(b \sqrt{-t}) \f$
+		/// \param b in fm.
 		virtual TComplex Prf(double b) const =0;
 
-		///\brief sets the presampling option, if available
+		/// Sets the presampling option, if available.
 		/// This option determines whether calling Init would presample relevant distributions
 		/// (typically b distributions) for faster Amp calls. This behaviour is, in contrary,
 		/// undesirable for evaluating s distributions.
