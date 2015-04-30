@@ -37,6 +37,7 @@ namespace Elegent
  *	[3] ISLAM, M. M., LUDDY, R. J. and PROKUDIN, A. V., Phys. Lett. B605 (2005) 115-122
  *	[4] ISLAM, M. M., LUDDY, R. J. and PROKUDIN, A. V., Int. J. Mod. Phys. A21 (2006) 1-42
  *	[5] ISLAM, M. M., KASPAR, J. and LUDDY, R. J., Mod. Phys. Lett. A24 (2009) 485-496
+ *	[6] ISLAM, M. M. and LUDDY, R. J., EDS'13 Conference Proceedings, http://arxiv.org/abs/1310.5602
  **/
 class IslamModel : public Model
 {
@@ -45,7 +46,8 @@ class IslamModel : public Model
 		enum VariantType
 		{
 			vHP,	///< hard Pomeron
-			vLxG	///< low-x gluons
+			vLxG,	///< low-x gluons
+			vLxG13,	///< low-x gluons, version from EDS'13
 		} variant;
 
 		/// mode of the model
@@ -87,6 +89,7 @@ class IslamModel : public Model
 	
 		/// core scattering variables
 		double beta, m_omega_sq, Core_fac;
+		bool multipleOmegaExchange;
 		
 		/// quark confinement parameters
 		double m0sq;
@@ -117,8 +120,9 @@ class IslamModel : public Model
 		static TComplex GammaD_J0(double b, double *par, const void *vobj);
 		
 		/// core amplitude
-		TComplex T_core(double t) const;
+		static TComplex T_core_integ(double b, double *par, const void *vobj);
 		double F_sq(double t) const;
+		TComplex T_core(double t) const;
 
 		/// quark-quark amplitude
 		TComplex T_quark(double t) const;

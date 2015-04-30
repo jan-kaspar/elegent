@@ -56,6 +56,10 @@ ModelFactory::ModelFactory()
 	islam_hp->Configure(IslamModel::vHP, IslamModel::mFull);
 	model_map[islam_hp->CompileShortLabel()] = islam_hp;
 
+	IslamModel *islam13 = new IslamModel();
+	islam13->Configure(IslamModel::vLxG13, IslamModel::mFull);
+	model_map[islam13->CompileShortLabel()] = islam13;
+	
 	JenkovszkyModel *jenkovszky = new JenkovszkyModel();
 	jenkovszky->Configure();
 	model_map[jenkovszky->CompileShortLabel()] = jenkovszky;
