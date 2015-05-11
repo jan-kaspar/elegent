@@ -57,7 +57,8 @@ double RealIntegrate(
 		double rel_err,								///< requested relative error on the result
 		unsigned long work_space_size,				///< size to GSL integration workspace
 		gsl_integration_workspace *work_space,		///< pointer to GSL integration workspace
-		const char* errorLabel=""					///< caption of (possible) error messages
+		const char* errorLabel,						///< caption of (possible) error messages
+		int integration_rule = GSL_INTEG_GAUSS61	///< GSL integration rule
 	);
 
 /// Represents a complex function of real variable.
@@ -69,7 +70,8 @@ typedef TComplex (* ComplexFunction)(double x, double *par, const void *obj);
 TComplex ComplexIntegrate(ComplexFunction fcn, double *par, const void *object,
 	double from, double to,
 	double abs_err, double rel_err,
-	unsigned long work_space_size, gsl_integration_workspace *work_space, const char* errorLabel="");
+	unsigned long work_space_size, gsl_integration_workspace *work_space, const char* errorLabel,
+	int integration_rule = GSL_INTEG_GAUSS61);
 
 } // namespace
 
