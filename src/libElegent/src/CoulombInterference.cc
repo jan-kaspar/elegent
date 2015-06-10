@@ -355,6 +355,7 @@ double CoulombInterference::C_term(double t) const
 
 TComplex CoulombInterference::Phi_WY(double t) const
 {
+	// TODO: implement Eq. (23) in [1], but with "-" in front of eta in the second term
 	TComplex corr = (cnts->pMode == cnts->mPP) ? -cnts->alpha : +cnts->alpha;
 	corr *= + B_term(t) + C_term(t);
 	return corr;

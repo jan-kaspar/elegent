@@ -31,6 +31,10 @@ namespace Elegent
 
 /**
  * Coulomb hadron interference for elastic scattering.
+ *
+ * References:
+ *  [1] WEST, G. B. and YENNIE, D. R., Phys. Rev. 172 (1968) 1413-1422
+ *  [2] KUNDRÁT, V. and LOKAJÍČEK, M., Z. Phys. C63 (1994) 619-630
  **/
 class CoulombInterference
 {
@@ -138,20 +142,25 @@ class CoulombInterference
 
 		//-------------------- interference phases --------------------
 
-		/// full West-Yennie phase (with alpha factor).
-		/// that is the \f$\alpha\Phi\f$ in the decomposition \f$F^{C+H} = F^C e^{i \alpha \Phi} + F^H\f$
+		/// Full West-Yennie phase (with alpha factor).
+		/// That is the \f$\alpha\Phi\f$ in the decomposition \f$F^{C+H} = F^C e^{i \alpha \Phi} + F^H\f$
+		/// Implemented according Eq. (23) in [1]. NB: There is a typo in the formula, there should be
+		/// "-" in front of eta in the second term on RHS.
 		/// \param t in GeV^2, negative
 		TComplex Phi_WY(double t) const;
 		
-		/// simplified West-Yennie phase
+		/// Simplified West-Yennie phase.
+		/// Implemented according Eq. (26) in [1].
 		TComplex Phi_SWY(double t) const;
 
 		/// Kundrat-Lokajicek phase (with alpha factor).
-		/// that is the \f$\alpha\Phi\f$ in the decomposition \f$F^{C+H} = F^C + F^H * e^{i \alpha \Psi}\f$
+		/// That is the \f$\alpha\Phi\f$ in the decomposition \f$F^{C+H} = F^C + F^H * e^{i \alpha \Psi}\f$
+		/// Implemented according Eq. (26) in [2]. NB: many other publications by Kundrat and Lokajicek have
+		/// a wrong sign of the B term!
 		/// \param t in GeV^2, negative
 		TComplex Psi_KL(double t) const;
 
-		/// interference phase WITH the alpha factor.
+		/// Interference phase WITH the alpha factor.
 		/// returns either \f$-\Phi\f$ or \f$\Psi\f$
 		/// \param t in GeV^2, negative
 		TComplex Phase(double t) const;
