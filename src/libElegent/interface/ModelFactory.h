@@ -29,6 +29,7 @@
 #include "FerreiraModel.h"
 #include "GodizovModel.h"
 #include "IslamModel.h"
+#include "IslamModel2015.h"
 #include "PPPModel.h"
 #include "JenkovszkyModel.h"
 

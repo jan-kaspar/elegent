@@ -48,7 +48,6 @@ class IslamModel : public Model
 		{
 			vHP,	///< hard Pomeron
 			vLxG,	///< low-x gluons
-			vLxG13,	///< low-x gluons, version from EDS'13
 		} variant;
 
 		/// mode of the model
@@ -90,7 +89,6 @@ class IslamModel : public Model
 	
 		/// core scattering variables
 		double beta, m_omega_sq, Core_fac;
-		bool multipleOmegaExchange;
 		
 		/// quark confinement parameters
 		double m0sq;
@@ -121,7 +119,6 @@ class IslamModel : public Model
 		static TComplex GammaD_J0(double b, double *par, const void *vobj);
 		
 		/// core amplitude
-		static TComplex T_core_integ(double b, double *par, const void *vobj);
 		double F_sq(double t) const;
 		TComplex T_core(double t) const;
 

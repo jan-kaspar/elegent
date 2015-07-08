@@ -7,7 +7,7 @@
 * Godizov model - tune better the integration parameters
  - problems visible in B(t) and then in KL cross-section
 
-* update PPP model: Petrov-Prokuding arXiv paper from 2012
+* Bourrely: alternative (Fermi-like) profile function
 
 * problem with low |t| sampling: visible in B(t)
  - then finish the TODO in "code.asy"
@@ -20,5 +20,3 @@
 * s-distributions: add si_el(s), si_inel(s) and their ratios
 
 * Jenkovszky model: other trajectory parameterisations than Eq. (8)?
-
-* Islam model: implement updates (multiple omega exchange, new sign for LxG amplitude)

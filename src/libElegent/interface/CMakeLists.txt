@@ -12,6 +12,7 @@ install(FILES
 	GodizovModel.h
 	InterpolationModel.h
 	IslamModel.h
+	IslamModel2015.h
 	JenkovszkyModel.h
 	Math.h
 	ModelFactory.h

@@ -35,6 +35,8 @@ namespace Elegent
  * References:
  *  [1] WEST, G. B. and YENNIE, D. R., Phys. Rev. 172 (1968) 1413-1422
  *  [2] KUNDRÁT, V. and LOKAJÍČEK, M., Z. Phys. C63 (1994) 619-630
+ * TODO: note about wrong sign in WY publication
+ * TODO: note about wrong sign in many KL publications
  **/
 class CoulombInterference
 {

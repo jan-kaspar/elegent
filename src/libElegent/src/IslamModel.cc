@@ -63,19 +63,9 @@ void IslamModel::Configure(IslamModel::VariantType _v, IslamModel::ModeType _m)
 	{
 		fullLabel.variant = "LxG"; shortLabel.variant = "lxg";
 	}
-	
-	if (variant == vLxG13)
-	{
-		fullLabel.variant = "LxG13"; shortLabel.variant = "lxg13";
-	}
 
 	// set labels
-	if (variant != vLxG13)
-	{
-		fullLabel.version = "Int. J. Mod. Phys. A21 (2006) 1-42, Mod. Phys. Lett. A24 (2009) 485-496"; shortLabel.version = "06,09";
-	} else {
-		fullLabel.version = "arXiv:1310.5602"; shortLabel.version = "13";
-	}
+	fullLabel.version = "Int. J. Mod. Phys. A21 (2006) 1-42, Mod. Phys. Lett. A24 (2009) 485-496"; shortLabel.version = "06,09";
 
 	if (mode == mDiff)
 		{ fullLabel.mode = "diffraction"; shortLabel.mode = "diff"; }
@@ -139,10 +129,6 @@ void IslamModel::Init()
 	if (cnts->pMode == cnts->mAPP)
 		Core_fac = +1;
 
-	multipleOmegaExchange = false;
-	if (variant == vLxG13)
-		multipleOmegaExchange = true;
-	
 	// ---------- quark-quark amplitude ----------
 	
 	// parameter from page 25 of [4]
@@ -166,7 +152,7 @@ void IslamModel::Init()
 	}
 	
 	// low-x gluons variant
-	if (variant == vLxG || variant == vLxG13)
+	if (variant == vLxG)
 	{
 		double tgagg = 0.0056;	// obtained in private communication with the authors
 
@@ -176,10 +162,6 @@ void IslamModel::Init()
 		
 		// the factor (without is) multiplying the fraction in Eq. (32) in [5]
 		cgc_fac = tgagg * TComplex::Power(-i * cnts->s, lambda);
-
-		// TODO
-		if (variant == vLxG13)
-			cgc_fac *= -i;
 
 		// Born term only by default
 		cgcMaxOrder = 1;
@@ -301,23 +283,6 @@ double IslamModel::F_sq(double t)	const
 
 //----------------------------------------------------------------------------------------------------
 
-TComplex IslamModel::T_core_integ(double b, double *par, const void *vobj)
-{
-	const IslamModel *obj = (IslamModel *) vobj;
-	const double &t = par[0];	
-	
-	/// TODO: reference needed
-	// TODO: correct scaling factor
-	TComplex chi_om = obj->Abs_fac * obj->Core_fac * TMath::BesselK0(sqrt(obj->m_omega_sq * (obj->beta*obj->beta + b*b)))
-		/ (i * cnts->s);
-
-	// TODO: remove debug
-	return b * TMath::BesselJ0(b*sqrt(-t)) * (1. - TComplex::Exp(i * chi_om));
-	//return b * TMath::BesselJ0(b*sqrt(-t)) * (- i * chi_om);
-}
-
-//----------------------------------------------------------------------------------------------------
-
 TComplex IslamModel::T_core(double t) const
 {
 	/// t < 0
@@ -326,14 +291,7 @@ TComplex IslamModel::T_core(double t) const
 	printf(">> IslamModel::T_core\n");
 #endif
 
-	if (!multipleOmegaExchange)
-		return Abs_fac * Core_fac * F_sq(t) / (m_omega_sq - t);
-	else {
-		// TODO: correct scaling factor
-		double par[] = { t };
-		return i * cnts->s * ComplexIntegrate(T_core_integ, par, this, 0., upper_bound_b, 0., precision_b,
-			integ_workspace_size_b, integ_workspace_b, "IslamModel::T_core");
-	}
+	return Abs_fac * Core_fac * F_sq(t) / (m_omega_sq - t);
 }
 
 //---------------------------------------- QUARK AMPLITUDE ----------------------------------------
@@ -386,8 +344,7 @@ TComplex IslamModel::T_quark(double t) const
 	switch (variant)
 	{
 		case vHP: return T_hp(t);
-		case vLxG: 
-		case vLxG13: return T_lxg(t);
+		case vLxG: return T_lxg(t);
 		default:
 			printf("ERROR in IslamModel::T_quark > unknown variant %i\n", variant);
 			return 0.;

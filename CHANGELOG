@@ -7,6 +7,7 @@ future release
 	* numerical integration exploiting GSL library
 	* added model of Ferreira et al.
 	* added model of Donnachie and Landshoff
+	* added 2015 version of model by Islam et al.
 
 release 1.2.1
 	* fixed build problem: correct order of libraries
