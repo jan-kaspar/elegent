@@ -35,6 +35,7 @@ namespace Elegent
  * References:
  *  [1] WEST, G. B. and YENNIE, D. R., Phys. Rev. 172 (1968) 1413-1422
  *  [2] KUNDRÁT, V. and LOKAJÍČEK, M., Z. Phys. C63 (1994) 619-630
+ *  [3] CAHN, R., Z. Phys. C15 (1982) 23-260
  * TODO: note about wrong sign in WY publication
  * TODO: note about wrong sign in many KL publications
  **/
@@ -48,7 +49,8 @@ class CoulombInterference
 			mPH,				///< pure hadronic amplitude
 			mWY,				///< WY formula
 			mSWY,			 	///< simplified WY formula
-			mKL				 	///< (corrected) KL formula (includes the one of Cahn)
+			mKL,			 	///< (corrected) KL formula
+			mCahn				///< Eq. (30) from [3]
 		} mode;
 
 		std::string GetModeString() const;
@@ -97,6 +99,12 @@ class CoulombInterference
 
 		/// the integrand of the B term
 		static TComplex B_integrand(double tp, double *par, const void *vobj);
+
+		/// Cahn's B term: expression for integration over phi.
+		static TComplex B_cahn_integrand_phi(double phi, double *par, const void *vobj);
+		
+		/// Cahn's B term: expression for integration over t.
+		static TComplex B_cahn_integrand_t(double tp, double *par, const void *vobj);
 		
 	public:
 		/// A: \f$\int_{t_{min}}^0 \log(t'/t) * d/dt(FF^2(t'))\f$.
@@ -108,6 +116,9 @@ class CoulombInterference
 		/// B: \f${1 / 2\pi} \int_{t_{min}}^0 [ F^N(t') / F^N(t) - 1] I(t, t')\f$.
 		/// \param t in GeV^2, negative
 		TComplex B_term(double t) const;
+		
+		/// Cahn's expression for the B term.
+		TComplex B_term_cahn(double t) const;
 
 		/// C: the correction for non-vanishing form factors at t_min.
 		/// \f$FF^2(t_{min} \log(t/t_{min}))\f$
@@ -161,6 +172,11 @@ class CoulombInterference
 		/// a wrong sign of the B term!
 		/// \param t in GeV^2, negative
 		TComplex Psi_KL(double t) const;
+		
+		/// Kundrat-Lokajicek phase (with alpha factor).
+		/// That is the \f$\alpha\Phi\f$ in the decomposition \f$F^{C+H} = F^C + F^H * e^{i \alpha \Psi}\f$
+		/// Implemented according Eq. (30) in [3].
+		TComplex Psi_Cahn(double t) const;
 
 		/// Interference phase WITH the alpha factor.
 		/// returns either \f$-\Phi\f$ or \f$\Psi\f$
@@ -176,6 +192,7 @@ class CoulombInterference
 		TComplex Amp_WY(double t) const;	
 		TComplex Amp_SWY(double t) const;	
 		TComplex Amp_KL(double t) const;	
+		TComplex Amp_Cahn(double t) const;	
 
 		/// total Amplitude according to the choice in `mode'
 		TComplex Amp(double t) const;

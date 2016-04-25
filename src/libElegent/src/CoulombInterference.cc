@@ -74,6 +74,7 @@ string CoulombInterference::GetModeString() const
 		case mWY: return "WY";
 		case mSWY: return "SWY";
 		case mKL: return "KL";
+		case mCahn: return "Cahn";
 		default: return "unknown";
 	}
 }
@@ -345,6 +346,46 @@ TComplex CoulombInterference::B_term(double t) const
 
 //--------------------------------------------------------------------------------------------------
 
+TComplex CoulombInterference::B_cahn_integrand_phi(double phi, double *par, const void* /*vobj*/)
+{
+	const double &tp = par[0];
+	const double &t = par[1];
+	TComplex T_hadron_t(par[2], par[3]);
+	
+	double tpp = tp + t + 2. * sqrt(tp * t) * cos(phi);
+	return (model->Amp(tpp) / T_hadron_t - 1.);
+}
+
+//--------------------------------------------------------------------------------------------------
+
+TComplex CoulombInterference::B_cahn_integrand_t(double tp, double *par, const void *vobj)
+{
+	CoulombInterference *obj = (CoulombInterference *) vobj;
+	
+	const double &t = par[0];
+
+	double ppar[] = { tp, t, par[1], par[2] };
+	TComplex I = ComplexIntegrate(B_cahn_integrand_phi, ppar, vobj, 0., 2.*cnts->pi, 0., obj->precision,
+		obj->integ_workspace_size, obj->integ_workspace2, "B_cahn_integrand_t");
+	
+	return obj->FF_sq(tp) / tp / 2. / cnts->pi * I;
+}
+
+//--------------------------------------------------------------------------------------------------
+
+TComplex CoulombInterference::B_term_cahn(double t) const
+{
+	TComplex amp_t = model->Amp(t);
+	double par[] = { t, amp_t.Re(), amp_t.Im() }; 
+
+	TComplex I = ComplexIntegrate(B_cahn_integrand_t, par, this, t - T, 0., 1E-7, precision,
+		integ_workspace_size, integ_workspace, "CoulombInterference::B_term_cahn");
+
+	return I;
+}
+
+//--------------------------------------------------------------------------------------------------
+
 double CoulombInterference::C_term(double t) const
 {
 	return FF_sq(t-T) * log(t/(t-T));
@@ -390,6 +431,15 @@ TComplex CoulombInterference::Psi_KL(double t) const
 
 //--------------------------------------------------------------------------------------------------
 
+TComplex CoulombInterference::Psi_Cahn(double t) const
+{
+	TComplex corr = (cnts->pMode == cnts->mPP) ? -cnts->alpha : +cnts->alpha;
+	corr *= A_term(t) - B_term_cahn(t);
+	return corr;
+}
+
+//--------------------------------------------------------------------------------------------------
+
 TComplex CoulombInterference::Phase(double t) const
 {
 	switch (mode)
@@ -399,6 +449,7 @@ TComplex CoulombInterference::Phase(double t) const
 		case mWY: return -Phi_WY(t);
 		case mSWY: return -Phi_SWY(t);
 		case mKL: return Psi_KL(t);
+		case mCahn: return Psi_Cahn(t);
 		default: return 0.;
 	};
 }
@@ -426,6 +477,13 @@ TComplex CoulombInterference::Amp_KL(double t) const
 
 //--------------------------------------------------------------------------------------------------
 
+TComplex CoulombInterference::Amp_Cahn(double t) const
+{
+	return Amp_pure(t) + model->Amp(t) * TComplex::Exp(i*Psi_Cahn(t));
+}
+
+//--------------------------------------------------------------------------------------------------
+
 TComplex CoulombInterference::Amp(double t) const
 {
 	switch (mode)
@@ -440,6 +498,8 @@ TComplex CoulombInterference::Amp(double t) const
 			return Amp_SWY(t);
 		case mKL:
 			return Amp_KL(t);
+		case mCahn:
+			return Amp_Cahn(t);
 		default:
 			return 0.;
 	};
