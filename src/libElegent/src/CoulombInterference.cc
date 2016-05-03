@@ -353,7 +353,16 @@ TComplex CoulombInterference::B_cahn_integrand_phi(double phi, double *par, cons
 	TComplex T_hadron_t(par[2], par[3]);
 	
 	double tpp = tp + t + 2. * sqrt(tp * t) * cos(phi);
-	return (model->Amp(tpp) / T_hadron_t - 1.);
+
+	TComplex ret = model->Amp(tpp) / T_hadron_t - 1.;
+
+	// The above calculation of ret suffers from round-off errors for constant phase:
+	// ret value fluctuates between zero and some very small number.
+	// The code below is a work around.
+	if (fabs(ret.Im()) < 1E-11)
+		ret = TComplex(ret.Re(), 0.);
+
+	return ret;
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -378,8 +387,11 @@ TComplex CoulombInterference::B_term_cahn(double t) const
 	TComplex amp_t = model->Amp(t);
 	double par[] = { t, amp_t.Re(), amp_t.Im() }; 
 
-	TComplex I = ComplexIntegrate(B_cahn_integrand_t, par, this, t - T, 0., 1E-7, precision,
-		integ_workspace_size, integ_workspace, "CoulombInterference::B_term_cahn");
+	TComplex I = ComplexIntegrate(B_cahn_integrand_t, par, this, t - T, t - tau, 1E-7, precision,
+		integ_workspace_size, integ_workspace, "CoulombInterference::B_term_cahn/ht");
+	if (t + tau < 0.)
+		I += ComplexIntegrate(B_cahn_integrand_t, par, this, t + tau, 0., 1E-7, precision,
+			integ_workspace_size, integ_workspace, "CoulombInterference::B_term_cahn/lt");
 
 	return I;
 }
