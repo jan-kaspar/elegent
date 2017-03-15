@@ -128,6 +128,7 @@ void IslamModel2015::Init()
 	
 	// ---------- polarisation amplitude ----------
 
+	// [2]
 	ht = 0.024;
 	wd = 0.0034;
 	sf = 0.647;

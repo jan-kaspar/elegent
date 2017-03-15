@@ -17,13 +17,17 @@ void AddModel(string tag, pen p)
 	model_pens.push(p);
 }
 
+// TODO: make this automatic
 
 AddModel("block [06]", heavygreen);
 AddModel("bourrely [03]", blue);
+AddModel("dl [13]", heavygreen + dashed);
+AddModel("ferreira [14]", blue + dashed);
+AddModel("godizov [14]", red + dashed);
 AddModel("islam (hp) [06,09]", black);
 AddModel("islam (lxg) [06,09]", black+dashed);
 AddModel("jenkovszky [11]", magenta);
-AddModel("petrov (2p) [02]", red+dashed);
+//AddModel("petrov (2p) [02]", red+dashed);
 AddModel("petrov (3p) [02]", red);
 
 //----------------------------------------------------------------------------------------------------
@@ -79,7 +83,7 @@ void DrawOptimized(real jump_tol, rObject obj, pen p, string label = "")
 		if ((currentpicture.scale.x.scale.logarithmic && x <= 0))
 			continue;
 
-		if (x > TGraph_highLimit)
+		if (x > TGraph_x_max)
 			break;
 
 		real de_y = y - prev_y;
@@ -240,13 +244,13 @@ void ProcessPlots(string mode, string energies[], string tag)
 	{
 		if (plots[pi].tripleScale)
 		{
-			TGraph_highLimit = 10;
+			TGraph_x_max = 10;
 			ProcessOnePlot(pi, mode, energies, tag, "full_range", "full range", "full range", 2);
 
-			TGraph_highLimit = 1.5;
+			TGraph_x_max = 1.5;
 			ProcessOnePlot(pi, mode, energies, tag, "mid_t", "full range", "medium |t|", 0);
 
-			TGraph_highLimit = +inf;
+			TGraph_x_max = +inf;
 			ProcessOnePlot(pi, mode, energies, tag, "low_t", "low |t|", "low |t|", 0);
 		} else {
 			ProcessOnePlot(pi, mode, energies, tag, "", "", "full range", 1);
@@ -416,15 +420,16 @@ void MakePlots(string pp_energies_str, string app_energies_str)
 	string pp_energies_a[] = split(pp_energies_str, " ");
 	string app_energies_a[] = split(app_energies_str, " ");
 
+	// TODO: uncomment
 	write(f_out, "<h1>t-distributions</h1>", endl);
-	MakeTPlots("pp", pp_energies_a);
-	MakeTPlots("app", app_energies_a);
+	//MakeTPlots("pp", pp_energies_a);
+	//MakeTPlots("app", app_energies_a);
 
 	write(f_out, "<h1>b-distributions</h1>", endl);
-	MakeBPlots("pp", pp_energies_a);
-	MakeBPlots("app", app_energies_a);
+	//MakeBPlots("pp", pp_energies_a);
+	//MakeBPlots("app", app_energies_a);
 	
-	write(f_out, "<h1>s-distributions</h1>", endl);
+	//write(f_out, "<h1>s-distributions</h1>", endl);
 	MakeSPlots("pp");
 	MakeSPlots("app");
 }

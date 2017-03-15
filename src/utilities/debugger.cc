@@ -37,6 +37,7 @@ void TestIslam()
 	vector<Constants::ParticleMode> pModes;
 	energies.push_back(1960); pModes.push_back(Constants::mAPP);
 	energies.push_back(7000); pModes.push_back(Constants::mPP);
+	energies.push_back(8000); pModes.push_back(Constants::mPP);
 	energies.push_back(13000); pModes.push_back(Constants::mPP);
 
 	//vector<int> modes = { 0, 1, 2, 3, 4 };
@@ -62,7 +63,7 @@ void TestIslam()
 			g_dsdt->SetName(buf);
 			g_dsdt->SetTitle(im->fullLabel.mode.c_str());
 
-			for (double mt = 1e-4; mt < 2.5; mt += 0.01)
+			for (double mt = 1e-4; mt < 2.5; mt += 0.001)
 			{
 				double dsdt = cnts->sig_fac * im->Amp(-mt).Rho2();
 				//printf("t = %E: dsdt = %E\n", mt, dsdt);
@@ -116,8 +117,8 @@ void TestIslam()
 
 int main()
 {
-	//TestIslam();
-	//return 0;
+	TestIslam();
+	return 0;
 
 	TFile *f_out = new TFile("debugger.root", "recreate");
 
