@@ -21,8 +21,6 @@
 
 #include "interface/InterpolationModel.h"
 
-#include "TGraph.h"
-
 namespace Elegent
 {
 

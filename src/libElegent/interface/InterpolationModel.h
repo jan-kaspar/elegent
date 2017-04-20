@@ -26,8 +26,6 @@
 
 #include <vector>
 
-class TGraph;
-
 namespace Elegent
 {
 
