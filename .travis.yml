@@ -1,0 +1,32 @@
+sudo: required
+dist: trusty
+
+# travis-ci runs by default on ancient Ubuntu 12.04 (precise), with support until 04.2017
+# following options will give us Ubuntu 14.04 (trusty)
+services:
+  - docker
+
+# matrix build
+env:
+  - DOCKER_IMAGE=cern/cc7-base
+
+# here we can define the sub-builds which can fail (and won't mark whole build as failed)
+#matrix:
+#    allow_failures:
+#        - env: DOCKER_IMAGE=grzanka/cmssw_810:pre5 CMSSW_VER=CMSSW_8_1_0_pre5
+
+language: bash
+
+# TODO: duplicate, remove ??
+services:
+  - docker
+
+before_install:
+  - docker pull $DOCKER_IMAGE
+
+script:
+  - docker run --rm -v `pwd`:/home/cmsbuild/src -it $DOCKER_IMAGE /bin/sh -c "cp -r src/* $CMSSW_VER/src && chown -R cmsbuild:cmsbuild $CMSSW_VER && cd $CMSSW_VER/src && bash test.sh"
+
+notifications:
+  email:
+    - jan.kaspar@gmail.com

@@ -3,7 +3,9 @@
 ## DOWNLOAD
 
 Either download an Elegent release (http://www.hepforge.org/downloads/elegent) or checkout the code from git:
+```
 	git clone https://github.com/jan-kaspar/elegent.git
+```
 
 
 ## BUILD
@@ -22,7 +24,9 @@ CMake will automatically search for GSL, HepMC and ROOT installations. If it fai
  * `-DGSL_CONFIG:STRING=<path to gsl-config>`
 
 The program files (executables, library and header files) can be installed by
-```make install```
+```
+make install
+```
 
 The installation destination can be set by option
 ```
@@ -33,17 +37,13 @@ passed to cmake at configure time.
 
 ## BUILD TEST
 
-TODO
-
 To verify the success of the recommended build, you can do the following:
 ```
 cd ../test/build
 ./package_test ../../build
 ```
-Prior to that, make sure that ROOT and HepMC libraries can be found in LD_LIBRARY_PATH.
 
 
 ## PROGRAM EXECUTION
 
-All executable programs can be run with `-h` option in oder to get help. Alternatively, you can consult the Wiki pages:
-	http://elegent.hepforge.org/trac/wiki
+All executable programs can be run with `-h` option in oder to get help. Alternatively, you can consult the Wiki pages: http://elegent.hepforge.org/trac/wiki .
