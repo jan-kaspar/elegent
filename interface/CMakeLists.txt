@@ -18,5 +18,5 @@ install(FILES
 	ModelFactory.h
 	Model.h
 	PPPModel.h
-	"${PROJECT_BINARY_DIR}/libElegent/interface/Config.h"	
+	"${PROJECT_BINARY_DIR}/interface/Config.h"
 		DESTINATION "include/Elegent")

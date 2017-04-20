@@ -1,29 +1,14 @@
 cmake_minimum_required(VERSION 2.6)
 
-# project name and version
-project(Elegent)
-set(Elegent_VERSION "2.0pre")
+include_directories(${Elegent_SOURCE_DIR})
+include_directories(${ROOT_INCLUDE_DIR})
+include_directories(${HEPMC_INCLUDE})
+include_directories(${GSL_INCLUDE_DIR})
 
-# search for installations of required packages
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${Elegent_SOURCE_DIR}/../cmake/modules/")
-find_package(ROOT REQUIRED)
-find_package(HepMC REQUIRED)
-find_package(GSL REQUIRED)
+add_library(Elegent SHARED Constants.cc Math.cc
+	Model.cc BHModel.cc BSWModel.cc DLModel.cc ExpModel.cc FerreiraModel.cc
+	GodizovModel.cc InterpolationModel.cc IslamModel.cc IslamModel2015.cc
+	JenkovszkyModel.cc PPPModel.cc CoulombInterference.cc ModelFactory.cc
+	Generator.cc)
 
-message(STATUS "Elegent version: " ${Elegent_VERSION})
-
-# configuration file
-configure_file(
-	"${PROJECT_SOURCE_DIR}/libElegent/interface/Config.h.in"
-	"${PROJECT_BINARY_DIR}/libElegent/interface/Config.h"
-)
-
-include_directories("${PROJECT_BINARY_DIR}/libElegent")
-
-# compiler flags
-add_definitions("-Wall -Wextra -Werror")
-set(CMAKE_CXX_FLAGS "--std=c++1y -O3")
-
-# list of subdirectories
-add_subdirectory(libElegent)
-add_subdirectory(utilities)
+install(TARGETS Elegent DESTINATION lib)
