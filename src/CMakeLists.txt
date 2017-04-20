@@ -22,7 +22,7 @@ include_directories("${PROJECT_BINARY_DIR}/libElegent")
 
 # compiler flags
 add_definitions("-Wall -Wextra -Werror")
-set(CMAKE_CXX_FLAGS "-O3")
+set(CMAKE_CXX_FLAGS "--std=c++1y -O3")
 
 # list of subdirectories
 add_subdirectory(libElegent)
