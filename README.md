@@ -14,7 +14,7 @@ The build is based on the CMake system (http://www.cmake.org/). While you may us
 ```
 mkdir build
 cd build
-cmake ../src <options>
+cmake .. <options>
 make
 ```
 
