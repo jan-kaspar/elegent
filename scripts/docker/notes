@@ -1,0 +1,15 @@
+# build:
+# copy Dockerfile somewhere to a local disk (docker has a problem with AFS)
+# cd to that directory
+docker build -t new_image .
+
+# check
+docker images
+
+# upload:
+docker login
+docker tag new_image jkaspar/for_elegent_cern_cc7:2017_04_27
+docker push jkaspar/for_elegent_cern_cc7:2017_04_27
+
+# clean up
+docker rmi new_image
