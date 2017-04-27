@@ -13,6 +13,7 @@ if (${HEPMC_LIB} MATCHES "HEPMC_LIB-NOTFOUND")
 			HepMC
 		PATHS
 			/usr/lib
+			/usr/lib64
 			/usr/local/lib
 	)
 endif()
