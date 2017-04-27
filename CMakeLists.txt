@@ -8,7 +8,7 @@ set(Elegent_VERSION "2.0pre")
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${Elegent_SOURCE_DIR}/cmake/modules/")
 find_package(ROOT REQUIRED)
 find_package(HepMC REQUIRED)
-find_package(GSL REQUIRED)
+find_package(GSL 2.0 REQUIRED)
 
 message(STATUS "Elegent version: " ${Elegent_VERSION})
 
