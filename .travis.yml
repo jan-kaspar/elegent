@@ -5,6 +5,7 @@ services:
 
 env:
   - DOCKER_IMAGE=jkaspar/for_elegent_cern_cc7:2017_04_27
+  - DOCKER_IMAGE=jkaspar/for_elegent_archlinux:2017_04_27
 
 language: bash
 
