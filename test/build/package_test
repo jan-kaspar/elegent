@@ -29,11 +29,6 @@ function RunTest()
 }
 
 #----------------------------------------------------------------------------------------------------
-
-# set up environment
-LD_LIBRARY_PATH=$LD_LIBRARY_PATH:`pwd`/../lib
-
-#----------------------------------------------------------------------------------------------------
 # directory with executables
 
 if [ $# -ne 1 ]
@@ -49,19 +44,19 @@ export bin_dir="../$1/tools"
 
 # determine ROOT executable
 
-root_exe=`which "root"`
-if [ -z "$root_exe" ]
-then
-	root_exe=`which "root.exe"`
-fi
+#root_exe=`which "root"`
+#if [ -z "$root_exe" ]
+#then
+#	root_exe=`which "root.exe"`
+#fi
+#
+#if [ -z "$root_exe" ]
+#then
+#	echo "ERROR: Cannot determine ROOT executable. No tests will be run."
+#	exit 2
+#fi
 
-if [ -z "$root_exe" ]
-then
-	echo "ERROR: Cannot determine ROOT executable. No tests will be run."
-	exit 2
-fi
-
-export root_exe=$root_exe
+export root_exe="root"
 
 #----------------------------------------------------------------------------------------------------
 # prepare test directory
