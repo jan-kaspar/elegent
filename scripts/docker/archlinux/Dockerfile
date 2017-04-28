@@ -1,6 +1,6 @@
 FROM base/archlinux
 
-RUN pacman --noconfirm -Sy gcc make cmake git gsl libglvnd openssl
+RUN pacman --noconfirm -Sy gcc make cmake git gsl libglvnd openssl grep which
 
 RUN for p in \
 		hepmc-2.06.09-1-x86_64.pkg.tar.xz \
