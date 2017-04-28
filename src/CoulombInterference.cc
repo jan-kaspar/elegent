@@ -36,7 +36,7 @@ CoulombInterference *coulomb = new CoulombInterference();
 //----------------------------------------------------------------------------------------------------
 
 CoulombInterference::CoulombInterference() : mode(mPC), ffType(ffPuckett),
-	tau(1E-10), T(10.), precision(1E-2)
+	tau(1E-10), T(10.), precision(1E-5)
 {
 	integ_workspace_size = 1000;
 	integ_workspace = gsl_integration_workspace_alloc(integ_workspace_size);
@@ -310,9 +310,7 @@ TComplex CoulombInterference::B_integrand(double tp, double *par, const void *vo
 	const double &t = par[0];
 	TComplex T_hadron_t(par[1], par[2]);
 
-	double ppar[] = { tp, t };
-	double I = RealIntegrate(I_integrand, ppar, vobj, 0., 2.*cnts->pi, 0., obj->precision,
-		obj->integ_workspace_size, obj->integ_workspace2, "B_integrand");
+	double I = obj->I_integral(t, tp);
 	
 	TComplex a = model->Amp(tp) / T_hadron_t;
 	return (a - 1.) * I	/ 2. / cnts->pi;
