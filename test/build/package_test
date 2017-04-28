@@ -9,6 +9,8 @@ function PrintUsage()
 
 #----------------------------------------------------------------------------------------------------
 
+anythingFailed="0"
+
 function RunTest()
 {
 	echo ">> running test '$1'"
@@ -17,13 +19,14 @@ function RunTest()
 
 	case  "$code" in
 		"0")
-			echo "    PASS"
+			echo "    PASSED"
 			;;
 		"77")
 			echo "    SKIPPED, details in '$1.log'"
 			;;
 		*)
 			echo "    FAILED (code $code), details in '$1.log'"
+			anythingFailed="1"
 			;;
 	esac
 }
@@ -71,3 +74,8 @@ RunTest "test1"
 RunTest "test2"
 RunTest "test3"
 RunTest "test4"
+
+if [ "$anythingFailed" -ne "0" ]
+then
+	exit 4
+fi
