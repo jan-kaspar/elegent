@@ -117,9 +117,6 @@ void TestIslam()
 
 int main()
 {
-	TestIslam();
-	return 0;
-
 	TFile *f_out = new TFile("debugger.root", "recreate");
 
 	// initialise constants etc.
@@ -127,18 +124,21 @@ int main()
 	Constants::Init(8000, Constants::mPP);
 	//Constants::Init(13000, Constants::mPP);
 	
-	coulomb->precision = 1E-2;
+	coulomb->precision = 1E-5;
+	coulomb->mode = CoulombInterference::mKL;
+
+	coulomb->InitIFunctionInterpolator(20., 300);
 
 	cnts->Print();
 	coulomb->Print();
 
 	ModelFactory mf;
-	//model = mf.MakeInstance("block [06]");
+	model = mf.MakeInstance("block [06]");
 	//model = mf.MakeInstance("bourrely [03]", false);
 	//model = mf.MakeInstance("dl [13]");
 	//model = mf.MakeInstance("godizov [14]", false);
 	//model = mf.MakeInstance("islam (hp) [06,09]");
-	model = mf.MakeInstance("islam (lxg) [06,09]");
+	//model = mf.MakeInstance("islam (lxg) [06,09]");
 	//model = mf.MakeInstance("jenkovszky [11]");
 	//model = mf.MakeInstance("petrov (2p) [02]");
 	//model = mf.MakeInstance("petrov (3p) [02]");
@@ -147,10 +147,10 @@ int main()
 	// dsdt
 	TGraph *g_dsdt = new TGraph();
 	g_dsdt->SetName("g_dsdt");
-	for (double mt = 1e-4; mt < 2.5; mt += 0.01)
+	for (double mt = 1e-4; mt < 1; mt += 0.01)
 	{
-		double dsdt = cnts->sig_fac * model->Amp(-mt).Rho2();
-		printf("t = %E: dsdt = %E\n", mt, dsdt);
+		double dsdt = cnts->sig_fac * coulomb->Amp(-mt).Rho2();
+		//printf("t = %E: dsdt = %E\n", mt, dsdt);
 
 		int idx = g_dsdt->GetN();
 		g_dsdt->SetPoint(idx, mt, dsdt);
@@ -203,6 +203,19 @@ int main()
 		printf(" => %.3E, %.3E\n", r.Re(), r.Im());
 	}
 	*/
+
+	TGraph *g_B_re = new TGraph(); g_B_re->SetName("g_B_re");
+	TGraph *g_B_im = new TGraph(); g_B_im->SetName("g_B_im");
+	for (double mt = 1e-4; mt < 1; mt += 0.01)
+	{
+		TComplex B = coulomb->B_term(-mt);
+
+		int idx = g_B_re->GetN();
+		g_B_re->SetPoint(idx, mt, B.Re());
+		g_B_im->SetPoint(idx, mt, B.Im());
+	}
+	g_B_re->Write();
+	g_B_im->Write();
 
 	// C, R, Z graphs
 /*

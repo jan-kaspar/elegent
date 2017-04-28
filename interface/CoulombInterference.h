@@ -29,6 +29,8 @@
 namespace Elegent
 {
 
+class IFunctionInterpolator;
+
 /**
  * Coulomb hadron interference for elastic scattering.
  *
@@ -84,13 +86,22 @@ class CoulombInterference
 		/// precision of the integration
 		double precision;
 
-		unsigned long integ_workspace_size;
-		gsl_integration_workspace *integ_workspace, *integ_workspace2;
+		/// flag whether to use IFunctionInterpolator instead of numerical integration (I_function_integration)
+		bool useIFunctionInterpolator = false;
+
+		/// initialises the IFunctionInterpolator
+		void InitIFunctionInterpolator(double mt_max, unsigned int n_grid_values);
 
 		/// print the parameters
 		void Print() const;
 
 	protected:
+		unsigned long integ_workspace_size;
+		gsl_integration_workspace *integ_workspace, *integ_workspace2;
+
+		/// optional object for interpolation of \f$I(t, t')\f$
+		IFunctionInterpolator *iFunctionInterpolator = NULL;
+
 		/// the integrand of the A term
 		static double A_integrand(double tt, double *par, const void *vobj);
 
@@ -111,7 +122,11 @@ class CoulombInterference
 		/// \param t in GeV^2, negative
 		double A_term(double t) const;
 
-		double I_integral(double t, double tp) const;
+		/// evaluates \f$I(t, t')\f$ directly by integration
+		double I_function_integration(double t, double tp) const;
+
+		/// evaluates \f$I(t, t')\f$, dependening on useIFunctionInterpolator either by integration or by interpolaion
+		double I_function(double t, double tp) const;
 		
 		/// B: \f${1 / 2\pi} \int_{t_{min}}^0 [ F^N(t') / F^N(t) - 1] I(t, t')\f$.
 		/// \param t in GeV^2, negative

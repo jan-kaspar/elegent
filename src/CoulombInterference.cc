@@ -21,6 +21,7 @@
 
 #include "interface/CoulombInterference.h"
 #include "interface/Constants.h"
+#include "interface/IFunctionInterpolator.h"
 
 using namespace std;
 using namespace Elegent;
@@ -49,6 +50,9 @@ CoulombInterference::~CoulombInterference()
 {
 	gsl_integration_workspace_free(integ_workspace);
 	gsl_integration_workspace_free(integ_workspace2);
+
+	if (iFunctionInterpolator)
+		delete iFunctionInterpolator;
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -61,6 +65,7 @@ void CoulombInterference::Print() const
 	printf("\tT = %E\n", T);
 	printf("\ttau = %E\n", tau);
 	printf("\tprecision = %E\n", precision);
+	printf("\tuseIFunctionInterpolator = %u\n", useIFunctionInterpolator);
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -293,12 +298,30 @@ double CoulombInterference::I_integrand(double phi, double *par, const void *vob
 
 //--------------------------------------------------------------------------------------------------
 
-double CoulombInterference::I_integral(double t, double tp) const
+double CoulombInterference::I_function_integration(double t, double tp) const
 {
 	double par[] = { tp, t };
 
 	return RealIntegrate(I_integrand, par, this, 0., 2.*cnts->pi, 0., precision, integ_workspace_size,
-		integ_workspace2, "CoulombInterference::I_integral");
+		integ_workspace2, "CoulombInterference::I_integration");
+}
+
+//--------------------------------------------------------------------------------------------------
+
+void CoulombInterference::InitIFunctionInterpolator(double mt_max, unsigned int n_grid_values)
+{
+	iFunctionInterpolator = new IFunctionInterpolator(this, mt_max, n_grid_values);
+	useIFunctionInterpolator = true;
+}
+
+//--------------------------------------------------------------------------------------------------
+
+double CoulombInterference::I_function(double t, double tp) const
+{
+	if (useIFunctionInterpolator)
+		return iFunctionInterpolator->Eval(t, tp);
+	else
+		return I_function_integration(t, tp);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -310,7 +333,7 @@ TComplex CoulombInterference::B_integrand(double tp, double *par, const void *vo
 	const double &t = par[0];
 	TComplex T_hadron_t(par[1], par[2]);
 
-	double I = obj->I_integral(t, tp);
+	double I = obj->I_function(t, tp);
 	
 	TComplex a = model->Amp(tp) / T_hadron_t;
 	return (a - 1.) * I	/ 2. / cnts->pi;

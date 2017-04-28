@@ -11,6 +11,7 @@ install(FILES
 	Generator.h
 	GodizovModel.h
 	InterpolationModel.h
+	IFunctionInterpolator.h
 	IslamModel.h
 	IslamModel2015.h
 	JenkovszkyModel.h
