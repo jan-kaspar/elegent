@@ -18,7 +18,4 @@ target_link_libraries(ElegentTDistributionSampler ${LIBS})
 add_executable(ElegentGeneratorTest ElegentGeneratorTest.cc)
 target_link_libraries(ElegentGeneratorTest ${LIBS})
 
-add_executable(debugger debugger.cc)
-target_link_libraries(debugger ${LIBS})
-
 install(TARGETS ElegentBDistributionSampler ElegentSDistributionSampler ElegentTDistributionSampler ElegentGeneratorTest DESTINATION bin)
