@@ -8,7 +8,7 @@ function Generate()
 
 	tag="s-distributions,${mode}"
 
-	generator="../build/utilities/ElegentSDistributionSampler"
+	generator="../../build/tools/ElegentSDistributionSampler"
 	models="block [06];bourrely [03];dl [13];ferreira [14];godizov [14];islam (hp) [06,09];islam (lxg) [06,09];jenkovszky [11];petrov (3p) [02]"
 	$generator "-$mode" -output "$tag.root" -models "$models" &> "$tag.log"
 

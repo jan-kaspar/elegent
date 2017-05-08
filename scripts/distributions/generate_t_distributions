@@ -9,7 +9,7 @@ function Generate()
 
 	tag="t-distributions,${mode},${energy}GeV"
 
-	generator="../build/utilities/ElegentTDistributionSampler"
+	generator="../../build/tools/ElegentTDistributionSampler"
 	models="block [06];bourrely [03];dl [13];ferreira [14];godizov [14];islam (hp) [06,09];islam (lxg) [06,09];jenkovszky [11];petrov (3p) [02]"
 	$generator "-$mode" -energy "$energy" -output "$tag.root" -models "$models" &> "$tag.log"
 
@@ -25,10 +25,11 @@ function Generate()
 #Generate "pp" "31" &
 #Generate "pp" "53" &
 #Generate "pp" "200" &
+Generate "pp" "900" &
 #Generate "pp" "2760" &
 #Generate "pp" "7000" &
 #Generate "pp" "8000" &
-Generate "pp" "13000" &
+#Generate "pp" "13000" &
 #Generate "pp" "14000" &
 
 #Generate "app" "31" &
