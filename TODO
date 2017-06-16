@@ -1,3 +1,5 @@
+* make dependendence on HepMC optional
+
 * use of CMake system
  - update interface to CMSSW
  - finaly update: README, web, Wiki
