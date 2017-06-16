@@ -9,6 +9,7 @@ install(FILES
 	ExpModel.h
 	FerreiraModel.h
 	Generator.h
+	GNLModel.h
 	GodizovModel.h
 	InterpolationModel.h
 	IFunctionInterpolator.h

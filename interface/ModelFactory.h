@@ -27,6 +27,7 @@
 #include "DLModel.h"
 #include "ExpModel.h"
 #include "FerreiraModel.h"
+#include "GNLModel.h"
 #include "GodizovModel.h"
 #include "IslamModel.h"
 #include "IslamModel2015.h"
