@@ -64,7 +64,7 @@ void EndJob()
 //----------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------
 
-void DrawOptimized(real jump_tol, rObject obj, pen p, string label = "")
+void DrawOptimized(real jump_tol, RootObject obj, pen p, string label = "")
 {
 	int N = obj.iExec("GetN");
 	guide g;
@@ -114,7 +114,7 @@ void PlotAllModels(string input_file, string template, string legend_title,
 	for (int mi : model_tags.keys)
 	{
 		string obj_path = replace(template, "<model>", model_tags[mi]);
-		rObject obj = rGetObj(input_file, obj_path, search=false, error=false);
+		RootObject obj = RootGetObject(input_file, obj_path, search=false, error=false);
 		if (!obj.valid)
 			continue;
 
@@ -127,7 +127,7 @@ void PlotAllModels(string input_file, string template, string legend_title,
 	}
 
 	// try to get Elegent version
-	rObject metadata = rGetObj(input_file, "meta-data", error=false);
+	RootObject metadata = RootGetObject(input_file, "meta-data", error=false);
 	if (metadata.valid)
 	{
 		legend_title += "\quad{\it (Elegent version: " + metadata.sExec("GetTitle") + ")}";
@@ -141,6 +141,8 @@ void PlotAllModels(string input_file, string template, string legend_title,
 void FinalizeFile(string name)
 {
 	// add grid
+	// TODO: uncomment
+	/*
 	for (int pi : pad_collection.keys)
 	{
 		SetPad(pad_collection[pi]);
@@ -155,6 +157,7 @@ void FinalizeFile(string name)
 		yaxis(Label(currentpad.yLabel, 1), LeftRight, RightTicks());
 		currentpad.yLabel = "";
 	}
+	*/
 
 	NewPad(false);
 	add(legend_frame);
@@ -420,16 +423,15 @@ void MakePlots(string pp_energies_str, string app_energies_str)
 	string pp_energies_a[] = split(pp_energies_str, " ");
 	string app_energies_a[] = split(app_energies_str, " ");
 
-	// TODO: uncomment
 	write(f_out, "<h1>t-distributions</h1>", endl);
-	//MakeTPlots("pp", pp_energies_a);
-	//MakeTPlots("app", app_energies_a);
+	MakeTPlots("pp", pp_energies_a);
+	MakeTPlots("app", app_energies_a);
 
 	write(f_out, "<h1>b-distributions</h1>", endl);
-	//MakeBPlots("pp", pp_energies_a);
-	//MakeBPlots("app", app_energies_a);
+	MakeBPlots("pp", pp_energies_a);
+	MakeBPlots("app", app_energies_a);
 	
-	//write(f_out, "<h1>s-distributions</h1>", endl);
+	write(f_out, "<h1>s-distributions</h1>", endl);
 	MakeSPlots("pp");
 	MakeSPlots("app");
 }
