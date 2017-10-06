@@ -37,7 +37,8 @@ CoulombInterference *coulomb = new CoulombInterference();
 //----------------------------------------------------------------------------------------------------
 
 CoulombInterference::CoulombInterference() : mode(mPC), ffType(ffPuckett),
-	tau(1E-10), T(10.), precision(1E-5)
+	// TODO: investigate which precision is needed; value 1E-5 made problems to the script "generate_t_distributions"
+	tau(1E-10), T(10.), precision(1E-2)
 {
 	integ_workspace_size = 1000;
 	integ_workspace = gsl_integration_workspace_alloc(integ_workspace_size);

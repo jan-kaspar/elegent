@@ -6,7 +6,7 @@ include_directories(${HEPMC_INCLUDE})
 include_directories(${GSL_INCLUDE_DIR})
 
 add_library(Elegent SHARED Constants.cc Math.cc
-	Model.cc BHModel.cc BSWModel.cc DLModel.cc ExpModel.cc FerreiraModel.cc
+	Model.cc BHModel.cc BSWModel.cc DLModel.cc ExpModel.cc FerreiraModel.cc GNLModel.cc
 	GodizovModel.cc InterpolationModel.cc IFunctionInterpolator.cc IslamModel.cc IslamModel2015.cc
 	JenkovszkyModel.cc PPPModel.cc CoulombInterference.cc ModelFactory.cc
 	Generator.cc)

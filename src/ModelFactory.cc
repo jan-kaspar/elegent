@@ -44,6 +44,10 @@ ModelFactory::ModelFactory()
 	ferreira->Configure();
 	model_map[ferreira->CompileShortLabel()] = ferreira;
 	
+	GNLModel *gnl = new GNLModel();
+	gnl->Configure();
+	model_map[gnl->CompileShortLabel()] = gnl;
+	
 	GodizovModel *godizov = new GodizovModel();
 	godizov->Configure();
 	model_map[godizov->CompileShortLabel()] = godizov;

@@ -2,3 +2,8 @@
 *.swo
 *.root
 *.pdf
+
+build
+
+environment
+build_instructions
