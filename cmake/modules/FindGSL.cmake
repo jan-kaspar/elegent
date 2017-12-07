@@ -128,3 +128,25 @@ IF(GSL_LIBRARIES)
   ENDIF(GSL_INCLUDE_DIR OR GSL_CXX_FLAGS)
 ENDIF(GSL_LIBRARIES)
 
+
+if( NOT GSL_VERSION )
+  if( NOT GSL_VERSION AND EXISTS "${GSL_INCLUDE_DIR}/gsl/gsl_version.h" )
+    file( STRINGS "${GSL_INCLUDE_DIR}/gsl/gsl_version.h" gsl_version_h_contents REGEX "define GSL_VERSION" )
+    string( REGEX REPLACE ".*([0-9]\\.[0-9][0-9]?).*" "\\1" GSL_VERSION ${gsl_version_h_contents} )
+
+	MESSAGE(STATUS "GSL_VERSION = ${GSL_VERSION}")
+  endif()
+
+  # might also try scraping the directory name for a regex match "gsl-X.X"
+endif()
+
+
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args( GSL
+  FOUND_VAR
+    GSL_FOUND
+  REQUIRED_VARS
+    GSL_LIBRARIES
+  VERSION_VAR
+    GSL_VERSION
+)

@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.6)
 
 include_directories(${Elegent_SOURCE_DIR})
 include_directories(${ROOT_INCLUDE_DIR})
-include_directories(${HEPMC_INCLUDE})
+include_directories(${HEPMC_INCLUDE}) # TODO: needed ??
 include_directories(${GSL_INCLUDE_DIR})
 
 add_library(Elegent SHARED Constants.cc Math.cc
