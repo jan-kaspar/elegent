@@ -27,5 +27,6 @@ set(CMAKE_CXX_FLAGS "--std=c++1y -O3")
 # list of subdirectories
 add_subdirectory(interface)
 add_subdirectory(src)
+add_subdirectory(examples)
 add_subdirectory(tools)
 add_subdirectory(test/functional)
