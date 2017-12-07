@@ -12,9 +12,6 @@ find_package(HepMC)
 
 message(STATUS "Elegent version: " ${Elegent_VERSION})
 
-# TODO
-SET(HEPMC_FOUND 0)
-
 # configuration file
 configure_file(
 	"${PROJECT_SOURCE_DIR}/interface/Config.h.in"
