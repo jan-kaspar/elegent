@@ -3,7 +3,11 @@ cmake_minimum_required(VERSION 2.6)
 include_directories(${Elegent_SOURCE_DIR})
 include_directories(${ROOT_INCLUDE_DIR})
 
-set(LIBS Elegent ${ROOT_LIBRARIES} ${GSL_LIBRARIES})
+if (HEPMC_FOUND)
+	set(LIBS Elegent ${HEPMC_LIB} ${ROOT_LIBRARIES} ${GSL_LIBRARIES})
+else()
+	set(LIBS Elegent ${ROOT_LIBRARIES} ${GSL_LIBRARIES})
+endif()
 
 add_executable(debugger debugger.cc)
 target_link_libraries(debugger ${LIBS})
