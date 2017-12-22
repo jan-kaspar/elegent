@@ -1,4 +1,8 @@
 future release
+
+release 1.3
+	* added model of Nicolescu et al. (not finished)
+	* added optimisation for calculating function I(t, t')
 	* build based on CMake
 	* ElegentTest renamed to ElegentGeneratorTest
 	* traceable Elegent version (and SVN revision) in ROOT files and plots

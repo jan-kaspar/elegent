@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.6)
 
 # project name and version
 project(Elegent)
-set(Elegent_VERSION "2.0pre")
+set(Elegent_VERSION "1.3.0")
 
 # search for installations of required packages
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${Elegent_SOURCE_DIR}/cmake/modules/")

@@ -1,9 +1,8 @@
-* make dependendence on HepMC optional
+* make usable with GSL version 1.X
 
 * use of CMake system
  - update interface to CMSSW
  - finaly update: README, web, Wiki
- - test on: pckasparek, lxplus, hepforge
  - when 2.0 version released: regenerate ROOT files and plots and place them on web
 
 * Godizov model - tune better the integration parameters
